@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { apiFetch } from "@/lib/api";
+import {
+  fetchHoldings as fetchHoldingsApi,
+  fetchPortfolioPerformance,
+  addHolding as addHoldingApi,
+  deleteHolding as deleteHoldingApi,
+} from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -114,8 +119,8 @@ export default function PortfolioPage() {
   const fetchData = useCallback(async () => {
     try {
       const [holdingsRes, perfRes] = await Promise.allSettled([
-        apiFetch<Holding[]>("/holdings"),
-        apiFetch<PortfolioPerformance>("/portfolio/performance"),
+        fetchHoldingsApi(),
+        fetchPortfolioPerformance(),
       ]);
       if (holdingsRes.status === "fulfilled") setHoldings(holdingsRes.value);
       if (perfRes.status === "fulfilled") setPerformance(perfRes.value);
@@ -130,18 +135,15 @@ export default function PortfolioPage() {
     fetchData();
   }, [fetchData]);
 
-  async function addHolding(e: React.FormEvent) {
+  async function handleAddHolding(e: React.FormEvent) {
     e.preventDefault();
     if (!newSymbol || !newQty || !newAvgPrice) return;
     setAddingHolding(true);
     try {
-      await apiFetch("/holdings", {
-        method: "POST",
-        body: JSON.stringify({
-          symbol: newSymbol.toUpperCase(),
-          quantity: Number(newQty),
-          avg_price: Number(newAvgPrice),
-        }),
+      await addHoldingApi({
+        symbol: newSymbol.toUpperCase(),
+        quantity: Number(newQty),
+        avg_buy_price: Number(newAvgPrice),
       });
       toast.success(`${newSymbol.toUpperCase()} added to holdings`);
       setNewSymbol("");
@@ -156,9 +158,9 @@ export default function PortfolioPage() {
     }
   }
 
-  async function deleteHolding(id: string, symbol: string) {
+  async function handleDeleteHolding(id: string, symbol: string) {
     try {
-      await apiFetch(`/holdings/${id}`, { method: "DELETE" });
+      await deleteHoldingApi(id);
       toast.success(`${symbol} removed from holdings`);
       fetchData();
     } catch {
@@ -166,21 +168,10 @@ export default function PortfolioPage() {
     }
   }
 
-  async function runOptimization() {
+  async function handleRunOptimization() {
     setOptimizing(true);
-    try {
-      const result = await apiFetch<OptimizationResult>("/portfolio/optimize", {
-        method: "POST",
-      });
-      setOptimization(result);
-      toast.success("Portfolio optimization complete");
-    } catch (err: unknown) {
-      toast.error(
-        err instanceof Error ? err.message : "Optimization failed"
-      );
-    } finally {
-      setOptimizing(false);
-    }
+    toast.error("Portfolio optimization requires the Python backend and is currently unavailable.");
+    setOptimizing(false);
   }
 
   // Prepare pie chart data
@@ -229,7 +220,7 @@ export default function PortfolioPage() {
                   Enter the stock details to add to your portfolio.
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={addHolding} className="space-y-4">
+              <form onSubmit={handleAddHolding} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="symbol">Symbol</Label>
                   <Input
@@ -276,7 +267,7 @@ export default function PortfolioPage() {
           </Dialog>
           <Button
             variant="outline"
-            onClick={runOptimization}
+            onClick={handleRunOptimization}
             disabled={optimizing || holdings.length === 0}
           >
             {optimizing ? (
@@ -393,7 +384,7 @@ export default function PortfolioPage() {
                         variant="ghost"
                         size="sm"
                         className="text-destructive hover:text-destructive"
-                        onClick={() => deleteHolding(h.id, h.symbol)}
+                        onClick={() => handleDeleteHolding(h.id, h.symbol)}
                       >
                         Remove
                       </Button>

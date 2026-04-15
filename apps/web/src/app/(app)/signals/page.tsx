@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { apiFetch } from "@/lib/api";
+import {
+  fetchSignals as fetchSignalsApi,
+  fetchSignalsSummary,
+} from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -87,11 +90,11 @@ export default function SignalsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchSignals() {
+    async function loadSignals() {
       try {
         const [signalsRes, summaryRes] = await Promise.allSettled([
-          apiFetch<Signal[]>("/signals"),
-          apiFetch<SignalSummary>("/signals/summary"),
+          fetchSignalsApi(),
+          fetchSignalsSummary(),
         ]);
         if (signalsRes.status === "fulfilled") setSignals(signalsRes.value);
         if (summaryRes.status === "fulfilled") setSummary(summaryRes.value);
@@ -101,7 +104,7 @@ export default function SignalsPage() {
         setLoading(false);
       }
     }
-    fetchSignals();
+    loadSignals();
   }, []);
 
   const filtered = useMemo(() => {

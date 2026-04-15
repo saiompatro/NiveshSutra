@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth-context";
-import { apiFetch } from "@/lib/api";
+import { fetchProfile as fetchProfileApi } from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -47,9 +47,9 @@ export default function SettingsPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = useCallback(async () => {
+  const loadProfile = useCallback(async () => {
     try {
-      const data = await apiFetch<Profile>("/profile");
+      const data = await fetchProfileApi();
       setProfile(data);
     } catch {
       // Profile might not exist yet
@@ -59,8 +59,8 @@ export default function SettingsPage() {
   }, []);
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    loadProfile();
+  }, [loadProfile]);
 
   async function handleSignOut() {
     await signOut();

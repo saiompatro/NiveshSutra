@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { apiFetch } from "@/lib/api";
+import { fetchStocks as fetchStocksApi } from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -68,9 +68,9 @@ export default function StocksPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchStocks() {
+    async function loadStocks() {
       try {
-        const data = await apiFetch<Stock[]>("/stocks");
+        const data = await fetchStocksApi();
         setStocks(data);
       } catch {
         toast.error("Failed to load stocks");
@@ -78,7 +78,7 @@ export default function StocksPage() {
         setLoading(false);
       }
     }
-    fetchStocks();
+    loadStocks();
   }, []);
 
   const sectors = useMemo(() => {

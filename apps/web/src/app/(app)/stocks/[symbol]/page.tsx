@@ -2,7 +2,18 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { apiFetch } from "@/lib/api";
+import {
+  fetchStockDetail,
+  fetchOhlcv,
+  fetchIndicators,
+  fetchStockSentiment,
+  fetchStockNews,
+  fetchLatestSignal,
+  fetchWatchlistSymbols,
+  addToWatchlist,
+  removeFromWatchlist,
+} from "@/lib/api";
+import type { OhlcvCandle as OhlcvCandleType } from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -132,23 +143,23 @@ export default function StockDetailPage() {
     try {
       const [stockRes, ohlcvRes, indicatorsRes, sentimentRes, newsRes, signalRes, watchlistRes] =
         await Promise.allSettled([
-          apiFetch<StockInfo>(`/stocks/${symbol}`),
-          apiFetch<OhlcvCandle[]>(`/stocks/${symbol}/ohlcv`),
-          apiFetch<Indicators>(`/stocks/${symbol}/indicators`),
-          apiFetch<Sentiment>(`/stocks/${symbol}/sentiment`),
-          apiFetch<NewsItem[]>(`/stocks/${symbol}/news`),
-          apiFetch<Signal>(`/signals/${symbol}/latest`),
-          apiFetch<Array<{ symbol: string }>>("/watchlist"),
+          fetchStockDetail(symbol),
+          fetchOhlcv(symbol),
+          fetchIndicators(symbol),
+          fetchStockSentiment(symbol),
+          fetchStockNews(symbol),
+          fetchLatestSignal(symbol),
+          fetchWatchlistSymbols(),
         ]);
 
-      if (stockRes.status === "fulfilled") setStock(stockRes.value);
+      if (stockRes.status === "fulfilled" && stockRes.value) setStock(stockRes.value);
       if (ohlcvRes.status === "fulfilled") setOhlcv(ohlcvRes.value);
       if (indicatorsRes.status === "fulfilled") setIndicators(indicatorsRes.value);
       if (sentimentRes.status === "fulfilled") setSentiment(sentimentRes.value);
       if (newsRes.status === "fulfilled") setNews(newsRes.value);
       if (signalRes.status === "fulfilled") setSignal(signalRes.value);
       if (watchlistRes.status === "fulfilled") {
-        setInWatchlist(watchlistRes.value.some((w) => w.symbol === symbol));
+        setInWatchlist(watchlistRes.value.some((s) => s === symbol));
       }
     } catch {
       toast.error("Failed to load stock data");
@@ -257,17 +268,11 @@ export default function StockDetailPage() {
     setWatchlistLoading(true);
     try {
       if (inWatchlist) {
-        await apiFetch(`/watchlist`, {
-          method: "DELETE",
-          body: JSON.stringify({ symbol }),
-        });
+        await removeFromWatchlist(symbol);
         setInWatchlist(false);
         toast.success(`${symbol} removed from watchlist`);
       } else {
-        await apiFetch(`/watchlist`, {
-          method: "POST",
-          body: JSON.stringify({ symbol }),
-        });
+        await addToWatchlist(symbol);
         setInWatchlist(true);
         toast.success(`${symbol} added to watchlist`);
       }

@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { apiFetch } from "@/lib/api";
+import {
+  fetchPortfolioPerformance,
+  fetchSignals as fetchSignalsApi,
+  fetchAlerts as fetchAlertsApi,
+  fetchWatchlist as fetchWatchlistApi,
+  fetchMarketSentiment,
+  fetchMarketOverview,
+} from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -115,16 +122,16 @@ export default function DashboardPage() {
         sentimentRes,
         marketRes,
       ] = await Promise.allSettled([
-        apiFetch<PortfolioPerformance>("/portfolio/performance"),
-        apiFetch<Signal[]>("/signals?limit=5"),
-        apiFetch<Alert[]>("/alerts?limit=10"),
-        apiFetch<WatchlistItem[]>("/watchlist"),
-        apiFetch<MarketSentiment>("/sentiment/market"),
-        apiFetch<MarketOverview>("/market/overview"),
+        fetchPortfolioPerformance(),
+        fetchSignalsApi(),
+        fetchAlertsApi(10),
+        fetchWatchlistApi(),
+        fetchMarketSentiment(),
+        fetchMarketOverview(),
       ]);
 
       if (portfolioRes.status === "fulfilled") setPortfolio(portfolioRes.value);
-      if (signalsRes.status === "fulfilled") setSignals(signalsRes.value);
+      if (signalsRes.status === "fulfilled") setSignals(signalsRes.value.slice(0, 5));
       if (alertsRes.status === "fulfilled") setAlerts(alertsRes.value);
       if (watchlistRes.status === "fulfilled") setWatchlist(watchlistRes.value);
       if (sentimentRes.status === "fulfilled") setSentiment(sentimentRes.value);
