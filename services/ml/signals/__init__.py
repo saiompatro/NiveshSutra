@@ -101,7 +101,7 @@ def compute_technical_score(indicators_row: dict[str, Any]) -> float:
     technical_score = 0.3*RSI + 0.3*MACD + 0.2*BB + 0.2*OBV
     """
     rsi = normalize_rsi(indicators_row.get("rsi_14"))
-    macd = normalize_macd(indicators_row.get("macd_histogram"))
+    macd = normalize_macd(indicators_row.get("macd_hist"))
     bb = normalize_bb(
         indicators_row.get("close"),
         indicators_row.get("bb_upper"),

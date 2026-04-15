@@ -70,7 +70,7 @@ def compute_indicators(ohlcv_df: pd.DataFrame) -> pd.DataFrame:
                 "symbol": symbol,
                 "date": df.iloc[idx]["date"],
                 "rsi_14": _safe_round(rsi, idx),
-                "macd_line": _safe_round(macd.iloc[:, 0] if macd is not None else None, idx),
+                "macd": _safe_round(macd.iloc[:, 0] if macd is not None else None, idx),
                 "macd_signal": _safe_round(macd.iloc[:, 1] if macd is not None else None, idx),
                 "macd_hist": _safe_round(macd.iloc[:, 2] if macd is not None else None, idx),
                 "bb_upper": _safe_round(bbands.iloc[:, 2] if bbands is not None else None, idx),
@@ -101,7 +101,11 @@ def _safe_round(series, idx: int, decimals: int = 4):
         val = series.iloc[idx]
         if pd.isna(val):
             return None
-        return round(float(val), decimals)
+        rounded = round(float(val), decimals)
+        # Return int for zero-decimal columns (e.g. OBV which is bigint in DB)
+        if decimals == 0:
+            return int(rounded)
+        return rounded
     except (IndexError, TypeError):
         return None
 

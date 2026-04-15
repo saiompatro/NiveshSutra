@@ -351,7 +351,8 @@ def score_sentiments(articles: list[dict]) -> list[dict]:
         neu = probs.get("neutral", 0.0)
         label = max(probs, key=probs.get)  # type: ignore[arg-type]
 
-        relevance = 1.0 if len(symbols) == 1 else round(1.0 / len(symbols), 4)
+        # sentiment_score: positive - negative, in [-1, +1]
+        sent_score = round(pos - neg, 6)
         for sym in symbols:
             sentiments.append(
                 {
@@ -361,7 +362,7 @@ def score_sentiments(articles: list[dict]) -> list[dict]:
                     "negative_prob": neg,
                     "neutral_prob": neu,
                     "sentiment_label": label,
-                    "relevance_score": relevance,
+                    "sentiment_score": sent_score,
                     "computed_at": now,
                 }
             )
@@ -396,18 +397,20 @@ def aggregate_daily(sentiments: list[dict]) -> list[dict]:
     daily: list[dict] = []
     for (symbol, day), rows in buckets.items():
         n = len(rows)
-        pos_avg = round(sum(r["positive_prob"] for r in rows) / n, 6)
-        neg_avg = round(sum(r["negative_prob"] for r in rows) / n, 6)
-        neu_avg = round(sum(r["neutral_prob"] for r in rows) / n, 6)
+        pos_avg = sum(r["positive_prob"] for r in rows) / n
+        neg_avg = sum(r["negative_prob"] for r in rows) / n
         avg_sentiment = round(pos_avg - neg_avg, 6)
+        pos_count = sum(1 for r in rows if r["sentiment_label"] == "positive")
+        neg_count = sum(1 for r in rows if r["sentiment_label"] == "negative")
+        neu_count = sum(1 for r in rows if r["sentiment_label"] == "neutral")
         daily.append(
             {
                 "symbol": symbol,
                 "date": day,
                 "avg_sentiment": avg_sentiment,
-                "positive_avg": pos_avg,
-                "negative_avg": neg_avg,
-                "neutral_avg": neu_avg,
+                "positive_count": pos_count,
+                "negative_count": neg_count,
+                "neutral_count": neu_count,
                 "article_count": n,
             }
         )

@@ -153,8 +153,11 @@ def _df_to_records(df: pd.DataFrame) -> list[dict]:
     """Convert DataFrame to list of dicts, replacing NaN with None."""
     records = df.where(pd.notna(df), None).to_dict(orient="records")
     # Ensure None values are JSON-serializable (not float nan)
+    # Also convert OBV (bigint column) from float to int
     for rec in records:
         for k, v in rec.items():
             if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
                 rec[k] = None
+            elif k == "obv" and v is not None:
+                rec[k] = int(v)
     return records

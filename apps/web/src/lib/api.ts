@@ -261,7 +261,7 @@ export async function fetchIndicators(
 
   return {
     rsi: data.rsi_14 ?? 0,
-    macd: data.macd_line ?? 0,
+    macd: data.macd ?? 0,
     macd_signal: data.macd_signal ?? 0,
     macd_hist: data.macd_hist ?? 0,
     bb_upper: data.bb_upper ?? 0,
@@ -841,8 +841,204 @@ export async function markAllAlertsRead() {
   if (error) throw new Error(error.message);
 }
 
-// ---------- Portfolio Optimization (stub — requires Python backend) ----------
+// ---------- Portfolio Optimization ----------
 
-export async function runOptimization(): Promise<null> {
-  return null;
+export interface OptimizationAllocation {
+  symbol: string;
+  current_weight: number;
+  recommended_weight: number;
+  weight_change: number;
+  action: string;
+}
+
+export interface OptimizationResult {
+  id: string;
+  optimization_method: string;
+  expected_return: number | null;
+  expected_risk: number | null;
+  sharpe_ratio: number | null;
+  allocations: OptimizationAllocation[];
+}
+
+export async function runOptimization(): Promise<OptimizationResult | null> {
+  const supabase = sb();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Get user's risk profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("risk_profile")
+    .eq("id", user.id)
+    .single();
+
+  const riskProfile = profile?.risk_profile ?? "moderate";
+
+  // Get holdings
+  const { data: holdings } = await supabase
+    .from("holdings")
+    .select("symbol, quantity, avg_buy_price");
+
+  if (!holdings || holdings.length === 0) throw new Error("No holdings to optimize");
+
+  const symbols = [...new Set(holdings.map((h) => h.symbol))];
+
+  // Fetch OHLCV for computing returns
+  const { data: ohlcvData } = await supabase
+    .from("ohlcv")
+    .select("symbol, date, close")
+    .in("symbol", symbols)
+    .order("date", { ascending: true });
+
+  // Fetch latest signals
+  const { data: signalData } = await supabase
+    .from("signals")
+    .select("symbol, signal, confidence, technical_score, momentum_score")
+    .in("symbol", symbols)
+    .order("date", { ascending: false })
+    .limit(symbols.length * 2);
+
+  // Build price series per symbol
+  const priceMap = new Map<string, number[]>();
+  for (const row of ohlcvData ?? []) {
+    const arr = priceMap.get(row.symbol) ?? [];
+    arr.push(row.close);
+    priceMap.set(row.symbol, arr);
+  }
+
+  // Latest signal per symbol
+  const signalMap = new Map<string, { signal: string }>();
+  for (const row of signalData ?? []) {
+    if (!signalMap.has(row.symbol)) {
+      signalMap.set(row.symbol, { signal: row.signal });
+    }
+  }
+
+  // Compute metrics per symbol
+  const metrics: Array<{ symbol: string; avgReturn: number; volatility: number; signalScore: number }> = [];
+  for (const sym of symbols) {
+    const prices = priceMap.get(sym) ?? [];
+    let avgReturn = 0;
+    let volatility = 0.2;
+    if (prices.length >= 20) {
+      const returns: number[] = [];
+      for (let i = 1; i < prices.length; i++) {
+        returns.push((prices[i] - prices[i - 1]) / prices[i - 1]);
+      }
+      avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length * 252;
+      const mean = avgReturn / 252;
+      volatility = Math.sqrt(
+        returns.reduce((s, r) => s + (r - mean) ** 2, 0) / returns.length * 252
+      );
+    }
+
+    const sig = signalMap.get(sym);
+    const signalWeight: Record<string, number> = {
+      strong_buy: 1, buy: 0.5, hold: 0, sell: -0.5, strong_sell: -1,
+    };
+    const signalScore = sig ? (signalWeight[sig.signal] ?? 0) : 0;
+    metrics.push({ symbol: sym, avgReturn, volatility, signalScore });
+  }
+
+  // Compute scores based on risk profile
+  const scores = new Map<string, number>();
+  for (const m of metrics) {
+    let score: number;
+    if (riskProfile === "conservative") {
+      score = Math.max(0.01, 1 / (m.volatility + 0.01) + m.signalScore * 0.3);
+    } else if (riskProfile === "aggressive") {
+      score = Math.max(0.01, m.avgReturn + m.signalScore * 0.5);
+    } else {
+      score = Math.max(0.01, m.avgReturn * 0.5 + (1 / (m.volatility + 0.01)) * 0.3 + m.signalScore * 0.2);
+    }
+    scores.set(m.symbol, score);
+  }
+
+  const totalScore = [...scores.values()].reduce((a, b) => a + b, 0);
+
+  // Current portfolio values
+  const latestPrices = new Map<string, number>();
+  for (const sym of symbols) {
+    const prices = priceMap.get(sym) ?? [];
+    latestPrices.set(sym, prices[prices.length - 1] ?? 0);
+  }
+
+  let totalValue = 0;
+  const currentValues = new Map<string, number>();
+  for (const h of holdings) {
+    const price = latestPrices.get(h.symbol) ?? h.avg_buy_price;
+    const val = h.quantity * price;
+    currentValues.set(h.symbol, (currentValues.get(h.symbol) ?? 0) + val);
+    totalValue += val;
+  }
+
+  const allocations: OptimizationAllocation[] = symbols.map((sym) => {
+    const currentVal = currentValues.get(sym) ?? 0;
+    const cw = totalValue > 0 ? currentVal / totalValue : 0;
+    const rw = totalScore > 0 ? (scores.get(sym) ?? 0) / totalScore : 1 / symbols.length;
+    const wc = rw - cw;
+    const action = wc > 0.02 ? "buy" : wc < -0.02 ? "sell" : "hold";
+    return {
+      symbol: sym,
+      current_weight: Math.round(cw * 10000) / 10000,
+      recommended_weight: Math.round(rw * 10000) / 10000,
+      weight_change: Math.round(wc * 10000) / 10000,
+      action,
+    };
+  });
+
+  // Portfolio-level stats
+  const avgReturn = metrics.reduce((s, m) => {
+    const w = (scores.get(m.symbol) ?? 0) / (totalScore || 1);
+    return s + w * m.avgReturn;
+  }, 0);
+  const avgVol = metrics.reduce((s, m) => {
+    const w = (scores.get(m.symbol) ?? 0) / (totalScore || 1);
+    return s + w * m.volatility;
+  }, 0);
+  const sharpe = avgVol > 0 ? (avgReturn - 0.07) / avgVol : 0;
+
+  const methodMap: Record<string, string> = {
+    conservative: "min_volatility",
+    moderate: "max_sharpe",
+    aggressive: "efficient_return",
+  };
+
+  // Save to DB
+  const { data: optRow } = await supabase
+    .from("portfolio_optimizations")
+    .insert({
+      user_id: user.id,
+      risk_profile: riskProfile,
+      optimization_method: methodMap[riskProfile] ?? "max_sharpe",
+      expected_annual_return: Math.round(avgReturn * 10000) / 10000,
+      annual_volatility: Math.round(avgVol * 10000) / 10000,
+      sharpe_ratio: Math.round(sharpe * 10000) / 10000,
+    })
+    .select("id")
+    .single();
+
+  if (optRow) {
+    const allocRows = allocations.map((a) => ({
+      optimization_id: optRow.id,
+      symbol: a.symbol,
+      current_weight: a.current_weight,
+      recommended_weight: a.recommended_weight,
+      weight_change: a.weight_change,
+      action: a.action,
+    }));
+    await supabase.from("optimization_allocations").insert(allocRows);
+  }
+
+  return {
+    id: optRow?.id ?? "local",
+    optimization_method: methodMap[riskProfile] ?? "max_sharpe",
+    expected_return: Math.round(avgReturn * 10000) / 10000,
+    expected_risk: Math.round(avgVol * 10000) / 10000,
+    sharpe_ratio: Math.round(sharpe * 10000) / 10000,
+    allocations,
+  };
 }

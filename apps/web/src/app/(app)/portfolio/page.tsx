@@ -6,7 +6,9 @@ import {
   fetchPortfolioPerformance,
   addHolding as addHoldingApi,
   deleteHolding as deleteHoldingApi,
+  runOptimization as runOptimizationApi,
 } from "@/lib/api";
+import type { OptimizationResult } from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -72,14 +74,7 @@ interface PortfolioPerformance {
   history?: Array<{ date: string; value: number; benchmark: number }>;
 }
 
-interface OptimizationResult {
-  id: string;
-  status: string;
-  recommended_allocation: Array<{ symbol: string; weight: number; current_weight: number }>;
-  trades: Array<{ symbol: string; action: string; quantity: number; reason: string }>;
-  expected_return: number;
-  expected_risk: number;
-}
+// Using OptimizationResult from api.ts import
 
 const CHART_COLORS = [
   "#3b82f6",
@@ -170,8 +165,19 @@ export default function PortfolioPage() {
 
   async function handleRunOptimization() {
     setOptimizing(true);
-    toast.error("Portfolio optimization requires the Python backend and is currently unavailable.");
-    setOptimizing(false);
+    try {
+      const result = await runOptimizationApi();
+      if (result) {
+        setOptimization(result);
+        toast.success("Portfolio optimization complete!");
+      } else {
+        toast.error("Optimization failed — ensure you have holdings and market data.");
+      }
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Optimization failed");
+    } finally {
+      setOptimizing(false);
+    }
   }
 
   // Prepare pie chart data
@@ -505,24 +511,44 @@ export default function PortfolioPage() {
       {optimization && (
         <div className="space-y-4">
           <h2 className="text-xl font-bold">Optimization Results</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-sm text-muted-foreground">Expected Annual Return</p>
+                <p className="text-2xl font-bold text-green-400">
+                  {((optimization.expected_return ?? 0) * 100).toFixed(1)}%
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-sm text-muted-foreground">Annual Volatility</p>
+                <p className="text-2xl font-bold text-yellow-400">
+                  {((optimization.expected_risk ?? 0) * 100).toFixed(1)}%
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
           <div className="grid gap-4 lg:grid-cols-2">
-            {/* Recommended Allocation */}
+            {/* Recommended Allocation Pie */}
             <Card>
               <CardHeader>
                 <CardTitle>Recommended Allocation</CardTitle>
                 <CardDescription>
-                  Expected Return: {(optimization.expected_return * 100).toFixed(1)}%
-                  | Risk: {(optimization.expected_risk * 100).toFixed(1)}%
+                  Sharpe Ratio: {(optimization.sharpe_ratio ?? 0).toFixed(2)}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
-                      data={optimization.recommended_allocation.map((a) => ({
-                        name: a.symbol,
-                        value: a.weight,
-                      }))}
+                      data={optimization.allocations
+                        .filter((a) => a.recommended_weight > 0.01)
+                        .map((a) => ({
+                          name: a.symbol,
+                          value: a.recommended_weight,
+                        }))}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
@@ -533,12 +559,14 @@ export default function PortfolioPage() {
                         `${props.name ?? ""} ${(((props.value as number) ?? 0) * 100).toFixed(0)}%`
                       }
                     >
-                      {optimization.recommended_allocation.map((_, index) => (
-                        <Cell
-                          key={`opt-cell-${index}`}
-                          fill={CHART_COLORS[index % CHART_COLORS.length]}
-                        />
-                      ))}
+                      {optimization.allocations
+                        .filter((a) => a.recommended_weight > 0.01)
+                        .map((_, index) => (
+                          <Cell
+                            key={`opt-cell-${index}`}
+                            fill={CHART_COLORS[index % CHART_COLORS.length]}
+                          />
+                        ))}
                     </Pie>
                     <Tooltip
                       formatter={(value) =>
@@ -556,44 +584,51 @@ export default function PortfolioPage() {
               </CardContent>
             </Card>
 
-            {/* Trade Suggestions */}
+            {/* Allocation Changes */}
             <Card>
               <CardHeader>
-                <CardTitle>Suggested Trades</CardTitle>
+                <CardTitle>Rebalancing Actions</CardTitle>
               </CardHeader>
               <CardContent>
-                {optimization.trades.length > 0 ? (
-                  <div className="space-y-3">
-                    {optimization.trades.map((trade, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between rounded-lg border border-border p-3"
-                      >
-                        <div>
-                          <p className="font-medium">{trade.symbol}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {trade.reason}
-                          </p>
+                {optimization.allocations.filter((a) => a.action !== "hold").length > 0 ? (
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                    {optimization.allocations
+                      .filter((a) => a.action !== "hold")
+                      .sort((a, b) => Math.abs(b.weight_change) - Math.abs(a.weight_change))
+                      .map((alloc, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-between rounded-lg border border-border p-3"
+                        >
+                          <div>
+                            <p className="font-medium">{alloc.symbol}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {(alloc.current_weight * 100).toFixed(1)}% &rarr;{" "}
+                              {(alloc.recommended_weight * 100).toFixed(1)}%
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span
+                              className={`text-sm font-medium ${
+                                alloc.action === "increase" || alloc.action === "buy"
+                                  ? "text-green-400"
+                                  : alloc.action === "decrease" || alloc.action === "sell"
+                                  ? "text-red-400"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {alloc.action.toUpperCase()}
+                            </span>
+                            <p className="text-xs text-muted-foreground">
+                              {alloc.weight_change >= 0 ? "+" : ""}
+                              {(alloc.weight_change * 100).toFixed(1)}%
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <span
-                            className={`text-sm font-medium ${
-                              trade.action === "buy"
-                                ? "text-green-400"
-                                : "text-red-400"
-                            }`}
-                          >
-                            {trade.action.toUpperCase()}
-                          </span>
-                          <p className="text-xs text-muted-foreground">
-                            {trade.quantity} shares
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground">
+                  <p className="flex h-[300px] items-center justify-center text-muted-foreground">
                     Your portfolio is already well-optimized!
                   </p>
                 )}
