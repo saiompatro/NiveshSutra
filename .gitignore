@@ -1,0 +1,51 @@
+# Environment
+.env
+.env.local
+.env.production
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+.next/
+out/
+.turbo/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ML models (downloaded at runtime)
+models/
+*.pt
+*.bin
+*.safetensors
+
+# Logs
+*.log
+logs/
+
+# Coverage
+.coverage
+htmlcov/
+.nyc_output/
+
+# Misc
+*.bak
+*.tmp
