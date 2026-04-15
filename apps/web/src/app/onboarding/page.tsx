@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { apiFetch } from "@/lib/api";
+import { createClient } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
 import {
   Card,
   CardHeader,
@@ -107,6 +108,7 @@ export default function OnboardingPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
 
   const currentQuestion = questions[step];
   const isComplete = step >= questions.length;
@@ -132,14 +134,25 @@ export default function OnboardingPage() {
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      await apiFetch("/profile/risk", {
-        method: "PUT",
-        body: JSON.stringify({
-          risk_score: totalScore,
-          risk_profile: riskProfile,
-          answers,
-        }),
-      });
+      const scores = questions.map((q) => answers[q.id] ?? 0);
+      const total = scores.reduce((a, b) => a + b, 0);
+      let risk_profile = "moderate";
+      if (total <= 8) risk_profile = "conservative";
+      else if (total <= 11) risk_profile = "moderate";
+      else risk_profile = "aggressive";
+
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          risk_score: total,
+          risk_profile,
+          onboarding_complete: true,
+        })
+        .eq("id", user?.id);
+
+      if (error) throw new Error(error.message);
+
       toast.success("Risk profile saved!");
       router.push("/dashboard");
     } catch (err: unknown) {
