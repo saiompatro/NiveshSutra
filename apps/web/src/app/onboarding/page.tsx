@@ -108,7 +108,7 @@ export default function OnboardingPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   const currentQuestion = questions[step];
   const isComplete = step >= questions.length;
@@ -142,6 +142,17 @@ export default function OnboardingPage() {
       else risk_profile = "aggressive";
 
       const supabase = createClient();
+
+      // Ensure we have a valid authenticated user id before updating profiles.
+      // On some mobile OAuth redirects the context `user` from `useAuth` may
+      // not be hydrated yet — explicitly fetch the current user to avoid
+      // sending the literal string "undefined" to Postgres (causes UUID errors).
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+      const userId = currentUser?.id;
+      if (!userId) throw new Error("Not authenticated");
+
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -149,7 +160,7 @@ export default function OnboardingPage() {
           risk_profile,
           onboarding_complete: true,
         })
-        .eq("id", user?.id);
+        .eq("id", userId);
 
       if (error) throw new Error(error.message);
 
@@ -259,7 +270,7 @@ export default function OnboardingPage() {
               <Button variant="outline" onClick={() => setStep(0)}>
                 Retake
               </Button>
-              <Button onClick={handleSubmit} disabled={submitting}>
+              <Button onClick={handleSubmit} disabled={submitting || loading || !user}>
                 {submitting ? "Saving..." : "Continue to Dashboard"}
               </Button>
             </>

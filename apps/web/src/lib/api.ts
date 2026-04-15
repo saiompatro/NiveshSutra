@@ -860,7 +860,10 @@ export interface OptimizationResult {
   allocations: OptimizationAllocation[];
 }
 
-export async function runOptimization(): Promise<OptimizationResult | null> {
+// Local JS implementation used as a fallback when the Python ML backend
+// (PyPortfolioOpt) is not available. We keep this logic in a helper so the
+// exported `runOptimization` can prefer the server when available.
+export async function runOptimizationLocal(): Promise<OptimizationResult | null> {
   const supabase = sb();
 
   const {
@@ -1041,4 +1044,34 @@ export async function runOptimization(): Promise<OptimizationResult | null> {
     sharpe_ratio: Math.round(sharpe * 10000) / 10000,
     allocations,
   };
+}
+
+// Wrapper: prefer server-side/ML-backed optimization when available, but
+// gracefully fall back to the local JS implementation when the Python
+// backend is not reachable or returns a pending response.
+export async function runOptimization(): Promise<OptimizationResult | null> {
+  // Try calling the server optimization endpoint first (if NEXT_PUBLIC_API_URL set)
+  try {
+    const serverRes = await apiFetch<{ optimization_id?: string; status?: string; }>(
+      "/portfolio/optimize",
+      { method: "POST", body: JSON.stringify({}) }
+    );
+
+    // If server accepted the job but actual ML worker hasn't finished,
+    // compute a local fallback so the user sees immediate recommendations.
+    if (serverRes?.status === "pending") {
+      return await runOptimizationLocal();
+    }
+
+    // If server returned a full optimization result (allocations etc.), return it.
+    // We conservatively check for allocations field.
+    if ((serverRes as any)?.allocations) {
+      return serverRes as any;
+    }
+  } catch (err) {
+    // ignore and fall through to local implementation
+  }
+
+  // Fallback to the local JS optimizer
+  return await runOptimizationLocal();
 }
