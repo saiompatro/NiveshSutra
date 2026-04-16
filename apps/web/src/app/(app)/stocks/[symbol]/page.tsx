@@ -12,6 +12,8 @@ import {
   fetchWatchlistSymbols,
   addToWatchlist,
   removeFromWatchlist,
+  acceptSignal as acceptSignalApi,
+  fetchAcceptedSignals,
 } from "@/lib/api";
 import type { OhlcvCandle as OhlcvCandleType } from "@/lib/api";
 import { toast } from "sonner";
@@ -34,6 +36,7 @@ import {
   Activity,
   BarChart3,
   Loader2,
+  Check,
 } from "lucide-react";
 
 interface StockInfo {
@@ -150,6 +153,8 @@ export default function StockDetailPage() {
   const [watchlistLoading, setWatchlistLoading] = useState(false);
   const [selectedRange, setSelectedRange] = useState("1Y");
   const [chartLoading, setChartLoading] = useState(false);
+  const [isSignalAccepted, setIsSignalAccepted] = useState(false);
+  const [acceptingSignal, setAcceptingSignal] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -173,6 +178,14 @@ export default function StockDetailPage() {
       if (watchlistRes.status === "fulfilled") {
         setInWatchlist(watchlistRes.value.some((s) => s === symbol));
       }
+
+      // Check if signal is already accepted
+      try {
+        const accepted = await fetchAcceptedSignals();
+        setIsSignalAccepted(accepted.some((a) => a.symbol === symbol && a.status === "active"));
+      } catch {
+        // Non-critical
+      }
     } catch {
       toast.error("Failed to load stock data");
     } finally {
@@ -183,6 +196,25 @@ export default function StockDetailPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  async function handleAcceptSignal() {
+    if (!signal) return;
+    setAcceptingSignal(true);
+    try {
+      await acceptSignalApi({
+        symbol,
+        signal_type: signal.signal,
+        signal_date: signal.created_at,
+        composite_score: signal.confidence,
+      });
+      setIsSignalAccepted(true);
+      toast.success(`Now tracking ${symbol} signal for email alerts`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to accept signal");
+    } finally {
+      setAcceptingSignal(false);
+    }
+  }
 
   async function handleRangeChange(label: string, days: number) {
     setSelectedRange(label);
@@ -590,6 +622,25 @@ export default function StockDetailPage() {
                   Last updated:{" "}
                   {new Date(signal.created_at).toLocaleString("en-IN")}
                 </p>
+                <div className="pt-2">
+                  {isSignalAccepted ? (
+                    <Button variant="outline" disabled className="w-full gap-2">
+                      <Check className="h-4 w-4 text-green-400" />
+                      Tracking for Alerts
+                    </Button>
+                  ) : (
+                    <Button
+                      className="w-full"
+                      onClick={handleAcceptSignal}
+                      disabled={acceptingSignal}
+                    >
+                      {acceptingSignal && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Accept Signal
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : (
               <p className="text-muted-foreground">No signal data available</p>

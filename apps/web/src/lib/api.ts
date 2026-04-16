@@ -798,6 +798,11 @@ export interface Profile {
   full_name: string;
   risk_profile: string;
   risk_score: number;
+  volatility_tolerance: number | null;
+  time_horizon_score: number | null;
+  knowledge_score: number | null;
+  investable_surplus_range: string | null;
+  email_notifications_enabled: boolean;
 }
 
 export async function fetchProfile(): Promise<Profile | null> {
@@ -809,7 +814,9 @@ export async function fetchProfile(): Promise<Profile | null> {
 
   const { data } = await supabase
     .from("profiles")
-    .select("email, full_name, risk_profile, risk_score")
+    .select(
+      "email, full_name, risk_profile, risk_score, volatility_tolerance, time_horizon_score, knowledge_score, investable_surplus_range, email_notifications_enabled"
+    )
     .eq("id", user.id)
     .single();
 
@@ -820,6 +827,11 @@ export async function fetchProfile(): Promise<Profile | null> {
     full_name: data.full_name ?? "",
     risk_profile: data.risk_profile ?? "",
     risk_score: data.risk_score ?? 0,
+    volatility_tolerance: data.volatility_tolerance ?? null,
+    time_horizon_score: data.time_horizon_score ?? null,
+    knowledge_score: data.knowledge_score ?? null,
+    investable_surplus_range: data.investable_surplus_range ?? null,
+    email_notifications_enabled: data.email_notifications_enabled ?? false,
   };
 }
 
@@ -875,6 +887,80 @@ export async function markAllAlertsRead() {
     .from("alerts")
     .update({ is_read: true })
     .eq("is_read", false);
+  if (error) throw new Error(error.message);
+}
+
+// ---------- Signal Acceptance ----------
+
+export interface AcceptedSignal {
+  id: string;
+  symbol: string;
+  signal_type: string;
+  signal_date: string;
+  composite_score: number | null;
+  status: string;
+  accepted_at: string;
+}
+
+export async function acceptSignal(data: {
+  symbol: string;
+  signal_type: string;
+  signal_date: string;
+  composite_score?: number;
+}): Promise<void> {
+  const supabase = sb();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // 1. Insert into accepted_signals
+  const { error: acceptError } = await supabase.from("accepted_signals").insert({
+    user_id: user.id,
+    symbol: data.symbol,
+    signal_type: data.signal_type,
+    signal_date: data.signal_date,
+    composite_score: data.composite_score ?? null,
+    status: "active",
+  });
+  if (acceptError) throw new Error(acceptError.message);
+
+  // 2. Upsert into signal_notifications for email tracking
+  const { error: notifError } = await supabase
+    .from("signal_notifications")
+    .upsert(
+      {
+        user_id: user.id,
+        symbol: data.symbol,
+        last_signal: data.signal_type,
+        is_active: true,
+      },
+      { onConflict: "user_id,symbol" }
+    );
+  if (notifError) {
+    console.error("Failed to create signal notification tracking:", notifError.message);
+  }
+}
+
+export async function fetchAcceptedSignals(): Promise<AcceptedSignal[]> {
+  const supabase = sb();
+
+  const { data } = await supabase
+    .from("accepted_signals")
+    .select("id, symbol, signal_type, signal_date, composite_score, status, accepted_at")
+    .eq("status", "active")
+    .order("accepted_at", { ascending: false })
+    .limit(100);
+
+  return data ?? [];
+}
+
+export async function cancelAcceptedSignal(id: string): Promise<void> {
+  const supabase = sb();
+  const { error } = await supabase
+    .from("accepted_signals")
+    .update({ status: "cancelled" })
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }
 

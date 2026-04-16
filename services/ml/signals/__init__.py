@@ -392,6 +392,13 @@ def run_signals_pipeline() -> None:
     print("=" * 60)
     upsert_signals(signal_rows)
 
+    # --- 5. Signal Change Notifications ---
+    print()
+    print("=" * 60)
+    print("SIGNALS STEP 5: Checking for signal change notifications")
+    print("=" * 60)
+    _check_signal_change_notifications(sb, signal_rows)
+
     elapsed = time.time() - start
     print()
     print("=" * 60)
@@ -403,3 +410,111 @@ def run_signals_pipeline() -> None:
     for sig_label in ["strong_buy", "buy", "hold", "sell", "strong_sell"]:
         print(f"    {sig_label}: {counts.get(sig_label, 0)}")
     print("=" * 60)
+
+
+def _check_signal_change_notifications(sb: Any, signal_rows: list[dict]) -> None:
+    """
+    Check all active signal notifications. If a tracked signal has changed,
+    send an email (respecting 24h cooldown) and update the tracking record.
+    """
+    from datetime import datetime, timezone, timedelta
+
+    try:
+        # Get all active notification subscriptions
+        notif_resp = (
+            sb.table("signal_notifications")
+            .select("id, user_id, symbol, last_signal, last_notified_at")
+            .eq("is_active", True)
+            .execute()
+        )
+        if not notif_resp.data:
+            print("  No active signal notifications to check.")
+            return
+
+        # Build a lookup of new signals by symbol
+        signal_map = {r["symbol"]: r for r in signal_rows}
+
+        # Get user emails + notification preferences in bulk
+        user_ids = list({n["user_id"] for n in notif_resp.data})
+        profiles_resp = (
+            sb.table("profiles")
+            .select("id, email_notifications_enabled")
+            .in_("id", user_ids)
+            .execute()
+        )
+        profile_map = {p["id"]: p for p in (profiles_resp.data or [])}
+
+        # Supabase auth admin: get user emails
+        # We need the service role client for auth.admin
+        email_map: dict[str, str] = {}
+        for uid in user_ids:
+            try:
+                user_resp = sb.auth.admin.get_user_by_id(uid)
+                if user_resp and user_resp.user:
+                    email_map[uid] = user_resp.user.email or ""
+            except Exception:
+                pass
+
+        now = datetime.now(timezone.utc)
+        cooldown = timedelta(hours=24)
+        emails_sent = 0
+        signals_changed = 0
+
+        for notif in notif_resp.data:
+            symbol = notif["symbol"]
+            new_signal_data = signal_map.get(symbol)
+            if not new_signal_data:
+                continue
+
+            new_signal = new_signal_data["signal"]
+            old_signal = notif.get("last_signal")
+
+            # Always update the last_signal field
+            if old_signal != new_signal:
+                signals_changed += 1
+                update_data: dict[str, Any] = {"last_signal": new_signal}
+
+                # Check if we should send an email
+                user_profile = profile_map.get(notif["user_id"], {})
+                email_enabled = user_profile.get("email_notifications_enabled", False)
+                user_email = email_map.get(notif["user_id"], "")
+
+                should_send = email_enabled and user_email and old_signal is not None
+
+                # Respect 24h cooldown
+                if should_send and notif.get("last_notified_at"):
+                    last_notified = datetime.fromisoformat(
+                        notif["last_notified_at"].replace("Z", "+00:00")
+                    )
+                    if now - last_notified < cooldown:
+                        should_send = False
+                        print(f"  {symbol} ({notif['user_id'][:8]}...): signal changed but cooldown active")
+
+                if should_send:
+                    try:
+                        from services.notifications.email import send_signal_change_email
+
+                        sent = send_signal_change_email(
+                            to_email=user_email,
+                            symbol=symbol,
+                            old_signal=old_signal,
+                            new_signal=new_signal,
+                            confidence=new_signal_data.get("confidence", 0),
+                        )
+                        if sent:
+                            update_data["last_notified_at"] = now.isoformat()
+                            emails_sent += 1
+                    except Exception as e:
+                        print(f"  [notify] Email error for {symbol}: {e}")
+
+                # Update the notification record
+                sb.table("signal_notifications").update(update_data).eq(
+                    "id", notif["id"]
+                ).execute()
+
+        print(f"  Checked {len(notif_resp.data)} tracked signals.")
+        print(f"  Signals changed: {signals_changed}")
+        print(f"  Emails sent: {emails_sent}")
+
+    except Exception as e:
+        print(f"  [notify] Signal notification check failed: {e}")

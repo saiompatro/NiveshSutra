@@ -4,7 +4,11 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth-context";
-import { fetchProfile as fetchProfileApi } from "@/lib/api";
+import {
+  fetchProfile as fetchProfileApi,
+  updateProfile as updateProfileApi,
+} from "@/lib/api";
+import type { Profile } from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -17,15 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
-import { User, Shield, Moon, Sun, LogOut } from "lucide-react";
-
-interface Profile {
-  email: string;
-  full_name: string;
-  risk_profile: string;
-  risk_score: number;
-}
+import { User, Shield, Moon, Sun, LogOut, Bell } from "lucide-react";
 
 function getRiskColor(profile: string): string {
   switch (profile) {
@@ -46,6 +42,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [emailToggling, setEmailToggling] = useState(false);
 
   const loadProfile = useCallback(async () => {
     try {
@@ -67,7 +64,29 @@ export default function SettingsPage() {
     router.push("/login");
   }
 
+  async function handleEmailToggle(checked: boolean) {
+    setEmailToggling(true);
+    try {
+      await updateProfileApi({ email_notifications_enabled: checked } as any);
+      setProfile((prev) =>
+        prev ? { ...prev, email_notifications_enabled: checked } : prev
+      );
+      toast.success(
+        checked ? "Email notifications enabled" : "Email notifications disabled"
+      );
+    } catch {
+      toast.error("Failed to update notification settings");
+    } finally {
+      setEmailToggling(false);
+    }
+  }
+
   const isDark = theme === "dark";
+
+  // Determine max score based on questionnaire version
+  // New questionnaire: 11 questions * 4 = 44, Old: 5 * 3 = 15
+  const maxScore =
+    profile?.risk_score && profile.risk_score > 15 ? 44 : profile?.volatility_tolerance != null ? 44 : 15;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -127,11 +146,9 @@ export default function SettingsPage() {
             <Skeleton className="h-8 w-32" />
           ) : profile?.risk_profile ? (
             <>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <div>
-                  <p className="text-sm text-muted-foreground">
-                    Risk Profile
-                  </p>
+                  <p className="text-sm text-muted-foreground">Risk Profile</p>
                   <p
                     className={`text-xl font-bold capitalize ${getRiskColor(profile.risk_profile)}`}
                   >
@@ -141,10 +158,72 @@ export default function SettingsPage() {
                 <div>
                   <p className="text-sm text-muted-foreground">Score</p>
                   <p className="text-xl font-bold">
-                    {profile.risk_score} / 15
+                    {profile.risk_score} / {maxScore}
                   </p>
                 </div>
               </div>
+
+              {/* Sub-scores (only shown if expanded questionnaire was taken) */}
+              {profile.volatility_tolerance != null && (
+                <div className="space-y-3 pt-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Profile Breakdown
+                  </p>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">
+                        Volatility Tolerance
+                      </span>
+                      <span>{profile.volatility_tolerance}/100</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full bg-blue-500 transition-all"
+                        style={{
+                          width: `${profile.volatility_tolerance}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {profile.time_horizon_score != null && (
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">
+                          Time Horizon
+                        </span>
+                        <span>{profile.time_horizon_score}/100</span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full bg-purple-500 transition-all"
+                          style={{
+                            width: `${profile.time_horizon_score}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {profile.knowledge_score != null && (
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">
+                          Market Knowledge
+                        </span>
+                        <span>{profile.knowledge_score}/100</span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full bg-amber-500 transition-all"
+                          style={{
+                            width: `${profile.knowledge_score}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <Button
                 variant="outline"
                 onClick={() => router.push("/onboarding")}
@@ -163,6 +242,36 @@ export default function SettingsPage() {
               </Button>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Notifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-4 w-4" />
+            Notifications
+          </CardTitle>
+          <CardDescription>
+            Get notified when signals change for your accepted stocks
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div>
+                <Label>Email Alerts</Label>
+                <p className="text-xs text-muted-foreground">
+                  Receive email when a tracked signal changes
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={profile?.email_notifications_enabled ?? false}
+              onCheckedChange={handleEmailToggle}
+              disabled={emailToggling || loading}
+            />
+          </div>
         </CardContent>
       </Card>
 

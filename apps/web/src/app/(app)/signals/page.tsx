@@ -6,8 +6,12 @@ import {
   fetchSignals as fetchSignalsApi,
   fetchSignalsSummary,
   fetchProfile,
+  acceptSignal as acceptSignalApi,
+  fetchAcceptedSignals,
+  cancelAcceptedSignal,
+  addHolding,
 } from "@/lib/api";
-import type { Profile } from "@/lib/api";
+import type { Profile, AcceptedSignal } from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -33,7 +37,29 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import { Zap, TrendingUp, TrendingDown, Minus, Shield, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Zap,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Shield,
+  Info,
+  Check,
+  X,
+  Loader2,
+} from "lucide-react";
 
 interface Signal {
   symbol: string;
@@ -167,19 +193,31 @@ export default function SignalsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [acceptedSignals, setAcceptedSignals] = useState<AcceptedSignal[]>([]);
+  const [acceptDialog, setAcceptDialog] = useState<{
+    open: boolean;
+    signal: Signal | null;
+  }>({ open: false, signal: null });
+  const [acceptQty, setAcceptQty] = useState("");
+  const [acceptPrice, setAcceptPrice] = useState("");
+  const [accepting, setAccepting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     async function loadSignals() {
       try {
-        const [signalsRes, summaryRes, profileRes] = await Promise.allSettled([
-          fetchSignalsApi(),
-          fetchSignalsSummary(),
-          fetchProfile(),
-        ]);
+        const [signalsRes, summaryRes, profileRes, acceptedRes] =
+          await Promise.allSettled([
+            fetchSignalsApi(),
+            fetchSignalsSummary(),
+            fetchProfile(),
+            fetchAcceptedSignals(),
+          ]);
         if (signalsRes.status === "fulfilled") setSignals(signalsRes.value);
         if (summaryRes.status === "fulfilled") setSummary(summaryRes.value);
         if (profileRes.status === "fulfilled") setProfile(profileRes.value);
+        if (acceptedRes.status === "fulfilled")
+          setAcceptedSignals(acceptedRes.value);
       } catch {
         toast.error("Failed to load signals");
       } finally {
@@ -188,6 +226,66 @@ export default function SignalsPage() {
     }
     loadSignals();
   }, []);
+
+  async function handleAcceptSignal(e: React.FormEvent) {
+    e.preventDefault();
+    if (!acceptDialog.signal) return;
+    setAccepting(true);
+    const s = acceptDialog.signal;
+    try {
+      // Accept the signal
+      await acceptSignalApi({
+        symbol: s.symbol,
+        signal_type: s.signal,
+        signal_date: s.created_at,
+        composite_score: s.confidence,
+      });
+
+      // For buy/strong_buy signals, also add to holdings if qty provided
+      if (
+        (s.signal === "buy" || s.signal === "strong_buy") &&
+        acceptQty &&
+        acceptPrice
+      ) {
+        await addHolding({
+          symbol: s.symbol,
+          quantity: Number(acceptQty),
+          avg_buy_price: Number(acceptPrice),
+        });
+        toast.success(
+          `Signal accepted and ${s.symbol} added to holdings`
+        );
+      } else {
+        toast.success(`Signal for ${s.symbol} accepted`);
+      }
+
+      // Refresh accepted signals
+      const updated = await fetchAcceptedSignals();
+      setAcceptedSignals(updated);
+
+      setAcceptDialog({ open: false, signal: null });
+      setAcceptQty("");
+      setAcceptPrice("");
+    } catch (err: unknown) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to accept signal"
+      );
+    } finally {
+      setAccepting(false);
+    }
+  }
+
+  async function handleCancelAccepted(id: string, symbol: string) {
+    try {
+      await cancelAcceptedSignal(id);
+      setAcceptedSignals((prev) => prev.filter((a) => a.id !== id));
+      toast.success(`Stopped tracking ${symbol}`);
+    } catch {
+      toast.error("Failed to cancel signal");
+    }
+  }
+
+  const acceptedSymbols = new Set(acceptedSignals.map((a) => a.symbol));
 
   const riskProfile = profile?.risk_profile || "moderate";
   const confidenceThreshold = getConfidenceThreshold(riskProfile);
@@ -382,6 +480,7 @@ export default function SignalsPage() {
                 <TableHead className="hidden sm:table-cell text-right">
                   Date
                 </TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -391,6 +490,8 @@ export default function SignalsPage() {
                   key={`rec-${s.symbol}-${i}`}
                   signal={s}
                   riskProfile={riskProfile}
+                  isAccepted={acceptedSymbols.has(s.symbol)}
+                  onAccept={() => setAcceptDialog({ open: true, signal: s })}
                   onClick={() => router.push(`/stocks/${s.symbol}`)}
                 />
               ))}
@@ -398,7 +499,7 @@ export default function SignalsPage() {
               {recommended.length > 0 && other.length > 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="bg-muted/30 py-2 text-center text-xs text-muted-foreground"
                   >
                     <Info className="mr-1 inline h-3 w-3" />
@@ -413,13 +514,15 @@ export default function SignalsPage() {
                   signal={s}
                   riskProfile={riskProfile}
                   dimmed={recommended.length > 0}
+                  isAccepted={acceptedSymbols.has(s.symbol)}
+                  onAccept={() => setAcceptDialog({ open: true, signal: s })}
                   onClick={() => router.push(`/stocks/${s.symbol}`)}
                 />
               ))}
               {recommended.length === 0 && other.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="text-center text-muted-foreground"
                   >
                     No signals found
@@ -430,6 +533,158 @@ export default function SignalsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Accepted / Tracked Signals */}
+      {acceptedSignals.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Check className="h-4 w-4 text-green-400" />
+              Tracked Signals
+            </CardTitle>
+            <CardDescription>
+              You&apos;ll receive email alerts when these signals change
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Symbol</TableHead>
+                  <TableHead>Signal</TableHead>
+                  <TableHead className="hidden sm:table-cell">
+                    Confidence
+                  </TableHead>
+                  <TableHead className="hidden sm:table-cell">
+                    Accepted
+                  </TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {acceptedSignals.map((a) => (
+                  <TableRow key={a.id}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <SignalIcon signal={a.signal_type} />
+                        {a.symbol}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={signalColor(a.signal_type)}>
+                        {formatSignal(a.signal_type)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell tabular-nums">
+                      {a.composite_score
+                        ? `${(a.composite_score * 100).toFixed(0)}%`
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell text-muted-foreground">
+                      {new Date(a.accepted_at).toLocaleDateString("en-IN")}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 text-xs text-destructive hover:text-destructive"
+                        onClick={() => handleCancelAccepted(a.id, a.symbol)}
+                      >
+                        <X className="mr-1 h-3 w-3" />
+                        Stop
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Accept Signal Dialog */}
+      <Dialog
+        open={acceptDialog.open}
+        onOpenChange={(open) => {
+          if (!open) {
+            setAcceptDialog({ open: false, signal: null });
+            setAcceptQty("");
+            setAcceptPrice("");
+          }
+        }}
+      >
+        <DialogContent>
+          <form onSubmit={handleAcceptSignal}>
+            <DialogHeader>
+              <DialogTitle>
+                Accept {acceptDialog.signal?.signal === "buy" || acceptDialog.signal?.signal === "strong_buy" ? "Buy" : acceptDialog.signal?.signal === "sell" || acceptDialog.signal?.signal === "strong_sell" ? "Sell" : "Hold"} Signal
+              </DialogTitle>
+              <DialogDescription>
+                {acceptDialog.signal?.symbol} &mdash;{" "}
+                {acceptDialog.signal
+                  ? formatSignal(acceptDialog.signal.signal)
+                  : ""}{" "}
+                ({acceptDialog.signal
+                  ? `${(acceptDialog.signal.confidence * 100).toFixed(0)}% confidence`
+                  : ""})
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-muted-foreground">
+                Accepting this signal will track it for email notifications when the signal changes.
+              </p>
+              {(acceptDialog.signal?.signal === "buy" ||
+                acceptDialog.signal?.signal === "strong_buy") && (
+                <>
+                  <p className="text-sm font-medium">
+                    Optionally add to your portfolio:
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label htmlFor="accept-qty">Quantity</Label>
+                      <Input
+                        id="accept-qty"
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                        value={acceptQty}
+                        onChange={(e) => setAcceptQty(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="accept-price">Buy Price (₹)</Label>
+                      <Input
+                        id="accept-price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={acceptPrice}
+                        onChange={(e) => setAcceptPrice(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Leave blank to track without adding to holdings.
+                  </p>
+                </>
+              )}
+            </div>
+            <DialogFooter>
+              <DialogClose>
+                <Button type="button" variant="outline">
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button type="submit" disabled={accepting}>
+                {accepting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Accept Signal
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -438,11 +693,15 @@ function SignalRow({
   signal: s,
   riskProfile,
   dimmed,
+  isAccepted,
+  onAccept,
   onClick,
 }: {
   signal: Signal;
   riskProfile: string;
   dimmed?: boolean;
+  isAccepted?: boolean;
+  onAccept: () => void;
   onClick: () => void;
 }) {
   const sizeHint = getPositionSizeHint(riskProfile, s.signal);
@@ -490,6 +749,26 @@ function SignalRow({
       </TableCell>
       <TableCell className="hidden sm:table-cell text-right text-muted-foreground">
         {new Date(s.created_at).toLocaleDateString("en-IN")}
+      </TableCell>
+      <TableCell className="text-right">
+        {isAccepted ? (
+          <Badge variant="outline" className="gap-1 text-green-400 border-green-500/30">
+            <Check className="h-3 w-3" />
+            Tracked
+          </Badge>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAccept();
+            }}
+          >
+            Accept
+          </Button>
+        )}
       </TableCell>
     </TableRow>
   );
