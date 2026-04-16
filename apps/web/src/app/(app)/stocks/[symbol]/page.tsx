@@ -33,6 +33,7 @@ import {
   Newspaper,
   Activity,
   BarChart3,
+  Loader2,
 } from "lucide-react";
 
 interface StockInfo {
@@ -117,6 +118,15 @@ function formatSignal(signal: string): string {
   return signal.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+const TIME_RANGES = [
+  { label: "1D", days: 1 },
+  { label: "5D", days: 5 },
+  { label: "1M", days: 30 },
+  { label: "3M", days: 90 },
+  { label: "1Y", days: 365 },
+  { label: "ALL", days: 3650 },
+] as const;
+
 function formatLargeNumber(n: number): string {
   if (n >= 1e7) return (n / 1e7).toFixed(2) + " Cr";
   if (n >= 1e5) return (n / 1e5).toFixed(2) + " L";
@@ -138,6 +148,8 @@ export default function StockDetailPage() {
   const [inWatchlist, setInWatchlist] = useState(false);
   const [loading, setLoading] = useState(true);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("1Y");
+  const [chartLoading, setChartLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -171,6 +183,19 @@ export default function StockDetailPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  async function handleRangeChange(label: string, days: number) {
+    setSelectedRange(label);
+    setChartLoading(true);
+    try {
+      const data = await fetchOhlcv(symbol, days);
+      setOhlcv(data);
+    } catch {
+      toast.error("Failed to load chart data");
+    } finally {
+      setChartLoading(false);
+    }
+  }
 
   // Candlestick chart with lightweight-charts
   useEffect(() => {
@@ -384,16 +409,39 @@ export default function StockDetailPage() {
       {/* Candlestick Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Price Chart
-          </CardTitle>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Price Chart
+            </CardTitle>
+            <div className="flex gap-1">
+              {TIME_RANGES.map((range) => (
+                <Button
+                  key={range.label}
+                  variant={selectedRange === range.label ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 px-2.5 text-xs"
+                  onClick={() => handleRangeChange(range.label, range.days)}
+                  disabled={chartLoading}
+                >
+                  {range.label}
+                </Button>
+              ))}
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div ref={chartRef} className="w-full" />
-          {ohlcv.length === 0 && (
+          <div className="relative">
+            <div ref={chartRef} className="w-full" />
+            {chartLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-background/60">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            )}
+          </div>
+          {!chartLoading && ohlcv.length === 0 && (
             <p className="py-20 text-center text-muted-foreground">
-              Chart data unavailable
+              No chart data available for this time range
             </p>
           )}
         </CardContent>

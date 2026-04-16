@@ -92,15 +92,52 @@ export interface StockDetail {
   market_cap: number;
 }
 
-export async function fetchStocks(): Promise<StockWithPrice[]> {
-  const supabase = sb();
+export async function searchAndAddStock(
+  symbol: string
+): Promise<StockRow | null> {
+  try {
+    const result = await apiFetch<{ stock: StockRow; source: string }>(
+      `/stocks/search?q=${encodeURIComponent(symbol)}`
+    );
+    return result?.stock ?? null;
+  } catch {
+    // If server not available, check DB directly
+    const supabase = sb();
+    const { data } = await supabase
+      .from("stocks")
+      .select("*")
+      .eq("symbol", symbol.toUpperCase())
+      .single();
+    return data ?? null;
+  }
+}
 
-  // 1. Fetch all active stocks
-  const { data: stocks, error: stocksErr } = await supabase
+export async function fetchAllStockSymbols(): Promise<
+  Array<{ symbol: string; company_name: string }>
+> {
+  const supabase = sb();
+  const { data } = await supabase
     .from("stocks")
-    .select("symbol, company_name, sector")
+    .select("symbol, company_name")
     .eq("active", true)
     .order("symbol");
+  return data ?? [];
+}
+
+export async function fetchStocks(
+  nifty50Only = false
+): Promise<StockWithPrice[]> {
+  const supabase = sb();
+
+  // 1. Fetch active stocks (optionally filtered to Nifty 50)
+  let query = supabase
+    .from("stocks")
+    .select("symbol, company_name, sector, is_nifty50")
+    .eq("active", true);
+  if (nifty50Only) {
+    query = query.eq("is_nifty50", true);
+  }
+  const { data: stocks, error: stocksErr } = await query.order("symbol");
 
   if (stocksErr || !stocks) return [];
 
@@ -1010,19 +1047,24 @@ export async function runOptimizationLocal(): Promise<OptimizationResult | null>
     aggressive: "efficient_return",
   };
 
-  // Save to DB
-  const { data: optRow } = await supabase
+  // Save to DB (column names must match migration 005 schema)
+  const { data: optRow, error: optError } = await supabase
     .from("portfolio_optimizations")
     .insert({
       user_id: user.id,
       risk_profile: riskProfile,
       optimization_method: methodMap[riskProfile] ?? "max_sharpe",
-      expected_annual_return: Math.round(avgReturn * 10000) / 10000,
-      annual_volatility: Math.round(avgVol * 10000) / 10000,
+      expected_return: Math.round(avgReturn * 10000) / 10000,
+      expected_risk: Math.round(avgVol * 10000) / 10000,
       sharpe_ratio: Math.round(sharpe * 10000) / 10000,
+      status: "completed",
     })
     .select("id")
     .single();
+
+  if (optError) {
+    console.error("Failed to save optimization:", optError.message);
+  }
 
   if (optRow) {
     const allocRows = allocations.map((a) => ({
@@ -1030,8 +1072,8 @@ export async function runOptimizationLocal(): Promise<OptimizationResult | null>
       symbol: a.symbol,
       current_weight: a.current_weight,
       recommended_weight: a.recommended_weight,
-      weight_change: a.weight_change,
-      action: a.action,
+      current_value: Math.round(a.current_weight * totalValue * 100) / 100,
+      recommended_value: Math.round(a.recommended_weight * totalValue * 100) / 100,
     }));
     await supabase.from("optimization_allocations").insert(allocRows);
   }
@@ -1046,32 +1088,29 @@ export async function runOptimizationLocal(): Promise<OptimizationResult | null>
   };
 }
 
-// Wrapper: prefer server-side/ML-backed optimization when available, but
-// gracefully fall back to the local JS implementation when the Python
-// backend is not reachable or returns a pending response.
+// Run portfolio optimization. Uses the local JS optimizer as the primary path
+// since the Python ML backend may not be running. If the FastAPI server is
+// available AND returns a full result with allocations, use that instead.
 export async function runOptimization(): Promise<OptimizationResult | null> {
-  // Try calling the server optimization endpoint first (if NEXT_PUBLIC_API_URL set)
+  // Try the server endpoint first — it may run PyPortfolioOpt inline
   try {
-    const serverRes = await apiFetch<{ optimization_id?: string; status?: string; }>(
+    const serverRes = await apiFetch<Record<string, unknown>>(
       "/portfolio/optimize",
       { method: "POST", body: JSON.stringify({}) }
     );
 
-    // If server accepted the job but actual ML worker hasn't finished,
-    // compute a local fallback so the user sees immediate recommendations.
-    if (serverRes?.status === "pending") {
-      return await runOptimizationLocal();
+    // If server returned a full optimization result with allocations, use it
+    if (
+      serverRes &&
+      Array.isArray((serverRes as any).allocations) &&
+      (serverRes as any).allocations.length > 0
+    ) {
+      return serverRes as unknown as OptimizationResult;
     }
-
-    // If server returned a full optimization result (allocations etc.), return it.
-    // We conservatively check for allocations field.
-    if ((serverRes as any)?.allocations) {
-      return serverRes as any;
-    }
-  } catch (err) {
-    // ignore and fall through to local implementation
+  } catch {
+    // Server not reachable — fall through to local optimizer
   }
 
-  // Fallback to the local JS optimizer
+  // Primary path: local JS optimizer (always available)
   return await runOptimizationLocal();
 }

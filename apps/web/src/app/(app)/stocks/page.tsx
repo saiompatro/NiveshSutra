@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { fetchStocks as fetchStocksApi } from "@/lib/api";
+import {
+  fetchStocks as fetchStocksApi,
+  searchAndAddStock,
+} from "@/lib/api";
 import { toast } from "sonner";
 import {
   Card,
@@ -12,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -28,7 +32,18 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Search, TrendingUp, TrendingDown, Plus, Loader2 } from "lucide-react";
 
 interface Stock {
   symbol: string;
@@ -65,21 +80,52 @@ export default function StocksPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sectorFilter, setSectorFilter] = useState("all");
+  const [universeFilter, setUniverseFilter] = useState<"all" | "nifty50">("all");
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [addSymbol, setAddSymbol] = useState("");
+  const [addingStock, setAddingStock] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    async function loadStocks() {
-      try {
-        const data = await fetchStocksApi();
-        setStocks(data);
-      } catch {
-        toast.error("Failed to load stocks");
-      } finally {
-        setLoading(false);
-      }
+  const loadStocks = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchStocksApi(universeFilter === "nifty50");
+      setStocks(data);
+    } catch {
+      toast.error("Failed to load stocks");
+    } finally {
+      setLoading(false);
     }
+  }, [universeFilter]);
+
+  useEffect(() => {
     loadStocks();
-  }, []);
+  }, [loadStocks]);
+
+  async function handleAddStock(e: React.FormEvent) {
+    e.preventDefault();
+    if (!addSymbol.trim()) return;
+    setAddingStock(true);
+    try {
+      const result = await searchAndAddStock(addSymbol.trim());
+      if (result) {
+        toast.success(
+          `${result.company_name || result.symbol} added successfully`
+        );
+        setAddSymbol("");
+        setAddDialogOpen(false);
+        loadStocks();
+      } else {
+        toast.error("Stock not found. Please check the symbol.");
+      }
+    } catch (err: unknown) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to add stock"
+      );
+    } finally {
+      setAddingStock(false);
+    }
+  }
 
   const sectors = useMemo(() => {
     const s = new Set(stocks.map((st) => st.sector).filter(Boolean));
@@ -100,17 +146,98 @@ export default function StocksPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Stocks</h1>
-        <p className="text-sm text-muted-foreground">
-          Nifty 50 stocks with real-time signals
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Stocks</h1>
+          <p className="text-sm text-muted-foreground">
+            Indian equity stocks with AI-powered signals
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex rounded-lg border border-border">
+            <button
+              type="button"
+              className={`px-3 py-1.5 text-xs font-medium transition-colors rounded-l-lg ${
+                universeFilter === "all"
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }`}
+              onClick={() => setUniverseFilter("all")}
+            >
+              All Stocks
+            </button>
+            <button
+              type="button"
+              className={`px-3 py-1.5 text-xs font-medium transition-colors rounded-r-lg ${
+                universeFilter === "nifty50"
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }`}
+              onClick={() => setUniverseFilter("nifty50")}
+            >
+              Nifty 50
+            </button>
+          </div>
+          <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+            <DialogTrigger
+              render={
+                <Button size="sm">
+                  <Plus className="mr-1.5 h-4 w-4" />
+                  Add Stock
+                </Button>
+              }
+            />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Stock</DialogTitle>
+                <DialogDescription>
+                  Enter an NSE stock symbol (e.g., IRCTC, ZOMATO, DMART). The
+                  stock will be validated and added to your universe.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleAddStock} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="add-symbol">NSE Symbol</Label>
+                  <Input
+                    id="add-symbol"
+                    placeholder="e.g. IRCTC"
+                    value={addSymbol}
+                    onChange={(e) => setAddSymbol(e.target.value.toUpperCase())}
+                    required
+                  />
+                </div>
+                <DialogFooter>
+                  <DialogClose
+                    render={<Button variant="outline">Cancel</Button>}
+                  />
+                  <Button type="submit" disabled={addingStock}>
+                    {addingStock ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Adding...
+                      </>
+                    ) : (
+                      "Add Stock"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <Card>
         <CardHeader>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle>All Stocks</CardTitle>
+            <CardTitle>
+              {universeFilter === "nifty50" ? "Nifty 50 Stocks" : "All Stocks"}
+              {!loading && (
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  ({filtered.length})
+                </span>
+              )}
+            </CardTitle>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -121,7 +248,10 @@ export default function StocksPage() {
                   className="pl-9 w-full sm:w-64"
                 />
               </div>
-              <Select value={sectorFilter} onValueChange={(v) => setSectorFilter(v ?? "all")}>
+              <Select
+                value={sectorFilter}
+                onValueChange={(v) => setSectorFilter(v ?? "all")}
+              >
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="All Sectors" />
                 </SelectTrigger>
@@ -163,7 +293,10 @@ export default function StocksPage() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    <TableCell
+                      colSpan={6}
+                      className="text-center text-muted-foreground"
+                    >
                       No stocks found
                     </TableCell>
                   </TableRow>

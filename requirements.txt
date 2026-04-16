@@ -4,7 +4,8 @@ pydantic>=2.0.0
 pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
 supabase>=2.0.0
-yfinance>=0.2.0
+alpha_vantage
+requests
 pandas>=2.0.0
 pandas-ta>=0.3.0
 feedparser>=6.0.0

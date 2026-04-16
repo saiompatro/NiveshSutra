@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import health, profile, stocks, watchlist, holdings, market, sentiment, signals, portfolio, alerts
+from .routers import health, profile, stocks, stock_search, watchlist, holdings, market, sentiment, signals, portfolio, alerts
 
 app = FastAPI(
     title="NiveshSutra API",
@@ -18,6 +18,7 @@ app.add_middleware(
 
 app.include_router(health.router, prefix="/api/v1", tags=["Health"])
 app.include_router(profile.router, prefix="/api/v1", tags=["Profile"])
+app.include_router(stock_search.router, prefix="/api/v1", tags=["Stock Search"])
 app.include_router(stocks.router, prefix="/api/v1", tags=["Stocks"])
 app.include_router(watchlist.router, prefix="/api/v1", tags=["Watchlist"])
 app.include_router(holdings.router, prefix="/api/v1", tags=["Holdings"])

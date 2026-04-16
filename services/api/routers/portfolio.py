@@ -19,16 +19,37 @@ async def optimize_portfolio(
     # Get holdings
     holdings = supabase.table("holdings").select("symbol, quantity, avg_buy_price").eq("user_id", user["id"]).execute()
 
-    # Store optimization request and return — actual optimization done by ML service
+    # Store optimization request
+    method_map = {"conservative": "min_volatility", "moderate": "max_sharpe", "aggressive": "efficient_return"}
     opt_data = {
         "user_id": user["id"],
         "risk_profile": risk_profile,
-        "optimization_method": {"conservative": "min_volatility", "moderate": "max_sharpe", "aggressive": "efficient_return"}.get(risk_profile, "max_sharpe"),
+        "optimization_method": method_map.get(risk_profile, "max_sharpe"),
         "target_return": body.target_return,
         "target_risk": body.target_risk,
+        "status": "pending",
     }
     result = supabase.table("portfolio_optimizations").insert(opt_data).execute()
     opt_id = result.data[0]["id"] if result.data else None
+
+    # Try running the ML optimizer inline (PyPortfolioOpt)
+    if opt_id and holdings.data:
+        try:
+            from services.ml.optimizer import run_optimization
+            opt_result = run_optimization(user["id"], risk_profile, opt_id)
+            return {
+                "optimization_id": opt_id,
+                "risk_profile": risk_profile,
+                "holdings_count": len(holdings.data),
+                "status": "completed",
+                "expected_return": opt_result.get("expected_return"),
+                "expected_risk": opt_result.get("expected_risk"),
+                "sharpe_ratio": opt_result.get("sharpe_ratio"),
+                "allocations": opt_result.get("allocations", []),
+            }
+        except Exception:
+            # ML dependencies not available — return pending for frontend fallback
+            pass
 
     return {
         "optimization_id": opt_id,

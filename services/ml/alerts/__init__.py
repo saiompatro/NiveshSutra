@@ -251,8 +251,8 @@ def _check_rebalance_drift(sb: Any) -> list[dict]:
 
         # Current holdings
         holdings_resp = (
-            sb.table("portfolio_holdings")
-            .select("symbol,quantity,avg_cost")
+            sb.table("holdings")
+            .select("symbol,quantity,avg_buy_price")
             .eq("user_id", user_id)
             .execute()
         )
@@ -263,7 +263,7 @@ def _check_rebalance_drift(sb: Any) -> list[dict]:
         total_value = 0.0
         current_values: dict[str, float] = {}
         for h in holdings_resp.data:
-            val = (h.get("quantity", 0) or 0) * (h.get("avg_cost", 0) or 0)
+            val = (h.get("quantity", 0) or 0) * (h.get("avg_buy_price", 0) or 0)
             current_values[h["symbol"]] = val
             total_value += val
 

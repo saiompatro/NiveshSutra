@@ -20,6 +20,7 @@ import { TrendingUp, ChevronRight, ChevronLeft } from "lucide-react";
 interface Question {
   id: string;
   text: string;
+  dimension: "volatility" | "horizon" | "knowledge" | "general";
   options: { label: string; score: number }[];
 }
 
@@ -27,53 +28,131 @@ const questions: Question[] = [
   {
     id: "experience",
     text: "What is your investment experience?",
+    dimension: "knowledge",
     options: [
       { label: "New to investing (less than 1 year)", score: 1 },
-      { label: "Some experience (1-5 years)", score: 2 },
-      { label: "Experienced investor (5+ years)", score: 3 },
+      { label: "Some experience (1-3 years)", score: 2 },
+      { label: "Intermediate (3-7 years)", score: 3 },
+      { label: "Experienced investor (7+ years)", score: 4 },
+    ],
+  },
+  {
+    id: "market_knowledge",
+    text: "How well do you understand financial markets and instruments?",
+    dimension: "knowledge",
+    options: [
+      { label: "Basic — I know about savings accounts and FDs", score: 1 },
+      { label: "Fair — I understand mutual funds and index investing", score: 2 },
+      { label: "Good — I understand stocks, sectors, and P/E ratios", score: 3 },
+      { label: "Advanced — I can read charts, options, and financial statements", score: 4 },
     ],
   },
   {
     id: "risk_tolerance",
     text: "How would you describe your risk tolerance?",
+    dimension: "volatility",
     options: [
-      { label: "I prefer safety over returns", score: 1 },
-      { label: "I can accept moderate risk for moderate returns", score: 2 },
-      { label: "I am comfortable with high risk for high returns", score: 3 },
-    ],
-  },
-  {
-    id: "time_horizon",
-    text: "What is your investment time horizon?",
-    options: [
-      { label: "Short-term (less than 2 years)", score: 1 },
-      { label: "Medium-term (2-7 years)", score: 2 },
-      { label: "Long-term (7+ years)", score: 3 },
+      { label: "I prefer safety over returns — capital preservation is key", score: 1 },
+      { label: "I can accept small dips for moderate growth", score: 2 },
+      { label: "I can tolerate significant swings for higher returns", score: 3 },
+      { label: "I actively seek high-risk, high-reward opportunities", score: 4 },
     ],
   },
   {
     id: "loss_tolerance",
     text: "If your portfolio dropped 20% in a month, what would you do?",
+    dimension: "volatility",
     options: [
-      { label: "Sell everything immediately", score: 1 },
-      { label: "Hold and wait for recovery", score: 2 },
-      { label: "Buy more at lower prices", score: 3 },
+      { label: "Sell everything immediately to cut losses", score: 1 },
+      { label: "Sell some positions and hold the rest", score: 2 },
+      { label: "Hold everything and wait for recovery", score: 3 },
+      { label: "Buy more at lower prices — it's an opportunity", score: 4 },
+    ],
+  },
+  {
+    id: "time_horizon",
+    text: "What is your primary investment time horizon?",
+    dimension: "horizon",
+    options: [
+      { label: "Short-term — less than 1 year", score: 1 },
+      { label: "Medium-term — 1 to 3 years", score: 2 },
+      { label: "Long-term — 3 to 7 years", score: 3 },
+      { label: "Very long-term — 7+ years (retirement planning)", score: 4 },
+    ],
+  },
+  {
+    id: "investment_goal",
+    text: "What is your primary investment goal?",
+    dimension: "general",
+    options: [
+      { label: "Capital preservation — protect my money from inflation", score: 1 },
+      { label: "Regular income — dividends and steady returns", score: 2 },
+      { label: "Balanced growth — grow wealth steadily over time", score: 3 },
+      { label: "Aggressive growth — maximize returns even with higher risk", score: 4 },
     ],
   },
   {
     id: "income_stability",
-    text: "How stable is your income?",
+    text: "How stable is your current income?",
+    dimension: "general",
     options: [
-      { label: "Irregular / freelance income", score: 1 },
-      { label: "Stable salary with some variability", score: 2 },
-      { label: "Very stable with surplus savings", score: 3 },
+      { label: "Irregular / freelance — income varies month to month", score: 1 },
+      { label: "Mostly stable with some variability (commissions, bonuses)", score: 2 },
+      { label: "Stable salary with reliable monthly income", score: 3 },
+      { label: "Very stable with significant surplus savings each month", score: 4 },
+    ],
+  },
+  {
+    id: "emergency_fund",
+    text: "Do you have an emergency fund?",
+    dimension: "general",
+    options: [
+      { label: "No emergency fund", score: 1 },
+      { label: "Less than 3 months of expenses", score: 2 },
+      { label: "3 to 6 months of expenses", score: 3 },
+      { label: "More than 6 months of expenses", score: 4 },
+    ],
+  },
+  {
+    id: "concentration",
+    text: "How do you feel about portfolio concentration?",
+    dimension: "volatility",
+    options: [
+      { label: "I want broad diversification across many stocks and sectors", score: 1 },
+      { label: "Moderate diversification — 10-15 stocks across key sectors", score: 2 },
+      { label: "Focused portfolio — 5-10 high-conviction stocks", score: 3 },
+      { label: "Concentrated bets — a few stocks I strongly believe in", score: 4 },
+    ],
+  },
+  {
+    id: "investable_surplus",
+    text: "What is your approximate monthly investable surplus?",
+    dimension: "general",
+    options: [
+      { label: "Under \u20B910,000", score: 1 },
+      { label: "\u20B910,000 - \u20B950,000", score: 2 },
+      { label: "\u20B950,000 - \u20B91,00,000", score: 3 },
+      { label: "Over \u20B91,00,000", score: 4 },
+    ],
+  },
+  {
+    id: "sector_preference",
+    text: "Which types of stocks interest you most?",
+    dimension: "general",
+    options: [
+      { label: "Blue-chip large caps — HDFC, Reliance, TCS", score: 1 },
+      { label: "A mix of large caps and proven mid caps", score: 2 },
+      { label: "Growth-oriented mid and small caps with potential", score: 3 },
+      { label: "Emerging themes — new-age tech, green energy, speciality chemicals", score: 4 },
     ],
   },
 ];
 
+// Max possible score: 11 questions * 4 = 44
+// Conservative: <= 20, Moderate: 21-32, Aggressive: >= 33
 function getRiskProfile(score: number): string {
-  if (score <= 8) return "conservative";
-  if (score <= 11) return "moderate";
+  if (score <= 20) return "conservative";
+  if (score <= 32) return "moderate";
   return "aggressive";
 }
 
@@ -100,6 +179,69 @@ function getRiskColor(profile: string): string {
       return "text-red-400";
     default:
       return "text-foreground";
+  }
+}
+
+function getRiskDescription(profile: string): string {
+  switch (profile) {
+    case "conservative":
+      return "We will recommend a portfolio focused on stability with blue-chip stocks and lower volatility. Signals will be filtered for higher confidence, and position sizing will be cautious.";
+    case "moderate":
+      return "We will recommend a balanced portfolio mixing growth and value stocks. Signals are shown with standard thresholds, and position sizing is moderate.";
+    case "aggressive":
+      return "We will recommend a growth-oriented portfolio with higher return potential. All signal types are shown prominently, and position sizing allows for larger concentrated bets.";
+    default:
+      return "";
+  }
+}
+
+function computeSubScores(answers: Record<string, number>) {
+  let volatility = 0;
+  let horizon = 0;
+  let knowledge = 0;
+  let volCount = 0;
+  let horCount = 0;
+  let knCount = 0;
+
+  for (const q of questions) {
+    const score = answers[q.id];
+    if (score === undefined) continue;
+    switch (q.dimension) {
+      case "volatility":
+        volatility += score;
+        volCount++;
+        break;
+      case "horizon":
+        horizon += score;
+        horCount++;
+        break;
+      case "knowledge":
+        knowledge += score;
+        knCount++;
+        break;
+    }
+  }
+
+  return {
+    volatility_tolerance: volCount > 0 ? Math.round((volatility / volCount) * 25) : 0,
+    time_horizon_score: horCount > 0 ? Math.round((horizon / horCount) * 25) : 0,
+    knowledge_score: knCount > 0 ? Math.round((knowledge / knCount) * 25) : 0,
+  };
+}
+
+function getInvestableSurplusRange(answers: Record<string, number>): string {
+  const score = answers["investable_surplus"];
+  switch (score) {
+    case 1:
+      return "under_10k";
+    case 2:
+      return "10k_50k";
+    case 3:
+      return "50k_1l";
+    case 4:
+      return "over_1l";
+    default:
+      return "unknown";
   }
 }
 
@@ -134,19 +276,13 @@ export default function OnboardingPage() {
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      const scores = questions.map((q) => answers[q.id] ?? 0);
-      const total = scores.reduce((a, b) => a + b, 0);
-      let risk_profile = "moderate";
-      if (total <= 8) risk_profile = "conservative";
-      else if (total <= 11) risk_profile = "moderate";
-      else risk_profile = "aggressive";
+      const total = Object.values(answers).reduce((a, b) => a + b, 0);
+      const risk_profile = getRiskProfile(total);
+      const subScores = computeSubScores(answers);
+      const investable_surplus_range = getInvestableSurplusRange(answers);
 
       const supabase = createClient();
 
-      // Ensure we have a valid authenticated user id before updating profiles.
-      // On some mobile OAuth redirects the context `user` from `useAuth` may
-      // not be hydrated yet — explicitly fetch the current user to avoid
-      // sending the literal string "undefined" to Postgres (causes UUID errors).
       const {
         data: { user: currentUser },
       } = await supabase.auth.getUser();
@@ -159,6 +295,10 @@ export default function OnboardingPage() {
           risk_score: total,
           risk_profile,
           onboarding_complete: true,
+          volatility_tolerance: subScores.volatility_tolerance,
+          time_horizon_score: subScores.time_horizon_score,
+          knowledge_score: subScores.knowledge_score,
+          investable_surplus_range,
         })
         .eq("id", userId);
 
@@ -228,16 +368,59 @@ export default function OnboardingPage() {
                   {getRiskLabel(riskProfile)}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Score: {totalScore} / 15
+                  Score: {totalScore} / {questions.length * 4}
                 </p>
               </div>
+
+              {/* Sub-scores breakdown */}
+              <div className="mx-auto grid max-w-xs gap-3 text-left">
+                {(() => {
+                  const sub = computeSubScores(answers);
+                  return (
+                    <>
+                      <div>
+                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                          <span>Volatility Tolerance</span>
+                          <span>{sub.volatility_tolerance}/100</span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full bg-blue-500 transition-all"
+                            style={{ width: `${sub.volatility_tolerance}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                          <span>Time Horizon</span>
+                          <span>{sub.time_horizon_score}/100</span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full bg-purple-500 transition-all"
+                            style={{ width: `${sub.time_horizon_score}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                          <span>Market Knowledge</span>
+                          <span>{sub.knowledge_score}/100</span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full bg-amber-500 transition-all"
+                            style={{ width: `${sub.knowledge_score}%` }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
               <p className="text-sm text-muted-foreground">
-                {riskProfile === "conservative" &&
-                  "We will recommend a portfolio focused on stability with blue-chip stocks and lower volatility."}
-                {riskProfile === "moderate" &&
-                  "We will recommend a balanced portfolio mixing growth and value stocks."}
-                {riskProfile === "aggressive" &&
-                  "We will recommend a growth-oriented portfolio with higher return potential."}
+                {getRiskDescription(riskProfile)}
               </p>
             </div>
           )}

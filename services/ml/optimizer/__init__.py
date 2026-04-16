@@ -59,8 +59,8 @@ def run_optimization(user_id: str, risk_profile: str, opt_id: str) -> dict[str, 
 
     # --- 1. Load user holdings ---
     holdings_resp = (
-        sb.table("portfolio_holdings")
-        .select("symbol, quantity, avg_cost")
+        sb.table("holdings")
+        .select("symbol, quantity, avg_buy_price")
         .eq("user_id", user_id)
         .execute()
     )
@@ -138,12 +138,12 @@ def run_optimization(user_id: str, risk_profile: str, opt_id: str) -> dict[str, 
     for h in holdings:
         sym = h["symbol"]
         qty = h.get("quantity", 0) or 0
-        # Use last close if available, else avg_cost
+        # Use last close if available, else avg_buy_price
         if sym in price_frames and len(price_frames[sym]) > 0:
             last_close = float(price_frames[sym].iloc[-1])
             val = qty * last_close
         else:
-            val = qty * (h.get("avg_cost", 0) or 0)
+            val = qty * (h.get("avg_buy_price", 0) or 0)
         current_values[sym] = val
         total_current_value += val
 

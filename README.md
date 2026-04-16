@@ -26,7 +26,7 @@ Score -> Signal:  >= 0.5 strong_buy | >= 0.2 buy | >= -0.2 hold | >= -0.5 sell |
 | Charts | Lightweight Charts (TradingView), Recharts |
 | Backend | FastAPI, Python 3.14 |
 | Database | Supabase (Postgres 17, Auth, RLS) |
-| Market Data | yfinance (NSE via .NS suffix) |
+| Market Data | Alpha Vantage (NSE via .NS suffix) |
 | Indicators | pandas-ta (RSI, MACD, BB, SMA, EMA, ATR, OBV) |
 | Sentiment | ProsusAI/finbert (HuggingFace Transformers) |
 | News | RSS feeds (Moneycontrol, Economic Times) |

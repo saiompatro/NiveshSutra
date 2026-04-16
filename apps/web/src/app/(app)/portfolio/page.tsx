@@ -7,6 +7,7 @@ import {
   addHolding as addHoldingApi,
   deleteHolding as deleteHoldingApi,
   runOptimization as runOptimizationApi,
+  fetchAllStockSymbols,
 } from "@/lib/api";
 import type { OptimizationResult } from "@/lib/api";
 import { toast } from "sonner";
@@ -110,15 +111,24 @@ export default function PortfolioPage() {
   const [newQty, setNewQty] = useState("");
   const [newAvgPrice, setNewAvgPrice] = useState("");
   const [addingHolding, setAddingHolding] = useState(false);
+  const [stockSymbols, setStockSymbols] = useState<
+    Array<{ symbol: string; company_name: string }>
+  >([]);
+  const [symbolSuggestions, setSymbolSuggestions] = useState<
+    Array<{ symbol: string; company_name: string }>
+  >([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
-      const [holdingsRes, perfRes] = await Promise.allSettled([
+      const [holdingsRes, perfRes, symbolsRes] = await Promise.allSettled([
         fetchHoldingsApi(),
         fetchPortfolioPerformance(),
+        fetchAllStockSymbols(),
       ]);
       if (holdingsRes.status === "fulfilled") setHoldings(holdingsRes.value);
       if (perfRes.status === "fulfilled") setPerformance(perfRes.value);
+      if (symbolsRes.status === "fulfilled") setStockSymbols(symbolsRes.value);
     } catch {
       toast.error("Failed to load portfolio");
     } finally {
@@ -229,13 +239,65 @@ export default function PortfolioPage() {
               <form onSubmit={handleAddHolding} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="symbol">Symbol</Label>
-                  <Input
-                    id="symbol"
-                    placeholder="e.g. RELIANCE"
-                    value={newSymbol}
-                    onChange={(e) => setNewSymbol(e.target.value)}
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="symbol"
+                      placeholder="e.g. RELIANCE"
+                      value={newSymbol}
+                      onChange={(e) => {
+                        const val = e.target.value.toUpperCase();
+                        setNewSymbol(val);
+                        if (val.length >= 1) {
+                          const matches = stockSymbols.filter(
+                            (s) =>
+                              s.symbol.includes(val) ||
+                              s.company_name
+                                .toUpperCase()
+                                .includes(val)
+                          );
+                          setSymbolSuggestions(matches.slice(0, 8));
+                          setShowSuggestions(matches.length > 0);
+                        } else {
+                          setShowSuggestions(false);
+                        }
+                      }}
+                      onFocus={() => {
+                        if (newSymbol && symbolSuggestions.length > 0) {
+                          setShowSuggestions(true);
+                        }
+                      }}
+                      onBlur={() => {
+                        // Delay to allow click on suggestion
+                        setTimeout(() => setShowSuggestions(false), 150);
+                      }}
+                      autoComplete="off"
+                      required
+                    />
+                    {showSuggestions && (
+                      <div className="absolute z-50 mt-1 w-full rounded-md border border-border bg-popover shadow-lg max-h-48 overflow-y-auto">
+                        {symbolSuggestions.map((s) => (
+                          <button
+                            key={s.symbol}
+                            type="button"
+                            className="flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-muted"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              setNewSymbol(s.symbol);
+                              setShowSuggestions(false);
+                            }}
+                          >
+                            <span className="font-medium">{s.symbol}</span>
+                            <span className="text-xs text-muted-foreground truncate ml-2">
+                              {s.company_name}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Type to search available stocks
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="qty">Quantity</Label>
