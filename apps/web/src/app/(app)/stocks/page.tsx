@@ -108,9 +108,9 @@ export default function StocksPage() {
     setAddingStock(true);
     try {
       const result = await searchAndAddStock(addSymbol.trim());
-      if (result) {
+      if (result?.stock) {
         toast.success(
-          `${result.company_name || result.symbol} added successfully`
+          `${result.stock.company_name || result.stock.symbol} added successfully`
         );
         setAddSymbol("");
         setAddDialogOpen(false);

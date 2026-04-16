@@ -60,21 +60,23 @@ def _instrument_cache_ttl_seconds() -> int:
     return DEFAULT_INSTRUMENT_CACHE_TTL_SECONDS
 
 
-def _cache_key(symbol: str) -> str:
-    return symbol.strip().upper()
+def _cache_key(symbol: str, preferred_ticker: str | None = None) -> str:
+    normalized_symbol = symbol.strip().upper()
+    normalized_ticker = (preferred_ticker or "").strip().upper()
+    return f"{normalized_symbol}::{normalized_ticker}"
 
 
 def _preferred_exchanges(symbol: str, preferred_ticker: str | None = None) -> list[str]:
     normalized = symbol.strip().upper()
     if normalized == "^NSEI":
-        return ["NSE_INDEX", "NSE_EQ", "BSE_EQ"]
+        return ["NSE", "BSE"]
 
     preferred = (preferred_ticker or "").strip().upper()
     if preferred.endswith(".NS"):
-        return ["NSE_EQ", "BSE_EQ"]
+        return ["NSE", "BSE"]
     if preferred.endswith(".BO") or preferred.endswith(".BSE"):
-        return ["BSE_EQ", "NSE_EQ"]
-    return ["NSE_EQ", "BSE_EQ"]
+        return ["BSE", "NSE"]
+    return ["NSE", "BSE"]
 
 
 def _settings_token() -> str:
@@ -97,8 +99,8 @@ def _headers() -> dict[str, str]:
     }
 
 
-def _from_quote_cache(symbol: str) -> QuoteSnapshot | None:
-    key = _cache_key(symbol)
+def _from_quote_cache(symbol: str, preferred_ticker: str | None = None) -> QuoteSnapshot | None:
+    key = _cache_key(symbol, preferred_ticker)
     with _cache_lock:
         cached = _quote_cache.get(key)
         if not cached:
@@ -110,14 +112,18 @@ def _from_quote_cache(symbol: str) -> QuoteSnapshot | None:
         return quote
 
 
-def _store_quote_cache(symbol: str, quote: QuoteSnapshot) -> QuoteSnapshot:
+def _store_quote_cache(
+    symbol: str,
+    quote: QuoteSnapshot,
+    preferred_ticker: str | None = None,
+) -> QuoteSnapshot:
     with _cache_lock:
-        _quote_cache[_cache_key(symbol)] = (time.time(), quote)
+        _quote_cache[_cache_key(symbol, preferred_ticker)] = (time.time(), quote)
     return quote
 
 
-def _from_instrument_cache(symbol: str) -> InstrumentMeta | None:
-    key = _cache_key(symbol)
+def _from_instrument_cache(symbol: str, preferred_ticker: str | None = None) -> InstrumentMeta | None:
+    key = _cache_key(symbol, preferred_ticker)
     with _cache_lock:
         cached = _instrument_cache.get(key)
         if not cached:
@@ -129,10 +135,22 @@ def _from_instrument_cache(symbol: str) -> InstrumentMeta | None:
         return meta
 
 
-def _store_instrument_cache(symbol: str, meta: InstrumentMeta) -> InstrumentMeta:
+def _store_instrument_cache(
+    symbol: str,
+    meta: InstrumentMeta,
+    preferred_ticker: str | None = None,
+) -> InstrumentMeta:
     with _cache_lock:
-        _instrument_cache[_cache_key(symbol)] = (time.time(), meta)
+        _instrument_cache[_cache_key(symbol, preferred_ticker)] = (time.time(), meta)
     return meta
+
+
+def _normalize_symbol_query(symbol: str) -> str:
+    normalized = symbol.strip().upper()
+    for suffix in (".NS", ".NSE", ".BSE", ".BO"):
+        if normalized.endswith(suffix):
+            return normalized[: -len(suffix)]
+    return normalized
 
 
 def _extract_candidates(payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -176,19 +194,30 @@ def _normalize_instrument(row: dict[str, Any], fallback_symbol: str, preferred_t
 
 
 def search_instrument(symbol: str, preferred_ticker: str | None = None) -> InstrumentMeta:
-    cached = _from_instrument_cache(symbol)
+    cached = _from_instrument_cache(symbol, preferred_ticker)
     if cached:
         return cached
 
-    normalized = symbol.strip().upper()
-    query_value = "NIFTY 50" if normalized == "^NSEI" else normalized
+    normalized = _normalize_symbol_query(symbol)
+    query_values = ["NIFTY 50", "NIFTY"] if normalized == "^NSEI" else [symbol.strip(), normalized]
+    seen_queries: set[str] = set()
+    exchange_order = _preferred_exchanges(symbol, preferred_ticker)
+
     with httpx.Client(timeout=15.0) as client:
-        for exchange in _preferred_exchanges(symbol, preferred_ticker):
+        best_candidate: tuple[int, InstrumentMeta] | None = None
+        for query_value in query_values:
+            if not query_value or query_value in seen_queries:
+                continue
+            seen_queries.add(query_value)
+
             response = client.get(
                 f"{_base_url()}/instruments/search",
                 params={
                     "query": query_value,
-                    "exchange": exchange,
+                    "exchanges": ",".join(exchange_order),
+                    "segments": "INDEX,EQ" if normalized == "^NSEI" else "EQ,INDEX",
+                    "page_number": 1,
+                    "records": 30,
                 },
                 headers=_headers(),
             )
@@ -201,13 +230,45 @@ def search_instrument(symbol: str, preferred_ticker: str | None = None) -> Instr
                     continue
 
                 candidate_symbol = candidate.trading_symbol.upper()
-                if normalized == "^NSEI" or candidate_symbol == normalized or candidate_symbol.startswith(normalized):
-                    return _store_instrument_cache(symbol, candidate)
+                name_fields = " ".join(
+                    str(row.get(field) or "")
+                    for field in ("short_name", "name", "company_name")
+                ).upper()
+                exchange = str(row.get("exchange") or "").upper()
+                segment = str(row.get("segment") or "").upper()
 
-            if rows:
-                candidate = _normalize_instrument(rows[0], normalized, preferred_ticker)
-                if candidate:
-                    return _store_instrument_cache(symbol, candidate)
+                score = 0
+                if normalized == "^NSEI":
+                    if candidate_symbol == "NIFTY" or "NIFTY 50" in name_fields:
+                        score += 200
+                    if segment.endswith("INDEX"):
+                        score += 100
+                else:
+                    if segment.endswith("EQ"):
+                        score += 80
+                    if candidate_symbol == normalized:
+                        score += 200
+                    elif candidate_symbol.startswith(normalized):
+                        score += 120
+                    elif normalized in name_fields:
+                        score += 40
+
+                if query_value.strip().upper() in name_fields:
+                    score += 30
+
+                if exchange_order and exchange == exchange_order[0]:
+                    score += 20
+                elif len(exchange_order) > 1 and exchange == exchange_order[1]:
+                    score += 10
+
+                if best_candidate is None or score > best_candidate[0]:
+                    best_candidate = (score, candidate)
+
+            if best_candidate and best_candidate[0] >= 120:
+                return _store_instrument_cache(symbol, best_candidate[1], preferred_ticker)
+
+        if best_candidate:
+            return _store_instrument_cache(symbol, best_candidate[1], preferred_ticker)
 
     raise MarketDataError(f"Upstox instrument not found for {symbol}")
 
@@ -241,7 +302,7 @@ def fetch_live_quotes_batch(requests_map: dict[str, str | None]) -> dict[str, Qu
     instrument_keys: list[str] = []
 
     for symbol, preferred_ticker in requests_map.items():
-        cached = _from_quote_cache(symbol)
+        cached = _from_quote_cache(symbol, preferred_ticker)
         if cached:
             result[symbol] = cached
             continue
@@ -271,13 +332,13 @@ def fetch_live_quotes_batch(requests_map: dict[str, str | None]) -> dict[str, Qu
         if not symbol:
             continue
         quote = _quote_from_upstox_entry(entry, metas[symbol])
-        result[symbol] = _store_quote_cache(symbol, quote)
+        result[symbol] = _store_quote_cache(symbol, quote, requests_map.get(symbol))
 
     return result
 
 
 def fetch_live_quote(symbol: str, preferred_ticker: str | None = None) -> QuoteSnapshot:
-    cached = _from_quote_cache(symbol)
+    cached = _from_quote_cache(symbol, preferred_ticker)
     if cached:
         return cached
 

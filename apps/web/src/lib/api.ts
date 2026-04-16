@@ -1,8 +1,11 @@
 import { createClient } from "@/lib/supabase";
 
 // ── Legacy helper (deprecated — use named functions below) ──────────
+const configuredApiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").trim();
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+  configuredApiBase && !/^https?:\/\/localhost(?::\d+)?$/i.test(configuredApiBase)
+    ? configuredApiBase.replace(/\/+$/, "")
+    : "";
 
 export class ApiError extends Error {
   status: number;
@@ -92,14 +95,19 @@ export interface StockDetail {
   market_cap: number;
 }
 
+export interface StockSearchResult {
+  stock: StockRow;
+  source: string;
+}
+
 export async function searchAndAddStock(
   symbol: string
-): Promise<StockRow | null> {
+): Promise<StockSearchResult | null> {
   try {
-    const result = await apiFetch<{ stock: StockRow; source: string }>(
+    const result = await apiFetch<StockSearchResult>(
       `/stocks/search?q=${encodeURIComponent(symbol)}`
     );
-    return result?.stock ?? null;
+    return result ?? null;
   } catch {
     // If server not available, check DB directly
     const supabase = sb();
@@ -108,7 +116,7 @@ export async function searchAndAddStock(
       .select("*")
       .eq("symbol", symbol.toUpperCase())
       .single();
-    return data ?? null;
+    return data ? { stock: data, source: "database" } : null;
   }
 }
 
