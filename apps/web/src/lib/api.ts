@@ -127,6 +127,14 @@ export async function fetchAllStockSymbols(): Promise<
 export async function fetchStocks(
   nifty50Only = false
 ): Promise<StockWithPrice[]> {
+  try {
+    return await apiFetch<StockWithPrice[]>(
+      `/stocks/live?nifty50_only=${nifty50Only ? "true" : "false"}`
+    );
+  } catch {
+    // Fall back to DB-backed reads when the API is unavailable.
+  }
+
   const supabase = sb();
 
   // 1. Fetch active stocks (optionally filtered to Nifty 50)
@@ -194,6 +202,12 @@ export async function fetchStocks(
 export async function fetchStockDetail(
   symbol: string
 ): Promise<StockDetail | null> {
+  try {
+    return await apiFetch<StockDetail | null>(`/stocks/${encodeURIComponent(symbol)}/quote`);
+  } catch {
+    // Fall back to DB-backed reads when the API is unavailable.
+  }
+
   const supabase = sb();
 
   const { data: stock } = await supabase
@@ -246,6 +260,22 @@ export async function fetchOhlcv(
   symbol: string,
   days = 365
 ): Promise<OhlcvCandle[]> {
+  try {
+    const data = await apiFetch<
+      Array<{ date: string; open: number; high: number; low: number; close: number; volume: number }>
+    >(`/stocks/${encodeURIComponent(symbol)}/ohlcv?days=${days}`);
+    return (data ?? []).map((r) => ({
+      time: r.date,
+      open: r.open,
+      high: r.high,
+      low: r.low,
+      close: r.close,
+      volume: r.volume,
+    }));
+  } catch {
+    // Fall back to DB-backed reads when the API is unavailable.
+  }
+
   const supabase = sb();
   const fromDate = new Date();
   fromDate.setDate(fromDate.getDate() - days);
@@ -553,6 +583,12 @@ export interface MarketOverview {
 }
 
 export async function fetchMarketOverview(): Promise<MarketOverview | null> {
+  try {
+    return await apiFetch<MarketOverview | null>("/market/index-overview");
+  } catch {
+    // Fall back to DB-backed reads when the API is unavailable.
+  }
+
   const supabase = sb();
 
   // Try ^NSEI (Nifty 50 index) in ohlcv
@@ -607,6 +643,12 @@ export interface PortfolioPerformance {
 }
 
 export async function fetchHoldings(): Promise<HoldingWithPrice[]> {
+  try {
+    return await apiFetch<HoldingWithPrice[]>("/holdings/live");
+  } catch {
+    // Fall back to DB-backed reads when the API is unavailable.
+  }
+
   const supabase = sb();
 
   const { data: holdings } = await supabase
@@ -711,6 +753,12 @@ export interface WatchlistItemWithPrice {
 }
 
 export async function fetchWatchlist(): Promise<WatchlistItemWithPrice[]> {
+  try {
+    return await apiFetch<WatchlistItemWithPrice[]>("/watchlist/live");
+  } catch {
+    // Fall back to DB-backed reads when the API is unavailable.
+  }
+
   const supabase = sb();
 
   const { data: wl } = await supabase
@@ -983,6 +1031,12 @@ export interface OptimizationResult {
   allocations: OptimizationAllocation[];
 }
 
+function isOptimizationResult(value: unknown): value is OptimizationResult {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<OptimizationResult>;
+  return Array.isArray(candidate.allocations) && candidate.allocations.length > 0;
+}
+
 // Local JS implementation used as a fallback when the Python ML backend
 // (PyPortfolioOpt) is not available. We keep this logic in a helper so the
 // exported `runOptimization` can prefer the server when available.
@@ -1186,12 +1240,8 @@ export async function runOptimization(): Promise<OptimizationResult | null> {
     );
 
     // If server returned a full optimization result with allocations, use it
-    if (
-      serverRes &&
-      Array.isArray((serverRes as any).allocations) &&
-      (serverRes as any).allocations.length > 0
-    ) {
-      return serverRes as unknown as OptimizationResult;
+    if (isOptimizationResult(serverRes)) {
+      return serverRes;
     }
   } catch {
     // Server not reachable — fall through to local optimizer

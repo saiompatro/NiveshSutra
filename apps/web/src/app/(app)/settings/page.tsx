@@ -67,7 +67,7 @@ export default function SettingsPage() {
   async function handleEmailToggle(checked: boolean) {
     setEmailToggling(true);
     try {
-      await updateProfileApi({ email_notifications_enabled: checked } as any);
+      await updateProfileApi({ email_notifications_enabled: checked });
       setProfile((prev) =>
         prev ? { ...prev, email_notifications_enabled: checked } : prev
       );

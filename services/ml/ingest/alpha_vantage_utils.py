@@ -1,8 +1,7 @@
 import requests
 import pandas as pd
-import time
+import os
 
-ALPHA_VANTAGE_API_KEY = "EBPHSH292TU490B4"
 BASE_URL = "https://www.alphavantage.co/query"
 
 
@@ -11,11 +10,15 @@ def fetch_alpha_vantage_daily(symbol: str, outputsize: str = "full") -> pd.DataF
     Fetch daily OHLCV data for a given symbol from Alpha Vantage.
     Returns a DataFrame with columns: date, open, high, low, close, volume
     """
+    api_key = os.getenv("ALPHA_VANTAGE_API_KEY", "")
+    if not api_key:
+        raise ValueError("ALPHA_VANTAGE_API_KEY is not configured")
+
     params = {
         "function": "TIME_SERIES_DAILY_ADJUSTED",
         "symbol": symbol,
         "outputsize": outputsize,
-        "apikey": ALPHA_VANTAGE_API_KEY,
+        "apikey": api_key,
         "datatype": "json"
     }
     response = requests.get(BASE_URL, params=params)

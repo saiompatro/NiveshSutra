@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase import Client
 from ..dependencies import get_supabase_admin, get_current_user
+from ..services.market_data import fetch_live_quote
 
 router = APIRouter()
 
@@ -15,26 +16,16 @@ async def search_stock(
     Search for a stock by symbol. If it exists in the DB, return it.
     If not, validate via Alpha Vantage and add it to the stocks table.
     """
-    symbol = q.strip().upper().replace(".NS", "")
+    symbol = q.strip().upper().replace(".NS", "").replace(".BSE", "").replace(".NSE", "")
 
     # Check if stock already exists
     result = supabase.table("stocks").select("*").eq("symbol", symbol).execute()
     if result.data:
         return {"stock": result.data[0], "source": "database"}
 
-    # Try to fetch from Alpha Vantage
+    # Try to validate with Alpha Vantage live quote
     try:
-        from services.ml.ingest.alpha_vantage_utils import fetch_alpha_vantage_daily
-        import requests
-
-        av_symbol = f"{symbol}.NS"
-        # Fetch daily data to validate symbol and get company name
-        df = fetch_alpha_vantage_daily(av_symbol, outputsize="compact")
-        if df.empty:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Stock '{symbol}' not found on NSE via Alpha Vantage. Please check the symbol.",
-            )
+        quote = fetch_live_quote(symbol)
 
         # Alpha Vantage does not provide company name/sector/industry in free tier, so use symbol as name
         name = symbol
@@ -44,7 +35,7 @@ async def search_stock(
 
         stock_data = {
             "symbol": symbol,
-            "yf_ticker": av_symbol,
+            "yf_ticker": quote.provider_symbol,
             "company_name": name,
             "sector": sector,
             "industry": industry,
@@ -77,7 +68,7 @@ async def search_stock(
 def _fetch_initial_ohlcv(supabase: Client, symbol: str) -> None:
     """Fetch last 90 days of OHLCV data for a newly added stock using Alpha Vantage."""
     from services.ml.ingest.alpha_vantage_utils import fetch_alpha_vantage_daily
-    av_symbol = f"{symbol}.NS"
+    av_symbol = f"{symbol}.BSE"
     try:
         df = fetch_alpha_vantage_daily(av_symbol, outputsize="compact")
         if df.empty:
