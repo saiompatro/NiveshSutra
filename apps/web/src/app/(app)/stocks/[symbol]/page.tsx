@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   fetchStockDetail,
   fetchOhlcv,
@@ -14,6 +14,7 @@ import {
   removeFromWatchlist,
   acceptSignal as acceptSignalApi,
   fetchAcceptedSignals,
+  fetchHoldingSymbols,
 } from "@/lib/api";
 import { toast } from "sonner";
 import {
@@ -137,6 +138,7 @@ function formatLargeNumber(n: number): string {
 
 export default function StockDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const symbol = params.symbol as string;
   const chartRef = useRef<HTMLDivElement>(null);
 
@@ -153,10 +155,11 @@ export default function StockDetailPage() {
   const [chartLoading, setChartLoading] = useState(false);
   const [isSignalAccepted, setIsSignalAccepted] = useState(false);
   const [acceptingSignal, setAcceptingSignal] = useState(false);
+  const [isInPortfolio, setIsInPortfolio] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
-      const [stockRes, ohlcvRes, indicatorsRes, sentimentRes, newsRes, signalRes, watchlistRes] =
+      const [stockRes, ohlcvRes, indicatorsRes, sentimentRes, newsRes, signalRes, watchlistRes, holdingsRes] =
         await Promise.allSettled([
           fetchStockDetail(symbol),
           fetchOhlcv(symbol),
@@ -165,6 +168,7 @@ export default function StockDetailPage() {
           fetchStockNews(symbol),
           fetchLatestSignal(symbol),
           fetchWatchlistSymbols(),
+          fetchHoldingSymbols(),
         ]);
 
       if (stockRes.status === "fulfilled" && stockRes.value) setStock(stockRes.value);
@@ -175,6 +179,9 @@ export default function StockDetailPage() {
       if (signalRes.status === "fulfilled") setSignal(signalRes.value);
       if (watchlistRes.status === "fulfilled") {
         setInWatchlist(watchlistRes.value.some((s) => s === symbol));
+      }
+      if (holdingsRes.status === "fulfilled") {
+        setIsInPortfolio(holdingsRes.value.some((s) => s === symbol));
       }
 
       // Check if signal is already accepted
@@ -197,6 +204,15 @@ export default function StockDetailPage() {
 
   async function handleAcceptSignal() {
     if (!signal) return;
+    if (!isInPortfolio) {
+      const shouldGoToPortfolio = window.confirm(
+        `${symbol} is not in your portfolio yet. Add it to your portfolio before accepting its signal alerts?`
+      );
+      if (shouldGoToPortfolio) {
+        router.push("/portfolio");
+      }
+      return;
+    }
     setAcceptingSignal(true);
     try {
       await acceptSignalApi({

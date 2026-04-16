@@ -2,7 +2,12 @@ from fastapi import APIRouter, Depends, Query
 from supabase import Client
 
 from ..dependencies import get_supabase_client
-from ..services.market_data import get_quote_with_fallback, merge_live_quote_into_history
+from ..services.market_data import (
+    fetch_historical_daily,
+    fetch_live_quotes_batch,
+    get_quote_with_fallback,
+    merge_live_quote_into_history,
+)
 
 router = APIRouter()
 
@@ -25,7 +30,7 @@ async def list_stocks_live(
     nifty50_only: bool = False,
     supabase: Client = Depends(get_supabase_client),
 ):
-    query = supabase.table("stocks").select("symbol, company_name, sector, is_nifty50").eq("active", True)
+    query = supabase.table("stocks").select("symbol, company_name, sector, is_nifty50, yf_ticker").eq("active", True)
     if sector:
         query = query.eq("sector", sector)
     if nifty50_only:
@@ -45,9 +50,15 @@ async def list_stocks_live(
     for row in signals:
         signal_map.setdefault(row["symbol"], row["signal"])
 
+    quote_map = fetch_live_quotes_batch(
+        {stock["symbol"]: stock.get("yf_ticker") for stock in stocks}
+    )
+
     enriched = []
     for stock in stocks:
-        quote = get_quote_with_fallback(supabase, stock["symbol"])
+        quote = quote_map.get(stock["symbol"]) or get_quote_with_fallback(
+            supabase, stock["symbol"], stock.get("yf_ticker")
+        )
         enriched.append(
             {
                 "symbol": stock["symbol"],
@@ -70,11 +81,11 @@ async def get_stock(symbol: str, supabase: Client = Depends(get_supabase_client)
 
 @router.get("/stocks/{symbol}/quote")
 async def get_stock_quote(symbol: str, supabase: Client = Depends(get_supabase_client)):
-    stock = supabase.table("stocks").select("symbol, company_name, sector").eq("symbol", symbol).single().execute().data
+    stock = supabase.table("stocks").select("symbol, company_name, sector, yf_ticker").eq("symbol", symbol).single().execute().data
     if not stock:
         return None
 
-    quote = get_quote_with_fallback(supabase, symbol)
+    quote = get_quote_with_fallback(supabase, symbol, stock.get("yf_ticker"))
     return {
         "symbol": stock["symbol"],
         "company_name": stock.get("company_name") or "",
@@ -107,7 +118,12 @@ async def get_ohlcv(
     )
     rows = sorted(result.data or [], key=lambda x: x["date"])
     try:
-        quote = get_quote_with_fallback(supabase, symbol)
+        stock = supabase.table("stocks").select("yf_ticker").eq("symbol", symbol).single().execute().data or {}
+        ticker = stock.get("yf_ticker")
+        live_history = fetch_historical_daily(symbol, ticker, days)
+        if live_history:
+            rows = live_history
+        quote = get_quote_with_fallback(supabase, symbol, ticker)
         rows = merge_live_quote_into_history(rows, quote)
     except Exception:
         pass

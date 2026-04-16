@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from supabase import Client
 from ..dependencies import get_current_user, get_supabase_client
 from ..models.holding import HoldingCreate, HoldingUpdate
-from ..services.market_data import get_quote_with_fallback
+from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
 
 router = APIRouter()
 
@@ -26,16 +26,26 @@ async def list_holdings_live(
 ):
     holdings = (
         supabase.table("holdings")
-        .select("id, symbol, quantity, avg_buy_price, buy_date, notes")
+        .select("id, symbol, quantity, avg_buy_price, buy_date, notes, stocks(yf_ticker)")
         .eq("user_id", user["id"])
         .execute()
         .data
         or []
     )
 
+    quote_map = fetch_live_quotes_batch(
+        {
+            holding["symbol"]: (holding.get("stocks") or {}).get("yf_ticker")
+            for holding in holdings
+        }
+    )
+
     enriched = []
     for holding in holdings:
-        quote = get_quote_with_fallback(supabase, holding["symbol"])
+        stock_info = holding.get("stocks") or {}
+        quote = quote_map.get(holding["symbol"]) or get_quote_with_fallback(
+            supabase, holding["symbol"], stock_info.get("yf_ticker")
+        )
         avg_price = float(holding.get("avg_buy_price") or 0)
         quantity = float(holding.get("quantity") or 0)
         value = quote.price * quantity

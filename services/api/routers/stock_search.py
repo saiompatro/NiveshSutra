@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase import Client
 from ..dependencies import get_supabase_admin, get_current_user
-from ..services.market_data import fetch_live_quote
+from ..services.market_data import fetch_historical_daily, fetch_live_quote, search_instrument
 
 router = APIRouter()
 
@@ -14,7 +14,7 @@ async def search_stock(
 ):
     """
     Search for a stock by symbol. If it exists in the DB, return it.
-    If not, validate via Alpha Vantage and add it to the stocks table.
+    If not, validate via Upstox and add it to the stocks table.
     """
     symbol = q.strip().upper().replace(".NS", "").replace(".BSE", "").replace(".NSE", "")
 
@@ -23,11 +23,12 @@ async def search_stock(
     if result.data:
         return {"stock": result.data[0], "source": "database"}
 
-    # Try to validate with Alpha Vantage live quote
+    # Try to validate with Upstox live quote
     try:
+        instrument = search_instrument(symbol)
         quote = fetch_live_quote(symbol)
 
-        # Alpha Vantage does not provide company name/sector/industry in free tier, so use symbol as name
+        # We only persist the minimal stock metadata required by the app.
         name = symbol
         sector = "Unknown"
         industry = "Unknown"
@@ -35,7 +36,7 @@ async def search_stock(
 
         stock_data = {
             "symbol": symbol,
-            "yf_ticker": quote.provider_symbol,
+            "yf_ticker": f"{symbol}.NS" if instrument.exchange.startswith("NSE") else f"{symbol}.BSE",
             "company_name": name,
             "sector": sector,
             "industry": industry,
@@ -54,7 +55,7 @@ async def search_stock(
         except Exception:
             pass  # Non-critical; data will be fetched by next pipeline run
 
-        return {"stock": insert_result.data[0], "source": "alpha_vantage"}
+        return {"stock": insert_result.data[0], "source": "upstox"}
 
     except HTTPException:
         raise
@@ -66,28 +67,24 @@ async def search_stock(
 
 
 def _fetch_initial_ohlcv(supabase: Client, symbol: str) -> None:
-    """Fetch last 90 days of OHLCV data for a newly added stock using Alpha Vantage."""
-    from services.ml.ingest.alpha_vantage_utils import fetch_alpha_vantage_daily
-    av_symbol = f"{symbol}.BSE"
+    """Fetch last 90 days of OHLCV data for a newly added stock using Upstox."""
     try:
-        df = fetch_alpha_vantage_daily(av_symbol, outputsize="compact")
-        if df.empty:
+        rows = fetch_historical_daily(symbol, days=90)
+        if not rows:
             return
-        # Only keep last 90 days
-        df = df.sort_values("date").tail(90)
-        rows = []
-        for _, r in df.iterrows():
-            date_str = r["date"].strftime("%Y-%m-%d")
-            rows.append({
+        upsert_rows = [
+            {
                 "symbol": symbol,
-                "date": date_str,
-                "open": round(float(r["open"]), 2),
-                "high": round(float(r["high"]), 2),
-                "low": round(float(r["low"]), 2),
-                "close": round(float(r["close"]), 2),
-                "volume": int(r["volume"]),
-            })
-        if rows:
-            supabase.table("ohlcv").upsert(rows, on_conflict="symbol,date").execute()
+                "date": row["date"],
+                "open": round(float(row["open"]), 2),
+                "high": round(float(row["high"]), 2),
+                "low": round(float(row["low"]), 2),
+                "close": round(float(row["close"]), 2),
+                "volume": int(row["volume"]),
+            }
+            for row in rows
+        ]
+        if upsert_rows:
+            supabase.table("ohlcv").upsert(upsert_rows, on_conflict="symbol,date").execute()
     except Exception as e:
-        print(f"Alpha Vantage OHLCV fetch failed for {symbol}: {e}")
+        print(f"Upstox OHLCV fetch failed for {symbol}: {e}")

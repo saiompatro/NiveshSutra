@@ -26,7 +26,7 @@ Score -> Signal:  >= 0.5 strong_buy | >= 0.2 buy | >= -0.2 hold | >= -0.5 sell |
 | Charts | Lightweight Charts (TradingView), Recharts |
 | Backend | FastAPI, Python 3.14 |
 | Database | Supabase (Postgres 17, Auth, RLS) |
-| Market Data | Alpha Vantage (NSE via .NS suffix) |
+| Market Data | Upstox Market Quote + Historical Candle APIs |
 | Indicators | pandas-ta (RSI, MACD, BB, SMA, EMA, ATR, OBV) |
 | Sentiment | ProsusAI/finbert (HuggingFace Transformers) |
 | News | RSS feeds (Moneycontrol, Economic Times) |
@@ -81,7 +81,7 @@ cd apps/web && npx pnpm install && cd ../..
 
 ### 2. Environment Variables
 
-Copy `.env.example` to `.env` and fill in your Supabase credentials:
+Copy `.env.example` to `.env` and fill in your Supabase credentials plus your Upstox read-only token:
 
 ```bash
 cp .env.example .env
@@ -91,6 +91,8 @@ cp .env.example .env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+UPSTOX_BASE_URL=https://api.upstox.com/v2
+UPSTOX_ACCESS_TOKEN=your-upstox-analytics-or-access-token
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```

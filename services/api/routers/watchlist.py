@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from supabase import Client
 from ..dependencies import get_current_user, get_supabase_client
-from ..services.market_data import get_quote_with_fallback
+from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ async def get_watchlist_live(
 ):
     rows = (
         supabase.table("watchlist")
-        .select("symbol, stocks(company_name)")
+        .select("symbol, stocks(company_name, yf_ticker)")
         .eq("user_id", user["id"])
         .order("added_at", desc=True)
         .execute()
@@ -33,10 +33,19 @@ async def get_watchlist_live(
         or []
     )
 
+    quote_map = fetch_live_quotes_batch(
+        {
+            row["symbol"]: (row.get("stocks") or {}).get("yf_ticker")
+            for row in rows
+        }
+    )
+
     items = []
     for row in rows:
-        quote = get_quote_with_fallback(supabase, row["symbol"])
         stock_info = row.get("stocks") or {}
+        quote = quote_map.get(row["symbol"]) or get_quote_with_fallback(
+            supabase, row["symbol"], stock_info.get("yf_ticker")
+        )
         items.append(
             {
                 "symbol": row["symbol"],

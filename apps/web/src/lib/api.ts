@@ -205,7 +205,7 @@ export async function fetchStockDetail(
   try {
     return await apiFetch<StockDetail | null>(`/stocks/${encodeURIComponent(symbol)}/quote`);
   } catch {
-    // Fall back to DB-backed reads when the API is unavailable.
+    // Fall back to DB-backed reads when the live API is unavailable.
   }
 
   const supabase = sb();
@@ -273,7 +273,7 @@ export async function fetchOhlcv(
       volume: r.volume,
     }));
   } catch {
-    // Fall back to DB-backed reads when the API is unavailable.
+    // Fall back to DB-backed reads when the live API is unavailable.
   }
 
   const supabase = sb();
@@ -586,7 +586,7 @@ export async function fetchMarketOverview(): Promise<MarketOverview | null> {
   try {
     return await apiFetch<MarketOverview | null>("/market/index-overview");
   } catch {
-    // Fall back to DB-backed reads when the API is unavailable.
+    // Fall back to DB-backed reads when the live API is unavailable.
   }
 
   const supabase = sb();
@@ -635,6 +635,12 @@ export interface HoldingWithPrice {
   value: number;
 }
 
+export async function fetchHoldingSymbols(): Promise<string[]> {
+  const supabase = sb();
+  const { data } = await supabase.from("holdings").select("symbol");
+  return (data ?? []).map((holding) => holding.symbol);
+}
+
 export interface PortfolioPerformance {
   total_value: number;
   total_invested: number;
@@ -646,7 +652,7 @@ export async function fetchHoldings(): Promise<HoldingWithPrice[]> {
   try {
     return await apiFetch<HoldingWithPrice[]>("/holdings/live");
   } catch {
-    // Fall back to DB-backed reads when the API is unavailable.
+    // Fall back to DB-backed reads when the live API is unavailable.
   }
 
   const supabase = sb();
@@ -756,7 +762,7 @@ export async function fetchWatchlist(): Promise<WatchlistItemWithPrice[]> {
   try {
     return await apiFetch<WatchlistItemWithPrice[]>("/watchlist/live");
   } catch {
-    // Fall back to DB-backed reads when the API is unavailable.
+    // Fall back to DB-backed reads when the live API is unavailable.
   }
 
   const supabase = sb();

@@ -1,14 +1,14 @@
 """
-Fetch OHLCV data for all Nifty 50 stocks using yfinance.
-Reads the stock list from Supabase and downloads data in batch.
+Fetch OHLCV data for all active stocks using Upstox.
+Reads the stock list from Supabase and pulls daily candles instrument-by-instrument.
 """
 
 
 import pandas as pd
 import time
-from services.ml.ingest.alpha_vantage_utils import fetch_alpha_vantage_daily
 
 from services.ml.config import get_supabase
+from services.api.services.market_data import fetch_historical_daily
 
 
 def get_stock_list() -> pd.DataFrame:
@@ -20,13 +20,13 @@ def get_stock_list() -> pd.DataFrame:
 
 def fetch_ohlcv(days: int = 365) -> pd.DataFrame:
     """
-    Fetch OHLCV data for all Nifty 50 stocks using Alpha Vantage.
+    Fetch OHLCV data for all active stocks using Upstox.
 
     Args:
         days: Number of historical days to fetch (default 365).
 
     Returns:
-        DataFrame with columns: symbol, date, open, high, low, close, adj_close, volume
+        DataFrame with columns: symbol, date, open, high, low, close, volume
     """
     stocks = get_stock_list()
     if stocks.empty:
@@ -36,25 +36,20 @@ def fetch_ohlcv(days: int = 365) -> pd.DataFrame:
     rows = []
     for _, row in stocks.iterrows():
         symbol = row["symbol"]
-        # Alpha Vantage uses NSE: {symbol}.NS
-        av_symbol = f"{symbol}.NS"
         try:
-            df = fetch_alpha_vantage_daily(av_symbol)
-            # Only keep last N days
-            df = df.sort_values("date").tail(days)
-            for _, r in df.iterrows():
+            candles = fetch_historical_daily(symbol, row.get("yf_ticker"), days)
+            for r in candles:
                 rows.append({
                     "symbol": symbol,
-                    "date": r["date"].strftime("%Y-%m-%d"),
+                    "date": r["date"],
                     "open": round(float(r["open"]), 2),
                     "high": round(float(r["high"]), 2),
                     "low": round(float(r["low"]), 2),
                     "close": round(float(r["close"]), 2),
-                    "adj_close": round(float(r["adj_close"]), 2),
                     "volume": int(r["volume"]),
                 })
-            print(f"Fetched {len(df)} rows for {symbol}")
-            time.sleep(12)  # Alpha Vantage free API: 5 requests/minute
+            print(f"Fetched {len(candles)} rows for {symbol}")
+            time.sleep(0.25)
         except Exception as e:
             print(f"  Warning: failed to fetch {symbol}: {e}")
 
