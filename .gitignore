@@ -32,7 +32,7 @@ build/
 .eggs/
 
 # ML models (downloaded at runtime)
-models/
+/models/
 *.pt
 *.bin
 *.safetensors
