@@ -11,7 +11,8 @@ def get_supabase_client(settings: Settings = Depends(get_settings)) -> Client:
 
 
 def get_supabase_admin(settings: Settings = Depends(get_settings)) -> Client:
-    return create_client(settings.supabase_url, settings.supabase_service_role_key)
+    key = settings.supabase_service_role_key or settings.supabase_anon_key
+    return create_client(settings.supabase_url, key)
 
 
 async def get_current_user(
