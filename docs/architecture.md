@@ -4,17 +4,18 @@
 
 ```mermaid
 graph TB
-    subgraph Frontend
-        A[Next.js 15 App] --> B[Supabase Auth]
-        A --> C[FastAPI Backend]
+    subgraph ProductUI
+        A[Streamlit App] --> B[Supabase Auth]
+        A --> D[Supabase Postgres]
+        A --> C[Optional FastAPI Service]
     end
 
     subgraph Backend
-        C --> D[Supabase Postgres]
+        C --> D
         C --> E[Auth Middleware]
     end
 
-    subgraph ML Pipeline
+    subgraph MLPipeline
         F[Daily Orchestrator] --> G[OHLCV Ingestion]
         F --> H[Sentiment Pipeline]
         F --> I[Signal Engine]
@@ -36,28 +37,30 @@ graph TB
 
 ## Data Flow
 
-1. **Ingestion**: yfinance → OHLCV table → pandas-ta → technical_indicators table
-2. **Sentiment**: Moneycontrol news → ticker mapping → FinBERT scoring → sentiment_daily table
-3. **Signals**: indicators + sentiment + momentum → weighted combination → signals table
-4. **Portfolio**: User holdings + OHLCV returns → PyPortfolioOpt → allocation recommendations
+1. **Ingestion**: yfinance -> OHLCV table -> pandas-ta -> technical_indicators table
+2. **Sentiment**: Moneycontrol news -> ticker mapping -> FinBERT scoring -> sentiment_daily table
+3. **Signals**: indicators + sentiment + momentum -> weighted combination -> signals table
+4. **Portfolio**: user holdings + OHLCV returns -> PyPortfolioOpt -> allocation recommendations
+5. **Frontend runtime**: Streamlit pages read and write Supabase directly for auth, watchlist, holdings, alerts, and dashboard views
+6. **Frontend-to-backend calls**: stock onboarding and portfolio optimization use the separate FastAPI service via `API_BASE_URL`
 
 ## Signal Engine
 
-```
-composite_score = 0.4 × technical_score + 0.3 × sentiment_score + 0.3 × momentum_score
+```text
+composite_score = 0.4 * technical_score + 0.3 * sentiment_score + 0.3 * momentum_score
 
-technical_score = 0.3×RSI + 0.3×MACD + 0.2×BB + 0.2×OBV  (each normalized -1 to +1)
-momentum_score = mean(5d_return, 20d_return, SMA_crossover)  (each normalized -1 to +1)
-sentiment_score = avg(positive_prob - negative_prob)  (from daily aggregation, -1 to +1)
+technical_score = 0.3*RSI + 0.3*MACD + 0.2*BB + 0.2*OBV
+momentum_score = mean(5d_return, 20d_return, SMA_crossover)
+sentiment_score = avg(positive_prob - negative_prob)
 
 Signal mapping:
-  composite >= 0.5  → strong_buy
-  composite >= 0.2  → buy
-  composite >= -0.2 → hold
-  composite >= -0.5 → sell
-  composite < -0.5  → strong_sell
+  composite >= 0.5  -> strong_buy
+  composite >= 0.2  -> buy
+  composite >= -0.2 -> hold
+  composite >= -0.5 -> sell
+  composite < -0.5  -> strong_sell
 
-confidence = min(|composite| × 2, 1.0)
+confidence = min(|composite| * 2, 1.0)
 ```
 
 ## Database Schema
@@ -84,13 +87,21 @@ confidence = min(|composite| × 2, 1.0)
 
 | Component | Technology |
 |-----------|-----------|
-| Frontend | Next.js 15, TypeScript, Tailwind CSS, shadcn/ui |
-| Charts | Lightweight Charts (TradingView), Recharts |
-| Backend | FastAPI, Python 3.14 |
+| Frontend | Streamlit |
+| Charts | Plotly |
+| Backend | FastAPI, Python 3.12 |
 | Database | Supabase (Postgres 17) |
 | Auth | Supabase Auth (email/password) |
 | Market Data | yfinance + Moneycontrol market scrape fallback |
 | Indicators | pandas-ta (RSI, MACD, BB, SMA, EMA, ATR, OBV) |
-| Sentiment | ProsusAI/finbert (HuggingFace) |
+| Sentiment | ProsusAI/finbert |
 | News | Moneycontrol via `moneycontrol-api` |
-| Optimization | PyPortfolioOpt (Mean-Variance, CAPM, Ledoit-Wolf) |
+| Optimization | PyPortfolioOpt |
+
+## Hosting Model
+
+- **Frontend**: Streamlit Community Cloud, serving `streamlit_app/app.py`
+- **Backend**: Render free web service, serving `services.api.main:app`
+- **Database/Auth**: Supabase
+
+This split matches the current codebase. The Streamlit app is the public product UI, while FastAPI remains available as a separate service for documented API access and backend-only workflows.

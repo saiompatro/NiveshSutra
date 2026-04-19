@@ -2,6 +2,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from .routers import health, profile, stocks, stock_search, watchlist, holdings, market, sentiment, signals, portfolio, alerts, notifications
 
 app = FastAPI(
@@ -25,6 +26,32 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/", include_in_schema=False)
+async def root() -> HTMLResponse:
+    frontend_url = os.getenv("PUBLIC_APP_URL", "").strip()
+    frontend_link = (
+        f'<p><a href="{frontend_url}">Open the Streamlit app</a></p>'
+        if frontend_url
+        else "<p>Set <code>PUBLIC_APP_URL</code> to show the public Streamlit frontend URL here.</p>"
+    )
+    return HTMLResponse(
+        f"""
+        <html>
+          <head>
+            <title>NiveshSutra API</title>
+          </head>
+          <body style="font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; line-height: 1.5;">
+            <h1>NiveshSutra API</h1>
+            <p>This host serves the FastAPI backend for NiveshSutra.</p>
+            {frontend_link}
+            <p><a href="/docs">Open API docs</a></p>
+            <p><a href="/api/v1/health">Health check</a></p>
+          </body>
+        </html>
+        """
+    )
 
 app.include_router(health.router, prefix="/api/v1", tags=["Health"])
 app.include_router(profile.router, prefix="/api/v1", tags=["Profile"])

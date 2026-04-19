@@ -2,33 +2,16 @@
 
 NiveshSutra is an AI-assisted Indian equity analysis and portfolio management platform for NSE-listed stocks. It combines technical indicators, financial-news sentiment, momentum scoring, and portfolio optimization into a single workflow backed by Supabase.
 
-The current repo is Streamlit-first for the product UI, with FastAPI routes and Python ML/data pipelines supporting ingestion, scoring, and automation.
+The repo is Streamlit-first for the product UI. FastAPI, Python ML jobs, and Supabase support ingestion, scoring, and automation.
 
 ## What It Does
 
 - Ingests OHLCV market data for tracked Indian equities
-- Computes technical indicators such as RSI, MACD, Bollinger Bands, SMA, EMA, ATR, and OBV
+- Computes indicators such as RSI, MACD, Bollinger Bands, SMA, EMA, ATR, and OBV
 - Pulls Moneycontrol news and scores headlines with FinBERT
 - Generates explainable buy/hold/sell signals from technical, sentiment, and momentum inputs
 - Tracks holdings, watchlists, alerts, and personalized risk profiles
-- Runs mean-variance portfolio optimization for users based on their risk tolerance
-
-## Signal Engine
-
-```text
-composite = 0.4 * technical + 0.3 * sentiment + 0.3 * momentum
-
-technical = weighted score from RSI, MACD, Bollinger Bands, and OBV
-momentum  = score from short and medium term price behavior
-sentiment = average(FinBERT positive - negative)
-
-Signal mapping:
->= 0.5   -> strong_buy
->= 0.2   -> buy
->= -0.2  -> hold
->= -0.5  -> sell
-< -0.5   -> strong_sell
-```
+- Runs mean-variance portfolio optimization based on user risk tolerance
 
 ## Tech Stack
 
@@ -37,7 +20,7 @@ Signal mapping:
 | Product UI | Streamlit |
 | Charts | Plotly |
 | API | FastAPI |
-| Language | Python |
+| Language | Python 3.12 |
 | Database/Auth | Supabase (Postgres, Auth, RLS) |
 | Market data | yfinance, Moneycontrol market scraping |
 | News | Moneycontrol via `moneycontrol-api` |
@@ -49,9 +32,11 @@ Signal mapping:
 ## Current Architecture
 
 ```text
-Streamlit app
+Public product UI
+  -> Streamlit app
   -> Supabase Auth + database reads/writes
-  -> shared Python service layer
+  -> shared Python helpers
+  -> FastAPI service URL for stock onboarding and portfolio optimization
 
 FastAPI API
   -> authenticated REST endpoints for stocks, holdings, watchlist,
@@ -72,15 +57,10 @@ NiveshSutra/
 |-- streamlit_app/              Streamlit frontend
 |   |-- app.py                  Entry point
 |   |-- auth.py                 Login/signup/session helpers
+|   |-- config.py               Hosted/local config resolution
 |   |-- supabase_client.py      Supabase client factories
 |   |-- utils.py                Formatting and personalization helpers
 |   `-- pages/
-|       |-- 1_Dashboard.py
-|       |-- 2_Stocks.py
-|       |-- 3_Stock_Detail.py
-|       |-- 4_Signals.py
-|       |-- 5_Portfolio.py
-|       `-- 6_Settings.py
 |-- services/
 |   |-- api/                    FastAPI backend
 |   |-- ml/                     Ingestion, sentiment, signals, optimizer, alerts
@@ -88,20 +68,11 @@ NiveshSutra/
 |-- scripts/                    Seed and orchestration scripts
 |-- supabase/migrations/        Database schema and RLS migrations
 |-- docs/                       Architecture and notes
+|-- .streamlit/                 Streamlit local config and secrets example
+|-- render.yaml                 Render deployment blueprint for FastAPI
 |-- requirements.txt
 `-- .env.example
 ```
-
-## Core Features
-
-- Risk-profiled onboarding with conservative, moderate, and aggressive segmentation
-- Dashboard with portfolio summary, market overview, sentiment, watchlist, and alerts
-- Stock explorer with live quote context, OHLCV history, indicators, and article sentiment
-- Signal engine with explainable recommendations
-- Portfolio holdings tracker with PnL and allocation views
-- Portfolio optimization based on user risk profile
-- Signal tracking and email notifications
-- Background daily pipeline for ingestion, scoring, and alert generation
 
 ## Setup
 
@@ -128,6 +99,14 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+The root `requirements.txt` is intentionally frontend-only for Streamlit hosting.
+Install backend and ML dependencies separately when needed:
+
+```bash
+pip install -r services/api/requirements.txt
+pip install -r services/ml/requirements.txt
+```
+
 ### 2. Configure environment variables
 
 Copy `.env.example` to `.env` and fill in your values.
@@ -137,10 +116,11 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 MARKET_DATA_CACHE_TTL_SECONDS=60
+PUBLIC_APP_URL=https://your-streamlit-app-url
+API_BASE_URL=https://your-render-api-url
 FASTAPI_PORT=8000
 ENVIRONMENT=development
 
-# Optional email notifications
 RESEND_API_KEY=re_your_resend_api_key
 RESEND_FROM_EMAIL=NiveshSutra <noreply@niveshsutra.com>
 ```
@@ -164,7 +144,7 @@ Apply the migrations in `supabase/migrations/` in order:
 python scripts/seed_nifty50.py
 ```
 
-### 5. Run the app
+### 5. Run the Streamlit app
 
 ```bash
 streamlit run streamlit_app/app.py
@@ -175,9 +155,45 @@ The Streamlit app is the primary local product surface.
 ### 6. Run the API separately if needed
 
 ```bash
-cd services/api
 python -m uvicorn services.api.main:app --reload --port 8000
 ```
+
+## Deployment
+
+### Streamlit frontend
+
+Deploy the public product UI from `streamlit_app/app.py` to Streamlit Community Cloud.
+
+- App file: `streamlit_app/app.py`
+- Python version: use the repo `.python-version`
+- Dependencies: install from the repo root `requirements.txt`
+- Secrets: copy values from `.streamlit/secrets.toml.example` into the Streamlit Cloud secrets manager
+
+Recommended frontend secrets:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `API_BASE_URL` if you later wire Streamlit pages to the FastAPI service
+- `PUBLIC_APP_URL`
+
+### FastAPI backend
+
+Deploy the backend separately to Render using `render.yaml`.
+
+- Build command: `pip install -r services/api/requirements.txt`
+- Start command: `uvicorn services.api.main:app --host 0.0.0.0 --port $PORT`
+- Health check: `/api/v1/health`
+
+Recommended backend environment variables:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `PUBLIC_APP_URL`
+- `MARKET_DATA_CACHE_TTL_SECONDS`
+- `ENVIRONMENT=production`
+
+The backend root URL now serves a small landing page with links to the frontend, API docs, and health endpoint instead of returning a raw 404 JSON payload.
 
 ## Data Pipeline
 
@@ -222,8 +238,9 @@ See [docs/architecture.md](docs/architecture.md) for higher-level system notes.
 ## Status Notes
 
 - Streamlit is the active frontend in this repository.
-- The README now reflects the current free-data stack: `yfinance` plus Moneycontrol-based sources.
-- Older references to Next.js and paid market-data providers are no longer part of the active setup.
+- The repo now reflects the free-data stack: `yfinance` plus Moneycontrol-based sources.
+- The recommended production hosting model is Streamlit Community Cloud for the UI and Render for FastAPI.
+- The Streamlit frontend now uses `API_BASE_URL` for stock onboarding and portfolio optimization instead of importing backend modules directly.
 
 ## Disclaimer
 
