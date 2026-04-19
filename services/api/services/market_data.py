@@ -1,20 +1,30 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import date, timedelta
+import re
 import threading
 import time
 from typing import Any
-from urllib.parse import quote
 
-import httpx
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 from supabase import Client
+import yfinance as yf
 
 from ..config import get_settings
 
 
 DEFAULT_CACHE_TTL_SECONDS = 60
 DEFAULT_INSTRUMENT_CACHE_TTL_SECONDS = 86400
+MONEYCONTROL_MARKETS_URL = "https://www.moneycontrol.com/stocksmarketsindia/"
+REQUEST_TIMEOUT_SECONDS = 15
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+)
 
 
 class MarketDataError(Exception):
@@ -33,7 +43,7 @@ class QuoteSnapshot:
     low: float
     volume: int
     latest_trading_day: str
-    provider: str = "upstox"
+    provider: str = "yfinance"
 
 
 @dataclass
@@ -43,6 +53,7 @@ class InstrumentMeta:
     exchange: str
     trading_symbol: str
     preferred_ticker: str | None = None
+    company_name: str | None = None
 
 
 _cache_lock = threading.Lock()
@@ -66,36 +77,10 @@ def _cache_key(symbol: str, preferred_ticker: str | None = None) -> str:
     return f"{normalized_symbol}::{normalized_ticker}"
 
 
-def _preferred_exchanges(symbol: str, preferred_ticker: str | None = None) -> list[str]:
-    normalized = symbol.strip().upper()
-    if normalized == "^NSEI":
-        return ["NSE", "BSE"]
-
-    preferred = (preferred_ticker or "").strip().upper()
-    if preferred.endswith(".NS"):
-        return ["NSE", "BSE"]
-    if preferred.endswith(".BO") or preferred.endswith(".BSE"):
-        return ["BSE", "NSE"]
-    return ["NSE", "BSE"]
-
-
-def _settings_token() -> str:
-    settings = get_settings()
-    token = getattr(settings, "upstox_access_token", "")
-    if not token:
-        raise MarketDataError("UPSTOX_ACCESS_TOKEN is not configured")
-    return token
-
-
-def _base_url() -> str:
-    settings = get_settings()
-    return getattr(settings, "upstox_base_url", "https://api.upstox.com/v2").rstrip("/")
-
-
-def _headers() -> dict[str, str]:
+def _request_headers() -> dict[str, str]:
     return {
-        "Accept": "application/json",
-        "Authorization": f"Bearer {_settings_token()}",
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     }
 
 
@@ -153,44 +138,188 @@ def _normalize_symbol_query(symbol: str) -> str:
     return normalized
 
 
-def _extract_candidates(payload: dict[str, Any]) -> list[dict[str, Any]]:
-    data = payload.get("data")
-    if isinstance(data, list):
-        return data
-    if isinstance(data, dict):
-        if isinstance(data.get("results"), list):
-            return data["results"]
-        return [value for value in data.values() if isinstance(value, dict)]
-    return []
+def _coerce_float(value: Any, default: float = 0.0) -> float:
+    try:
+        if value is None:
+            return default
+        return float(value)
+    except (TypeError, ValueError):
+        return default
 
 
-def _normalize_instrument(row: dict[str, Any], fallback_symbol: str, preferred_ticker: str | None = None) -> InstrumentMeta | None:
-    instrument_key = (
-        row.get("instrument_key")
-        or row.get("instrument_token")
-        or row.get("instrumentKey")
+def _coerce_int(value: Any, default: int = 0) -> int:
+    try:
+        if value is None:
+            return default
+        return int(float(value))
+    except (TypeError, ValueError):
+        return default
+
+
+def _candidate_tickers(symbol: str, preferred_ticker: str | None = None) -> list[str]:
+    normalized = symbol.strip().upper()
+    preferred = (preferred_ticker or "").strip().upper()
+    preferred = preferred.replace(".NSE", ".NS").replace(".BSE", ".BO")
+
+    if preferred:
+        return [preferred]
+    if normalized in {"^NSEI", "^BSESN"}:
+        return [normalized]
+    if normalized.endswith((".NS", ".BO")):
+        return [normalized]
+    return [f"{normalized}.NS", f"{normalized}.BO"]
+
+
+def _safe_history(provider_symbol: str, days: int = 30) -> pd.DataFrame:
+    start = date.today() - timedelta(days=max(days + 10, 20))
+    end = date.today() + timedelta(days=1)
+    history = yf.Ticker(provider_symbol).history(
+        start=start.isoformat(),
+        end=end.isoformat(),
+        interval="1d",
+        auto_adjust=False,
+        actions=False,
     )
-    if not instrument_key:
+    if history is None or history.empty:
+        return pd.DataFrame()
+
+    history = history.rename(columns=str.lower).reset_index()
+    history.columns = [str(column).lower() for column in history.columns]
+    index_col = "date" if "date" in history.columns else history.columns[0]
+    history["date"] = pd.to_datetime(history[index_col]).dt.strftime("%Y-%m-%d")
+    keep_columns = ["date", "open", "high", "low", "close", "volume"]
+    for column in keep_columns:
+        if column not in history.columns:
+            history[column] = 0
+    return history[keep_columns].dropna(subset=["close"])
+
+
+def _safe_fast_info(provider_symbol: str) -> dict[str, Any]:
+    try:
+        return dict(yf.Ticker(provider_symbol).fast_info or {})
+    except Exception:
+        return {}
+
+
+def _safe_info(provider_symbol: str) -> dict[str, Any]:
+    try:
+        return dict(yf.Ticker(provider_symbol).info or {})
+    except Exception:
+        return {}
+
+
+def _quote_from_yfinance(meta: InstrumentMeta) -> QuoteSnapshot:
+    history = _safe_history(meta.instrument_key, days=10)
+    fast_info = _safe_fast_info(meta.instrument_key)
+
+    if history.empty and not fast_info:
+        raise MarketDataError(f"Quote not available for {meta.instrument_key}")
+
+    latest = history.iloc[-1].to_dict() if not history.empty else {}
+    previous = history.iloc[-2].to_dict() if len(history) > 1 else latest
+
+    previous_close = _coerce_float(
+        fast_info.get("previousClose"),
+        _coerce_float(fast_info.get("regularMarketPreviousClose"), _coerce_float(previous.get("close"))),
+    )
+    price = _coerce_float(
+        fast_info.get("lastPrice"),
+        _coerce_float(fast_info.get("regularMarketPrice"), _coerce_float(latest.get("close"))),
+    )
+    if not previous_close:
+        previous_close = _coerce_float(previous.get("close"), price)
+
+    change = price - previous_close
+    change_pct = (change / previous_close * 100) if previous_close else 0.0
+    latest_trading_day = str(latest.get("date") or date.today().isoformat())
+
+    return QuoteSnapshot(
+        provider_symbol=meta.instrument_key,
+        price=price,
+        previous_close=previous_close,
+        change=change,
+        change_pct=change_pct,
+        open=_coerce_float(fast_info.get("open"), _coerce_float(latest.get("open"), price)),
+        high=_coerce_float(
+            fast_info.get("dayHigh"),
+            _coerce_float(fast_info.get("regularMarketDayHigh"), _coerce_float(latest.get("high"), price)),
+        ),
+        low=_coerce_float(
+            fast_info.get("dayLow"),
+            _coerce_float(fast_info.get("regularMarketDayLow"), _coerce_float(latest.get("low"), price)),
+        ),
+        volume=_coerce_int(
+            fast_info.get("lastVolume"),
+            _coerce_int(fast_info.get("regularMarketVolume"), _coerce_int(latest.get("volume"))),
+        ),
+        latest_trading_day=latest_trading_day,
+        provider="yfinance",
+    )
+
+
+def _parse_moneycontrol_snapshot(label: str, html: str) -> QuoteSnapshot | None:
+    patterns = [
+        re.compile(
+            rf"{re.escape(label)}\s*([0-9,]+\.\d+)\s*([+-]?[0-9,]+\.\d+)\s*([+-]?[0-9,]+\.\d+)%",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"{re.escape(label)}.*?([0-9,]+\.\d+).*?([+-]?[0-9,]+\.\d+).*?([+-]?[0-9,]+\.\d+)%",
+            re.IGNORECASE | re.DOTALL,
+        ),
+    ]
+    for pattern in patterns:
+        match = pattern.search(html)
+        if not match:
+            continue
+        price = _coerce_float(match.group(1).replace(",", ""))
+        change = _coerce_float(match.group(2).replace(",", ""))
+        change_pct = _coerce_float(match.group(3).replace(",", ""))
+        previous_close = price - change
+        return QuoteSnapshot(
+            provider_symbol=label,
+            price=price,
+            previous_close=previous_close,
+            change=change,
+            change_pct=change_pct,
+            open=price,
+            high=price,
+            low=price,
+            volume=0,
+            latest_trading_day=date.today().isoformat(),
+            provider="moneycontrol",
+        )
+    return None
+
+
+def _fetch_moneycontrol_index_snapshot(symbol: str) -> QuoteSnapshot | None:
+    label_map = {
+        "^NSEI": "NIFTY 50",
+        "^BSESN": "SENSEX",
+    }
+    label = label_map.get(symbol.strip().upper())
+    if not label:
         return None
 
-    trading_symbol = (
-        row.get("trading_symbol")
-        or row.get("symbol")
-        or row.get("tradingsymbol")
-        or fallback_symbol
-    )
-    exchange = (
-        row.get("exchange")
-        or row.get("segment")
-        or instrument_key.split("|", 1)[0]
-    )
-    return InstrumentMeta(
-        symbol=fallback_symbol,
-        instrument_key=str(instrument_key),
-        exchange=str(exchange),
-        trading_symbol=str(trading_symbol),
-        preferred_ticker=preferred_ticker,
-    )
+    try:
+        response = requests.get(
+            MONEYCONTROL_MARKETS_URL,
+            headers=_request_headers(),
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+    except requests.RequestException:
+        return None
+
+    html = response.text
+    snapshot = _parse_moneycontrol_snapshot(label, html)
+    if snapshot:
+        return snapshot
+
+    # Fall back to a text-only parse in case the markup changes but values still
+    # appear in the rendered document.
+    text = " ".join(BeautifulSoup(html, "html.parser").stripped_strings)
+    return _parse_moneycontrol_snapshot(label, text)
 
 
 def search_instrument(symbol: str, preferred_ticker: str | None = None) -> InstrumentMeta:
@@ -199,140 +328,86 @@ def search_instrument(symbol: str, preferred_ticker: str | None = None) -> Instr
         return cached
 
     normalized = _normalize_symbol_query(symbol)
-    query_values = ["NIFTY 50", "NIFTY"] if normalized == "^NSEI" else [symbol.strip(), normalized]
-    seen_queries: set[str] = set()
-    exchange_order = _preferred_exchanges(symbol, preferred_ticker)
+    if normalized in {"^NSEI", "^BSESN"}:
+        meta = InstrumentMeta(
+            symbol=normalized,
+            instrument_key=normalized,
+            exchange="INDEX",
+            trading_symbol="NIFTY 50" if normalized == "^NSEI" else "SENSEX",
+            preferred_ticker=normalized,
+            company_name="NIFTY 50" if normalized == "^NSEI" else "SENSEX",
+        )
+        return _store_instrument_cache(symbol, meta, preferred_ticker)
 
-    with httpx.Client(timeout=15.0) as client:
-        best_candidate: tuple[int, InstrumentMeta] | None = None
-        for query_value in query_values:
-            if not query_value or query_value in seen_queries:
+    last_error: Exception | None = None
+    for candidate in _candidate_tickers(normalized, preferred_ticker):
+        try:
+            history = _safe_history(candidate, days=10)
+            fast_info = _safe_fast_info(candidate)
+            if history.empty and not fast_info:
                 continue
-            seen_queries.add(query_value)
 
-            response = client.get(
-                f"{_base_url()}/instruments/search",
-                params={
-                    "query": query_value,
-                    "exchanges": ",".join(exchange_order),
-                    "segments": "INDEX,EQ" if normalized == "^NSEI" else "EQ,INDEX",
-                    "page_number": 1,
-                    "records": 30,
-                },
-                headers=_headers(),
+            info = _safe_info(candidate)
+            meta = InstrumentMeta(
+                symbol=normalized,
+                instrument_key=candidate,
+                exchange="NSE" if candidate.endswith(".NS") else "BSE",
+                trading_symbol=normalized,
+                preferred_ticker=candidate,
+                company_name=(
+                    info.get("shortName")
+                    or info.get("longName")
+                    or info.get("displayName")
+                    or normalized
+                ),
             )
-            response.raise_for_status()
-            payload = response.json()
-            rows = _extract_candidates(payload)
-            for row in rows:
-                candidate = _normalize_instrument(row, normalized, preferred_ticker)
-                if not candidate:
-                    continue
+            return _store_instrument_cache(symbol, meta, preferred_ticker)
+        except Exception as exc:
+            last_error = exc
 
-                candidate_symbol = candidate.trading_symbol.upper()
-                name_fields = " ".join(
-                    str(row.get(field) or "")
-                    for field in ("short_name", "name", "company_name")
-                ).upper()
-                exchange = str(row.get("exchange") or "").upper()
-                segment = str(row.get("segment") or "").upper()
-
-                score = 0
-                if normalized == "^NSEI":
-                    if candidate_symbol == "NIFTY" or "NIFTY 50" in name_fields:
-                        score += 200
-                    if segment.endswith("INDEX"):
-                        score += 100
-                else:
-                    if segment.endswith("EQ"):
-                        score += 80
-                    if candidate_symbol == normalized:
-                        score += 200
-                    elif candidate_symbol.startswith(normalized):
-                        score += 120
-                    elif normalized in name_fields:
-                        score += 40
-
-                if query_value.strip().upper() in name_fields:
-                    score += 30
-
-                if exchange_order and exchange == exchange_order[0]:
-                    score += 20
-                elif len(exchange_order) > 1 and exchange == exchange_order[1]:
-                    score += 10
-
-                if best_candidate is None or score > best_candidate[0]:
-                    best_candidate = (score, candidate)
-
-            if best_candidate and best_candidate[0] >= 120:
-                return _store_instrument_cache(symbol, best_candidate[1], preferred_ticker)
-
-        if best_candidate:
-            return _store_instrument_cache(symbol, best_candidate[1], preferred_ticker)
-
-    raise MarketDataError(f"Upstox instrument not found for {symbol}")
+    if last_error:
+        raise MarketDataError(str(last_error)) from last_error
+    raise MarketDataError(f"Instrument not found for {symbol}")
 
 
-def _quote_from_upstox_entry(entry: dict[str, Any], meta: InstrumentMeta) -> QuoteSnapshot:
-    ohlc = entry.get("ohlc") or {}
-    price = float(entry.get("last_price") or 0)
-    previous_close = float(ohlc.get("close") or 0)
-    change = float(entry.get("net_change") or (price - previous_close))
-    change_pct = (change / previous_close * 100) if previous_close else 0.0
-    timestamp = str(entry.get("timestamp") or "")
-    latest_trading_day = timestamp[:10] if len(timestamp) >= 10 else str(date.today())
-    return QuoteSnapshot(
-        provider_symbol=meta.trading_symbol,
-        price=price,
-        previous_close=previous_close,
-        change=change,
-        change_pct=change_pct,
-        open=float(ohlc.get("open") or 0),
-        high=float(ohlc.get("high") or 0),
-        low=float(ohlc.get("low") or 0),
-        volume=int(entry.get("volume") or 0),
-        latest_trading_day=latest_trading_day,
-        provider="upstox",
-    )
+def _fetch_quote(symbol: str, preferred_ticker: str | None = None) -> QuoteSnapshot:
+    normalized = _normalize_symbol_query(symbol)
+    if normalized in {"^NSEI", "^BSESN"}:
+        moneycontrol_snapshot = _fetch_moneycontrol_index_snapshot(normalized)
+        if moneycontrol_snapshot:
+            return moneycontrol_snapshot
+
+    meta = search_instrument(symbol, preferred_ticker)
+    return _quote_from_yfinance(meta)
 
 
 def fetch_live_quotes_batch(requests_map: dict[str, str | None]) -> dict[str, QuoteSnapshot]:
     result: dict[str, QuoteSnapshot] = {}
-    metas: dict[str, InstrumentMeta] = {}
-    instrument_keys: list[str] = []
+    pending: list[tuple[str, str | None]] = []
 
     for symbol, preferred_ticker in requests_map.items():
         cached = _from_quote_cache(symbol, preferred_ticker)
         if cached:
             result[symbol] = cached
-            continue
-        meta = search_instrument(symbol, preferred_ticker)
-        metas[symbol] = meta
-        instrument_keys.append(meta.instrument_key)
+        else:
+            pending.append((symbol, preferred_ticker))
 
-    if not instrument_keys:
+    if not pending:
         return result
 
-    with httpx.Client(timeout=20.0) as client:
-        response = client.get(
-            f"{_base_url()}/market-quote/quotes",
-            params={"instrument_key": ",".join(instrument_keys)},
-            headers=_headers(),
-        )
-        response.raise_for_status()
-        payload = response.json()
-        data = payload.get("data") or {}
-
-    keyed_by_instrument = {
-        meta.instrument_key: symbol
-        for symbol, meta in metas.items()
-    }
-    for instrument_key, entry in data.items():
-        symbol = keyed_by_instrument.get(instrument_key)
-        if not symbol:
-            continue
-        quote = _quote_from_upstox_entry(entry, metas[symbol])
-        result[symbol] = _store_quote_cache(symbol, quote, requests_map.get(symbol))
+    max_workers = min(8, len(pending))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_map = {
+            executor.submit(_fetch_quote, symbol, preferred_ticker): (symbol, preferred_ticker)
+            for symbol, preferred_ticker in pending
+        }
+        for future in as_completed(future_map):
+            symbol, preferred_ticker = future_map[future]
+            try:
+                quote = future.result()
+            except Exception:
+                continue
+            result[symbol] = _store_quote_cache(symbol, quote, preferred_ticker)
 
     return result
 
@@ -342,48 +417,29 @@ def fetch_live_quote(symbol: str, preferred_ticker: str | None = None) -> QuoteS
     if cached:
         return cached
 
-    quotes = fetch_live_quotes_batch({symbol: preferred_ticker})
-    if symbol in quotes:
-        return quotes[symbol]
-    raise MarketDataError(f"Upstox quote not found for {symbol}")
+    quote = _fetch_quote(symbol, preferred_ticker)
+    return _store_quote_cache(symbol, quote, preferred_ticker)
 
 
 def fetch_historical_daily(symbol: str, preferred_ticker: str | None = None, days: int = 365) -> list[dict[str, Any]]:
     meta = search_instrument(symbol, preferred_ticker)
-    to_date = date.today()
-    from_date = to_date - timedelta(days=days)
-    encoded_key = quote(meta.instrument_key, safe="")
-
-    with httpx.Client(timeout=20.0) as client:
-        response = client.get(
-            f"{_base_url()}/historical-candle/{encoded_key}/day/{to_date.isoformat()}/{from_date.isoformat()}",
-            headers=_headers(),
-        )
-        response.raise_for_status()
-        payload = response.json()
-
-    candles = payload.get("data", {}).get("candles")
-    if candles is None:
-        candles = payload.get("data", [])
-    if not isinstance(candles, list):
+    history = _safe_history(meta.instrument_key, days=days)
+    if history.empty:
         return []
 
     rows: list[dict[str, Any]] = []
-    for candle in candles:
-        if not isinstance(candle, list) or len(candle) < 6:
-            continue
-        candle_date = str(candle[0])[:10]
+    for _, candle in history.tail(days).iterrows():
         rows.append(
             {
-                "date": candle_date,
-                "open": float(candle[1]),
-                "high": float(candle[2]),
-                "low": float(candle[3]),
-                "close": float(candle[4]),
-                "volume": int(candle[5]),
+                "date": str(candle["date"]),
+                "open": _coerce_float(candle["open"]),
+                "high": _coerce_float(candle["high"]),
+                "low": _coerce_float(candle["low"]),
+                "close": _coerce_float(candle["close"]),
+                "volume": _coerce_int(candle["volume"]),
             }
         )
-    return sorted(rows, key=lambda item: item["date"])
+    return rows
 
 
 def get_latest_db_bars(supabase: Client, symbols: list[str]) -> dict[str, list[dict[str, Any]]]:

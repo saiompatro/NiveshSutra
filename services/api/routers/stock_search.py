@@ -14,7 +14,7 @@ async def search_stock(
 ):
     """
     Search for a stock by symbol. If it exists in the DB, return it.
-    If not, validate via Upstox and add it to the stocks table.
+    If not, validate via the free market data provider and add it to the stocks table.
     """
     symbol = q.strip().upper().replace(".NS", "").replace(".BSE", "").replace(".NSE", "")
 
@@ -23,20 +23,20 @@ async def search_stock(
     if result.data:
         return {"stock": result.data[0], "source": "database"}
 
-    # Try to validate with Upstox live quote
+    # Try to validate with the free provider stack.
     try:
         instrument = search_instrument(symbol)
-        quote = fetch_live_quote(symbol)
+        fetch_live_quote(symbol)
 
         # We only persist the minimal stock metadata required by the app.
-        name = symbol
+        name = instrument.company_name or symbol
         sector = "Unknown"
         industry = "Unknown"
         cap_category = "unknown"
 
         stock_data = {
             "symbol": symbol,
-            "yf_ticker": f"{symbol}.NS" if instrument.exchange.startswith("NSE") else f"{symbol}.BSE",
+            "yf_ticker": instrument.instrument_key,
             "company_name": name,
             "sector": sector,
             "industry": industry,
@@ -55,7 +55,7 @@ async def search_stock(
         except Exception:
             pass  # Non-critical; data will be fetched by next pipeline run
 
-        return {"stock": insert_result.data[0], "source": "upstox"}
+        return {"stock": insert_result.data[0], "source": "yfinance"}
 
     except HTTPException:
         raise
@@ -67,7 +67,7 @@ async def search_stock(
 
 
 def _fetch_initial_ohlcv(supabase: Client, symbol: str) -> None:
-    """Fetch last 90 days of OHLCV data for a newly added stock using Upstox."""
+    """Fetch last 90 days of OHLCV data for a newly added stock."""
     try:
         rows = fetch_historical_daily(symbol, days=90)
         if not rows:
@@ -87,4 +87,4 @@ def _fetch_initial_ohlcv(supabase: Client, symbol: str) -> None:
         if upsert_rows:
             supabase.table("ohlcv").upsert(upsert_rows, on_conflict="symbol,date").execute()
     except Exception as e:
-        print(f"Upstox OHLCV fetch failed for {symbol}: {e}")
+        print(f"Initial OHLCV fetch failed for {symbol}: {e}")

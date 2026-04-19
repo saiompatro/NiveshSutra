@@ -1,5 +1,5 @@
 """
-Fetch OHLCV data for all active stocks using Upstox.
+Fetch OHLCV data for all active stocks using yfinance-backed market data helpers.
 Reads the stock list from Supabase and pulls daily candles instrument-by-instrument.
 """
 
@@ -20,7 +20,7 @@ def get_stock_list() -> pd.DataFrame:
 
 def fetch_ohlcv(days: int = 365) -> pd.DataFrame:
     """
-    Fetch OHLCV data for all active stocks using Upstox.
+    Fetch OHLCV data for all active stocks using free market data providers.
 
     Args:
         days: Number of historical days to fetch (default 365).

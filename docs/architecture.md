@@ -21,7 +21,7 @@ graph TB
         F --> J[Alert Generator]
         G --> K[yfinance API]
         G --> L[pandas-ta Indicators]
-        H --> M[RSS Feeds]
+        H --> M[Moneycontrol News API]
         H --> N[FinBERT Model]
         I --> O[Technical Scorer]
         I --> P[Momentum Scorer]
@@ -37,7 +37,7 @@ graph TB
 ## Data Flow
 
 1. **Ingestion**: yfinance → OHLCV table → pandas-ta → technical_indicators table
-2. **Sentiment**: RSS feeds → ticker mapping → FinBERT scoring → sentiment_daily table
+2. **Sentiment**: Moneycontrol news → ticker mapping → FinBERT scoring → sentiment_daily table
 3. **Signals**: indicators + sentiment + momentum → weighted combination → signals table
 4. **Portfolio**: User holdings + OHLCV returns → PyPortfolioOpt → allocation recommendations
 
@@ -89,8 +89,8 @@ confidence = min(|composite| × 2, 1.0)
 | Backend | FastAPI, Python 3.14 |
 | Database | Supabase (Postgres 17) |
 | Auth | Supabase Auth (email/password) |
-| Market Data | yfinance (NSE via .NS suffix) |
+| Market Data | yfinance + Moneycontrol market scrape fallback |
 | Indicators | pandas-ta (RSI, MACD, BB, SMA, EMA, ATR, OBV) |
 | Sentiment | ProsusAI/finbert (HuggingFace) |
-| News | RSS feeds (Moneycontrol, Economic Times) |
+| News | Moneycontrol via `moneycontrol-api` |
 | Optimization | PyPortfolioOpt (Mean-Variance, CAPM, Ledoit-Wolf) |

@@ -6,8 +6,6 @@ class Settings(BaseSettings):
     supabase_url: str
     supabase_anon_key: str
     supabase_service_role_key: str = ""
-    upstox_base_url: str = "https://api.upstox.com/v2"
-    upstox_access_token: str = ""
     market_data_cache_ttl_seconds: int = 60
     fastapi_port: int = 8000
     environment: str = "development"

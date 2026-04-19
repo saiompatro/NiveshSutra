@@ -1,6 +1,6 @@
 """
 Sentiment analysis pipeline:
-  1. Fetch news via RSS (Moneycontrol, Economic Times)
+  1. Fetch Moneycontrol news via moneycontrol-api
   2. Map articles to Nifty 50 stock symbols
   3. Score headlines with ProsusAI/finbert
   4. Aggregate daily sentiment per symbol
@@ -10,32 +10,8 @@ Sentiment analysis pipeline:
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone, date
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
-
-import feedparser
-
-# ---------------------------------------------------------------------------
-# RSS feed sources
-# ---------------------------------------------------------------------------
-RSS_FEEDS: list[dict[str, str]] = [
-    {
-        "url": "https://www.moneycontrol.com/rss/latestnews.xml",
-        "source": "moneycontrol",
-    },
-    {
-        "url": "https://www.moneycontrol.com/rss/marketreports.xml",
-        "source": "moneycontrol",
-    },
-    {
-        "url": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
-        "source": "economic_times",
-    },
-    {
-        "url": "https://economictimes.indiatimes.com/markets/stocks/rssfeeds/2146842.cms",
-        "source": "economic_times",
-    },
-]
 
 # ---------------------------------------------------------------------------
 # Nifty 50 ticker mapper  (company name / alias -> symbol)
@@ -223,9 +199,72 @@ def _get_finbert():
 # ---------------------------------------------------------------------------
 
 
+_IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def _parse_moneycontrol_datetime(value: str | None, fallback: str) -> str:
+    if not value:
+        return fallback
+
+    cleaned = re.sub(r"\s+", " ", value).strip()
+    formats = (
+        "%B %d, %Y %I:%M %p",
+        "%b %d, %Y %I:%M %p",
+        "%d %b %Y %I:%M %p",
+    )
+    for fmt in formats:
+        try:
+            parsed = datetime.strptime(cleaned, fmt)
+            return parsed.replace(tzinfo=_IST).astimezone(timezone.utc).isoformat()
+        except ValueError:
+            continue
+    return fallback
+
+
+def _normalize_news_item(item: Any, source_label: str, fetched_at: str) -> dict[str, Any] | None:
+    if not isinstance(item, dict):
+        return None
+
+    url = item.get("Link:") or item.get("Link") or item.get("link") or item.get("url")
+    title = item.get("Title:") or item.get("Title") or item.get("title") or ""
+    if not url or not title:
+        return None
+
+    published_raw = item.get("Date:") or item.get("Date") or item.get("date")
+    news_type = (
+        item.get("NewsType:")
+        or item.get("NewsType")
+        or item.get("news_type")
+        or source_label
+    )
+    return {
+        "url": str(url).strip(),
+        "title": str(title).strip(),
+        "source": f"moneycontrol:{news_type}".lower(),
+        "published_at": _parse_moneycontrol_datetime(
+            str(published_raw).strip() if published_raw else None,
+            fetched_at,
+        ),
+        "fetched_at": fetched_at,
+    }
+
+
+def _iter_moneycontrol_results(payload: Any) -> list[dict[str, Any]]:
+    if isinstance(payload, list):
+        return [item for item in payload if isinstance(item, dict)]
+    if isinstance(payload, dict):
+        if all(not isinstance(value, (dict, list)) for value in payload.values()):
+            return [payload]
+        results: list[dict[str, Any]] = []
+        for value in payload.values():
+            results.extend(_iter_moneycontrol_results(value))
+        return results
+    return []
+
+
 def fetch_news() -> list[dict[str, Any]]:
     """
-    Fetch articles from all configured RSS feeds.
+    Fetch articles from Moneycontrol via moneycontrol-api.
 
     Returns:
         list of dicts with keys: url, title, source, published_at, fetched_at
@@ -234,42 +273,38 @@ def fetch_news() -> list[dict[str, Any]]:
     seen_urls: set[str] = set()
     articles: list[dict[str, Any]] = []
 
-    for feed_cfg in RSS_FEEDS:
-        try:
-            feed = feedparser.parse(feed_cfg["url"])
-        except Exception as exc:
-            print(f"Warning: failed to parse {feed_cfg['url']}: {exc}")
+    try:
+        from moneycontrol import moneycontrol_api as mc
+    except ImportError as exc:
+        raise RuntimeError(
+            "moneycontrol-api is not installed. Add it to the environment before running sentiment ingestion."
+        ) from exc
+
+    sources = (
+        ("get_latest_news", "latest_news"),
+        ("get_business_news", "business_news"),
+        ("get_news", "news"),
+    )
+    for func_name, source_label in sources:
+        func = getattr(mc, func_name, None)
+        if not callable(func):
+            print(f"Warning: moneycontrol-api does not expose {func_name}()")
             continue
 
-        for entry in feed.entries:
-            url = getattr(entry, "link", None)
-            if not url or url in seen_urls:
+        try:
+            payload = func()
+        except Exception as exc:
+            print(f"Warning: Moneycontrol fetch failed for {func_name}: {exc}")
+            continue
+
+        for item in _iter_moneycontrol_results(payload):
+            article = _normalize_news_item(item, source_label, now)
+            if not article or article["url"] in seen_urls:
                 continue
-            seen_urls.add(url)
+            seen_urls.add(article["url"])
+            articles.append(article)
 
-            # Parse published date
-            published_at = None
-            if hasattr(entry, "published_parsed") and entry.published_parsed:
-                try:
-                    published_at = datetime(
-                        *entry.published_parsed[:6], tzinfo=timezone.utc
-                    ).isoformat()
-                except Exception:
-                    pass
-            if published_at is None:
-                published_at = now
-
-            articles.append(
-                {
-                    "url": url,
-                    "title": getattr(entry, "title", ""),
-                    "source": feed_cfg["source"],
-                    "published_at": published_at,
-                    "fetched_at": now,
-                }
-            )
-
-    print(f"Fetched {len(articles)} unique articles from {len(RSS_FEEDS)} RSS feeds.")
+    print(f"Fetched {len(articles)} unique articles from Moneycontrol.")
     return articles
 
 
@@ -399,18 +434,16 @@ def aggregate_daily(sentiments: list[dict]) -> list[dict]:
         n = len(rows)
         pos_avg = sum(r["positive_prob"] for r in rows) / n
         neg_avg = sum(r["negative_prob"] for r in rows) / n
+        neu_avg = sum(r["neutral_prob"] for r in rows) / n
         avg_sentiment = round(pos_avg - neg_avg, 6)
-        pos_count = sum(1 for r in rows if r["sentiment_label"] == "positive")
-        neg_count = sum(1 for r in rows if r["sentiment_label"] == "negative")
-        neu_count = sum(1 for r in rows if r["sentiment_label"] == "neutral")
         daily.append(
             {
                 "symbol": symbol,
                 "date": day,
                 "avg_sentiment": avg_sentiment,
-                "positive_count": pos_count,
-                "negative_count": neg_count,
-                "neutral_count": neu_count,
+                "positive_avg": round(pos_avg, 6),
+                "negative_avg": round(neg_avg, 6),
+                "neutral_avg": round(neu_avg, 6),
                 "article_count": n,
             }
         )
@@ -438,7 +471,7 @@ def run_sentiment_pipeline() -> None:
 
     # --- fetch ---
     print("=" * 60)
-    print("SENTIMENT STEP 1: Fetching news from RSS feeds")
+    print("SENTIMENT STEP 1: Fetching Moneycontrol news")
     print("=" * 60)
     articles = fetch_news()
     if not articles:
