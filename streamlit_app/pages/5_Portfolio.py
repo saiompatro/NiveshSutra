@@ -22,7 +22,7 @@ from design import (
     style_plotly_figure,
 )
 from live_market import fetch_live_quotes_batch
-from supabase_client import get_authed_client
+from supabase_client import get_anon_client, get_authed_client
 from utils import format_currency, format_pct
 
 st.set_page_config(page_title="Portfolio | NiveshSutra", layout="wide")
