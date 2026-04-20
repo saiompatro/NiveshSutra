@@ -11,7 +11,7 @@ from supabase_client import get_anon_client, get_authed_client
 
 
 def login(email: str, password: str) -> tuple[bool, str]:
-    """Sign in. Returns (success, error_message)."""
+    """Sign in with email/password. Returns (success, error_message)."""
     try:
         client = get_anon_client()
         response = client.auth.sign_in_with_password({"email": email, "password": password})
@@ -31,7 +31,6 @@ def signup(email: str, password: str) -> tuple[bool, str]:
         client = get_anon_client()
         response = client.auth.sign_up({"email": email, "password": password})
         if response.user:
-            # Auto-login if session available (email confirmation disabled)
             if response.session:
                 st.session_state["session"] = response.session
                 st.session_state["user"] = response.user
@@ -44,6 +43,43 @@ def signup(email: str, password: str) -> tuple[bool, str]:
         return False, str(e)
 
 
+def get_github_oauth_url(redirect_to: str) -> tuple[bool, str]:
+    """
+    Get the GitHub OAuth authorization URL from Supabase.
+    Requires GitHub OAuth to be enabled in the Supabase Auth dashboard.
+    Returns (success, url_or_error).
+    """
+    try:
+        client = get_anon_client()
+        response = client.auth.sign_in_with_oauth(
+            {
+                "provider": "github",
+                "options": {"redirect_to": redirect_to},
+            }
+        )
+        return True, response.url
+    except Exception as e:
+        return False, str(e)
+
+
+def handle_oauth_tokens(access_token: str, refresh_token: str) -> tuple[bool, str]:
+    """
+    Establish a Supabase session from OAuth tokens returned via the URL hash.
+    Returns (success, error_message).
+    """
+    try:
+        client = get_anon_client()
+        response = client.auth.set_session(access_token, refresh_token)
+        if response.session and response.user:
+            st.session_state["session"] = response.session
+            st.session_state["user"] = response.user
+            _load_profile(response.user.id, response.session.access_token)
+            return True, ""
+        return False, "Could not establish session"
+    except Exception as e:
+        return False, str(e)
+
+
 def logout():
     """Clear session state."""
     for key in ["session", "user", "profile", "selected_stock"]:
@@ -51,10 +87,7 @@ def logout():
 
 
 def require_auth():
-    """
-    Call at the top of every protected page.
-    Redirects to app.py if session is missing.
-    """
+    """Redirect to app.py if the session is missing."""
     if "session" not in st.session_state or "user" not in st.session_state:
         st.switch_page("app.py")
 

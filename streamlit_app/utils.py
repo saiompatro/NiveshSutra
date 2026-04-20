@@ -68,19 +68,19 @@ def format_signal(signal: str) -> str:
 
 
 SIGNAL_COLORS = {
-    "strong_buy": "#5de4c7",
-    "buy": "#72d4ff",
-    "hold": "#f3c36f",
-    "sell": "#ff9a62",
-    "strong_sell": "#ff7f90",
+    "strong_buy": "#3dd68c",
+    "buy": "#5ba4f5",
+    "hold": "#f0b655",
+    "sell": "#fb923c",
+    "strong_sell": "#f06565",
 }
 
 SIGNAL_BG = {
-    "strong_buy": "rgba(93, 228, 199, 0.14)",
-    "buy": "rgba(114, 212, 255, 0.14)",
-    "hold": "rgba(243, 195, 111, 0.16)",
-    "sell": "rgba(255, 154, 98, 0.15)",
-    "strong_sell": "rgba(255, 127, 144, 0.16)",
+    "strong_buy": "rgba(61,  214, 140, 0.12)",
+    "buy":        "rgba(91,  164, 245, 0.12)",
+    "hold":       "rgba(240, 182,  85, 0.12)",
+    "sell":       "rgba(251, 146,  60, 0.12)",
+    "strong_sell":"rgba(240, 101, 101, 0.12)",
 }
 
 

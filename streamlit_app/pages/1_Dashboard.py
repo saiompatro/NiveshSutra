@@ -275,23 +275,11 @@ with st.spinner("Loading dashboard..."):
     alerts = fetch_alerts(user_id, token)
 
 render_page_hero(
-    kicker="Market panorama",
-    title="Your investing control room.",
-    body=(
-        "Portfolio motion, market tone, fresh conviction, and watchlist heat all sit on one cinematic surface. "
-        "Use it like a morning briefing, then dive deeper where the tape gets interesting."
-    ),
-    pills=[
-        f"Risk profile: {(profile.get('risk_profile') or 'Unassigned').capitalize()}",
-        f"Signals on deck: {len(signals)}",
-        f"Watchlist names: {len(watchlist)}",
-    ],
-    aside_title="Current scene",
-    aside_rows=[
-        ("Portfolio", format_currency(portfolio.get("total_value", 0))),
-        ("Nifty 50", f"{nifty.get('value', 0):,.2f}" if nifty else "Unavailable"),
-        ("Mood", sentiment.get("overall", "Waiting on data") if sentiment else "Waiting on data"),
-    ],
+    kicker="Dashboard",
+    title="Market overview",
+    body=f"Risk profile: {(profile.get('risk_profile') or 'Unassigned').capitalize()} · "
+         f"{len(signals)} signals · {len(watchlist)} watchlist names",
+    pills=[],
 )
 
 render_metric_grid(
@@ -338,25 +326,16 @@ render_metric_grid(
     columns=4,
 )
 
-render_info_band(
-    "Briefing note",
-    "The redesigned dashboard avoids a wall of generic cards. Instead, it stages today’s operating signals first, then lets the supporting context sit in side lanes you can scan quickly.",
-)
-
 lead_col, story_col = st.columns([1.35, 0.9], gap="large")
 
 with lead_col:
-    render_section_heading(
-        "Signal lane",
-        "The latest conviction calls, surfaced without leaving the main dashboard.",
-        kicker="Primary lane",
-    )
+    render_section_heading("Latest signals")
     if signals:
         for signal in signals:
             row_left, row_mid, row_right = st.columns([1.3, 1.1, 0.9], gap="medium")
             row_left.markdown(
                 f"**{signal['symbol']}**  \n"
-                f"<span style='color:#9aabc4;font-size:0.82rem'>Confidence {signal.get('confidence', 0) * 100:.0f}%</span>",
+                f"<span style='color:#8b9ab5;font-size:0.82rem'>Confidence {signal.get('confidence', 0) * 100:.0f}%</span>",
                 unsafe_allow_html=True,
             )
             row_mid.markdown(signal_badge_html(signal["signal"]), unsafe_allow_html=True)
@@ -368,23 +347,19 @@ with lead_col:
         render_empty_state("No live signals yet", "Once the signal pipeline runs, your latest calls will appear here.")
 
     st.markdown("")
-    render_section_heading(
-        "Watchlist theater",
-        "Quick movers in your personal radar.",
-        kicker="Secondary lane",
-    )
+    render_section_heading("Watchlist")
     if watchlist:
         for item in watchlist:
             change_pct = item["change_pct"]
-            change_color = "#5de4c7" if change_pct >= 0 else "#ff7f90"
+            change_color = "#3dd68c" if change_pct >= 0 else "#f06565"
             row_left, row_mid, row_right = st.columns([1.4, 1, 0.9], gap="medium")
             row_left.markdown(
                 f"**{item['symbol']}**  \n"
-                f"<span style='color:#9aabc4;font-size:0.8rem'>{item['company_name']}</span>",
+                f"<span style='color:#8b9ab5;font-size:0.8rem'>{item['company_name']}</span>",
                 unsafe_allow_html=True,
             )
             row_mid.markdown(
-                f"<span style='font-size:1rem;color:#f7f2e9'>{item['price']:,.2f}</span>",
+                f"<span style='font-size:1rem;color:#e2e8f0'>{item['price']:,.2f}</span>",
                 unsafe_allow_html=True,
             )
             row_right.markdown(
@@ -398,14 +373,11 @@ with lead_col:
         render_empty_state("Watchlist is empty", "Add names from the Stocks page to start tracking live price changes here.")
 
 with story_col:
-    render_section_heading(
-        "Context lanes",
-        "Sentiment balance, operational alerts, and the way the redesign frames the story around the numbers.",
-        kicker="Supporting detail",
-    )
+    render_section_heading("Market context")
+    st.markdown("")
     render_note_card(
-        "Market mood board",
-        "Daily sentiment acts like a weather layer over the equity universe, showing whether headlines are adding lift or drag.",
+        "Sentiment",
+        "Aggregated FinBERT score across the tracked equity universe.",
         rows=[
             ("Bullish", str(sentiment.get("bullish", 0))),
             ("Neutral", str(sentiment.get("neutral", 0))),
@@ -426,13 +398,3 @@ with story_col:
             "Alert stack",
             "No fresh alerts right now. When rebalancing drift or signal changes occur, they will surface here.",
         )
-    st.markdown("")
-    render_note_card(
-        "Why this layout feels different",
-        "The main lane handles action, while the right rail carries atmosphere and context. That keeps the dashboard from turning into a flat wall of widgets.",
-        rows=[
-            ("Poster moment", "Hero frames the page"),
-            ("Data rhythm", "Primary lane then side rail"),
-            ("Framework fit", "Pure Streamlit + CSS"),
-        ],
-    )

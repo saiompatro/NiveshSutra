@@ -211,22 +211,12 @@ day_open = float(latest.get("open") or 0)
 volume = int(quote.get("volume") or latest.get("volume") or 0)
 
 render_page_hero(
-    kicker="Single-name story",
-    title=f"{symbol} | {company}",
-    body=(
-        "A full-screen reading of price structure, technical tone, and sentiment drift. This view is built to feel like an analyst tear sheet rather than a generic ticker page."
-    ),
-    pills=[
-        sector,
-        "In watchlist" if in_watchlist else "Not in watchlist",
-        f"Move {price_change_pct:+.2f}%",
-    ],
-    aside_title="Current read",
-    aside_rows=[
-        ("Last price", f"{price:,.2f}"),
-        ("Daily move", f"{price_change:+.2f}"),
-        ("Latest signal", latest_signal.get("signal", "Waiting") if latest_signal else "Waiting"),
-    ],
+    kicker=sector or "Stock",
+    title=f"{symbol} — {company}",
+    body=f"Last price: {price:,.2f}  ·  Move: {price_change_pct:+.2f}%  ·  "
+         f"Signal: {latest_signal['signal'].replace('_', ' ').title() if latest_signal else 'None'}  ·  "
+         f"{'In watchlist' if in_watchlist else 'Not in watchlist'}",
+    pills=[],
 )
 
 action_left, action_right = st.columns([1, 1.2], gap="medium")
@@ -305,8 +295,8 @@ with tab_chart:
                 low=lows,
                 close=closes,
                 name=symbol,
-                increasing_line_color="#5de4c7",
-                decreasing_line_color="#ff7f90",
+                increasing_line_color="#3dd68c",
+                decreasing_line_color="#f06565",
             )
         )
         if indicators:
@@ -318,7 +308,7 @@ with tab_chart:
                         x=[row[0] for row in sma20_rows],
                         y=[row[1] for row in sma20_rows],
                         name="SMA 20",
-                        line=dict(color="#7bc8ff", width=1.6),
+                        line=dict(color="#5ba4f5", width=1.6),
                     )
                 )
             if sma50_rows:
@@ -327,7 +317,7 @@ with tab_chart:
                         x=[row[0] for row in sma50_rows],
                         y=[row[1] for row in sma50_rows],
                         name="SMA 50",
-                        line=dict(color="#f3a45c", width=1.6, dash="dot"),
+                        line=dict(color="#f0b655", width=1.6, dash="dot"),
                     )
                 )
         fig.update_layout(xaxis=dict(rangeslider=dict(visible=False)))
@@ -380,11 +370,11 @@ with tab_indicators:
                     x=[row[0] for row in rsi_rows],
                     y=[row[1] for row in rsi_rows],
                     name="RSI 14",
-                    line=dict(color="#7bc8ff", width=2),
+                    line=dict(color="#5ba4f5", width=2),
                 )
             )
-            fig_rsi.add_hline(y=70, line_dash="dash", line_color="#ff7f90")
-            fig_rsi.add_hline(y=30, line_dash="dash", line_color="#5de4c7")
+            fig_rsi.add_hline(y=70, line_dash="dash", line_color="#f06565")
+            fig_rsi.add_hline(y=30, line_dash="dash", line_color="#3dd68c")
             fig_rsi.update_layout(yaxis=dict(range=[0, 100]))
             st.plotly_chart(style_plotly_figure(fig_rsi, height=280), use_container_width=True)
     else:
@@ -407,7 +397,7 @@ with tab_sentiment:
                 y=scores,
                 name="Average sentiment",
                 fill="tozeroy",
-                line=dict(color="#5de4c7", width=2.2),
+                line=dict(color="#3dd68c", width=2.2),
             )
         )
         fig_sentiment.add_hline(y=0, line_color="rgba(164,185,213,0.25)")
@@ -416,26 +406,14 @@ with tab_sentiment:
 
         latest_score = scores[-1] if scores else 0.0
         sentiment_label = "Bullish" if latest_score > 0.1 else "Bearish" if latest_score < -0.1 else "Neutral"
-        rail_left, rail_right = st.columns(2, gap="large")
-        with rail_left:
-            render_note_card(
-                "Current read",
-                "Use the latest FinBERT output as a narrative check against the technical picture above.",
-                rows=[
-                    ("Mood", sentiment_label),
-                    ("Latest score", f"{latest_score:.3f}"),
-                    ("Articles", str(counts[-1] if counts else 0)),
-                ],
-            )
-        with rail_right:
-            render_note_card(
-                "Why the page works",
-                "The detail view makes one stock feel significant. Instead of a generic ticker sheet, the layout gives each analytical layer a distinct role.",
-                rows=[
-                    ("Lead surface", "Chart first"),
-                    ("Support lane", "Indicators"),
-                    ("Narrative lane", "Sentiment"),
-                ],
-            )
+        render_note_card(
+            "Latest sentiment",
+            "FinBERT score — use as a narrative check against the technical picture above.",
+            rows=[
+                ("Mood", sentiment_label),
+                ("Score", f"{latest_score:.3f}"),
+                ("Articles", str(counts[-1] if counts else 0)),
+            ],
+        )
     else:
         render_empty_state("No sentiment history available", "Run the sentiment pipeline to unlock this narrative layer.")

@@ -53,27 +53,11 @@ user_id = get_user_id()
 profile = get_profile()
 
 render_page_hero(
-    kicker="Calibration deck",
-    title="Tune the product around your investing rhythm.",
-    body=(
-        "Settings is designed as a quiet control deck rather than an afterthought. Update your identity, retake the risk questionnaire, and control alerting without leaving the app’s visual language."
-    ),
-    pills=[
-        f"Profile: {(profile.get('risk_profile') or 'Unassigned').capitalize()}",
-        f"Risk score: {profile.get('risk_score', 'n/a')}",
-        "Notifications wired to tracked signals",
-    ],
-    aside_title="Control deck",
-    aside_rows=[
-        ("Email", st.session_state["user"].email),
-        ("Risk profile", (profile.get("risk_profile") or "Unassigned").capitalize()),
-        ("Notifications", "Enabled" if profile.get("email_notifications_enabled", True) else "Muted"),
-    ],
-)
-
-render_info_band(
-    "Why this page matters",
-    "The rest of the product adapts around the preferences you set here. That makes settings part of the main product experience, not a maintenance corner.",
+    kicker="Settings",
+    title="Account & preferences",
+    body=f"Risk profile: {(profile.get(‘risk_profile’) or ‘Unassigned’).capitalize()} · "
+         f"Score: {profile.get(‘risk_score’, ‘n/a’)}/15",
+    pills=[],
 )
 
 tab_profile, tab_risk, tab_notifications = st.tabs(["Profile", "Risk Assessment", "Notifications"])

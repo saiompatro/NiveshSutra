@@ -152,12 +152,12 @@ def render_signal_row(
         unsafe_allow_html=True,
     )
     row[6].markdown(
-        f"<span style='opacity:{opacity};color:#9aabc4'>{get_position_size_hint(risk_profile, signal_row['signal']) or 'Observe only'}</span>",
+        f"<span style='opacity:{opacity};color:#8b9ab5'>{get_position_size_hint(risk_profile, signal_row['signal']) or 'Observe only'}</span>",
         unsafe_allow_html=True,
     )
 
     if signal_row["symbol"] in accepted_symbols:
-        row[7].markdown("<span style='color:#5de4c7'>Tracked</span>", unsafe_allow_html=True)
+        row[7].markdown("<span style='color:#3dd68c'>Tracked</span>", unsafe_allow_html=True)
     else:
         if row[7].button("Accept", key=f"accept_{signal_row['symbol']}", use_container_width=True):
             st.session_state[f"accept_dialog_{signal_row['symbol']}"] = True
@@ -173,7 +173,7 @@ def render_signal_row(
             )
             st.markdown(
                 f"{signal_badge_html(signal_row['signal'])} "
-                f"<span style='color:#9aabc4;font-size:0.85rem'>Confidence {confidence:.0f}%</span>",
+                f"<span style='color:#8b9ab5;font-size:0.85rem'>Confidence {confidence:.0f}%</span>",
                 unsafe_allow_html=True,
             )
             quantity = None
@@ -242,22 +242,12 @@ accepted_symbols = {item["symbol"] for item in accepted}
 confidence_threshold = get_confidence_threshold(risk_profile)
 
 render_page_hero(
-    kicker="Conviction engine",
-    title="Signals staged around your risk posture.",
-    body=(
-        "This page ranks current ideas, separates high-confidence action from lower-priority noise, and lets you turn a signal into a tracked workflow without leaving the scene."
-    ),
-    pills=[
-        f"Profile: {risk_profile.capitalize()}",
-        f"Threshold: {confidence_threshold * 100:.0f}%+",
-        f"Tracked signals: {len(accepted)}",
-    ],
-    aside_title="How it adapts",
-    aside_rows=[
-        ("Conservative", "Higher-confidence ideas first"),
-        ("Moderate", "Balanced ranking"),
-        ("Aggressive", "Broader directional coverage"),
-    ],
+    kicker="Signals",
+    title="Conviction engine",
+    body=f"Profile: {risk_profile.capitalize()} · "
+         f"Threshold: {confidence_threshold * 100:.0f}%+ confidence · "
+         f"{len(accepted)} tracked",
+    pills=[],
 )
 
 counts: dict[str, int] = {}
@@ -318,8 +308,8 @@ other = [row for row in filtered if row not in recommended]
 
 with rail_col:
     render_note_card(
-        "Signal posture",
-        "The right rail explains the logic instead of duplicating the table. That keeps the page more legible than a grid of dashboards.",
+        "Signal summary",
+        f"Signals at or above {confidence_threshold * 100:.0f}% confidence for your {risk_profile.capitalize()} profile are shown first.",
         rows=[
             ("Recommended", str(len(recommended))),
             ("Other visible", str(len(other))),
@@ -387,7 +377,7 @@ if accepted:
             pretty_date = datetime.fromisoformat(timestamp.replace("Z", "+00:00")).strftime("%d %b %Y")
         except Exception:
             pretty_date = timestamp or "Unknown"
-        row[2].markdown(f"<span style='color:#9aabc4'>{pretty_date}</span>", unsafe_allow_html=True)
+        row[2].markdown(f"<span style='color:#8b9ab5'>{pretty_date}</span>", unsafe_allow_html=True)
         with row[3]:
             if st.button("Stop", key=f"stop_{item['id']}", use_container_width=True):
                 stop_tracking(item["id"], user_id, token)

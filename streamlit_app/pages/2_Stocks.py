@@ -128,19 +128,11 @@ all_stocks = fetch_stocks()
 sectors = sorted({stock["sector"] for stock in all_stocks if stock["sector"]})
 
 render_page_hero(
-    kicker="Universe explorer",
-    title="Scan the equity field before you commit.",
-    body=(
-        "This page treats the market like a curated catalog instead of a plain table. Filter by sector, "
-        "toggle the benchmark universe, add fresh symbols, and jump into detail pages without losing the atmosphere."
-    ),
-    pills=["Search across names", "Signal-aware rows", "FastAPI stock onboarding"],
-    aside_title="Explorer notes",
-    aside_rows=[
-        ("Tracked names", str(len(all_stocks))),
-        ("Sectors", str(len(sectors))),
-        ("Benchmark set", str(sum(1 for stock in all_stocks if stock["is_nifty50"]))),
-    ],
+    kicker="Stocks",
+    title="Browse the equity universe",
+    body=f"{len(all_stocks)} tracked names · {len(sectors)} sectors · "
+         f"{sum(1 for s in all_stocks if s['is_nifty50'])} Nifty 50",
+    pills=[],
 )
 
 render_metric_grid(
@@ -164,11 +156,6 @@ render_metric_grid(
             "tone": "rose",
         },
     ],
-)
-
-render_info_band(
-    "Streamlit fit",
-    "The explorer keeps native inputs, select boxes, and buttons for reliability, while the surrounding composition gives the page a more magazine-like browsing rhythm.",
 )
 
 ctrl1, ctrl2, ctrl3, ctrl4 = st.columns([2.2, 1.7, 1.1, 1], gap="medium")
@@ -244,11 +231,11 @@ with story_left:
 
         for stock in stocks:
             row = st.columns([1.3, 2.8, 2, 1.4, 1.3, 1.5, 0.9], gap="small")
-            change_color = "#5de4c7" if stock["change_pct"] >= 0 else "#ff7f90"
+            change_color = "#3dd68c" if stock["change_pct"] >= 0 else "#f06565"
             row[0].markdown(f"**{stock['symbol']}**")
             row[1].markdown(stock["company_name"])
             row[2].markdown(
-                f"<span style='color:#9aabc4'>{stock['sector'] or 'Unassigned'}</span>",
+                f"<span style='color:#8b9ab5'>{stock['sector'] or 'Unassigned'}</span>",
                 unsafe_allow_html=True,
             )
             row[3].markdown(f"{stock['price']:,.2f}")
@@ -257,7 +244,7 @@ with story_left:
                 unsafe_allow_html=True,
             )
             row[5].markdown(
-                signal_badge_html(stock["signal"]) if stock["signal"] else "<span style='color:#6b7a92'>Waiting</span>",
+                signal_badge_html(stock["signal"]) if stock["signal"] else "<span style='color:#4d5f78'>Waiting</span>",
                 unsafe_allow_html=True,
             )
             with row[6]:
@@ -281,15 +268,5 @@ with story_right:
             ("Matching names", str(len(stocks))),
             ("Positive movers", str(positive_count)),
             ("Rows with signals", str(signal_count)),
-        ],
-    )
-    st.markdown("")
-    render_note_card(
-        "How the redesign helps",
-        "The explorer remains a dependable Streamlit table-and-controls page, but the hero, rail, and metric framing make it feel more like a crafted catalog.",
-        rows=[
-            ("Inputs", "Native widgets"),
-            ("Navigation", "Session-driven detail routing"),
-            ("Brand feel", "Editorial layout over utility data"),
         ],
     )

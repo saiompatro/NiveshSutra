@@ -30,14 +30,14 @@ apply_theme()
 require_auth()
 
 CHART_COLORS = [
-    "#7bc8ff",
-    "#5de4c7",
-    "#f3a45c",
-    "#ff7f90",
-    "#86a8ff",
-    "#ffd580",
-    "#a7f3d0",
-    "#ffb4a2",
+    "#5ba4f5",
+    "#3dd68c",
+    "#f0b655",
+    "#f06565",
+    "#a78bfa",
+    "#fbbf24",
+    "#34d399",
+    "#fb923c",
 ]
 
 
@@ -186,22 +186,10 @@ total_pnl = total_value - total_invested
 total_pnl_pct = (total_pnl / total_invested * 100) if total_invested else 0.0
 
 render_page_hero(
-    kicker="Allocation studio",
-    title="Shape the portfolio, not just the positions.",
-    body=(
-        "This surface treats holdings as a composition problem: current exposure, live PnL, allocation balance, and rebalancing opportunities all share the same visual rhythm."
-    ),
-    pills=[
-        f"Holdings: {len(holdings)}",
-        f"Value: {format_currency(total_value)}",
-        f"PnL: {format_pct(total_pnl_pct)}",
-    ],
-    aside_title="Current posture",
-    aside_rows=[
-        ("Invested capital", format_currency(total_invested)),
-        ("Current value", format_currency(total_value)),
-        ("Net PnL", format_currency(total_pnl)),
-    ],
+    kicker="Portfolio",
+    title="Holdings & allocation",
+    body=f"{len(holdings)} positions · Value {format_currency(total_value)} · PnL {format_pct(total_pnl_pct)}",
+    pills=[],
 )
 
 render_metric_grid(
@@ -225,11 +213,6 @@ render_metric_grid(
             "tone": "emerald" if total_pnl >= 0 else "rose",
         },
     ],
-)
-
-render_info_band(
-    "Design logic",
-    "Portfolio is often where Streamlit apps collapse into card clutter. This redesign keeps the controls native, but uses a single narrative arc: holdings first, allocation second, optimization third.",
 )
 
 action_col, action_col_2 = st.columns([1, 1], gap="medium")
@@ -288,7 +271,7 @@ if holdings:
     st.markdown('<div class="ns-row-divider"></div>', unsafe_allow_html=True)
 
     for holding in holdings:
-        pnl_color = "#5de4c7" if holding["pnl"] >= 0 else "#ff7f90"
+        pnl_color = "#3dd68c" if holding["pnl"] >= 0 else "#f06565"
         row = st.columns([1.2, 1, 1.3, 1.3, 1.2, 1.2, 1.3, 1], gap="small")
         row[0].markdown(f"**{holding['symbol']}**")
         row[1].markdown(f"{holding['quantity']:.0f}")
@@ -343,7 +326,7 @@ if holdings:
                 x=[holding["symbol"] for holding in sorted_holdings],
                 y=[holding["pnl"] for holding in sorted_holdings],
                 marker_color=[
-                    "#5de4c7" if holding["pnl"] >= 0 else "#ff7f90" for holding in sorted_holdings
+                    "#3dd68c" if holding["pnl"] >= 0 else "#f06565" for holding in sorted_holdings
                 ],
                 text=[format_currency(holding["pnl"]) for holding in sorted_holdings],
                 textposition="outside",
@@ -414,7 +397,7 @@ if optimization and optimization.get("allocations"):
         if actions:
             for action in actions:
                 direction = action.get("action", "")
-                color = "#5de4c7" if direction in {"increase", "buy"} else "#ff7f90"
+                color = "#3dd68c" if direction in {"increase", "buy"} else "#f06565"
                 render_note_card(
                     action["symbol"],
                     f"{direction.upper()} from {action.get('current_weight', 0) * 100:.1f}% to {action.get('recommended_weight', 0) * 100:.1f}% target weight.",

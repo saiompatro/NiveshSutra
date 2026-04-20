@@ -1,4 +1,4 @@
-"""NiveshSutra Streamlit entry point."""
+"""NiveshSutra — entry point: auth gate + onboarding wizard."""
 
 import sys
 from pathlib import Path
@@ -6,25 +6,21 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from auth import (
     get_access_token,
+    get_github_oauth_url,
     get_profile,
     get_user_id,
+    handle_oauth_tokens,
     login,
     logout,
     refresh_profile,
     signup,
 )
-from design import (
-    apply_theme,
-    render_info_band,
-    render_metric_grid,
-    render_note_card,
-    render_page_hero,
-    render_section_heading,
-    render_sidebar_shell,
-)
+from config import get_setting
+from design import apply_theme, render_sidebar_shell
 from supabase_client import get_authed_client
 from utils import RISK_QUESTIONS, compute_risk_profile
 
@@ -36,14 +32,52 @@ st.set_page_config(
 apply_theme()
 
 
+# ── OAuth hash-to-queryparams bridge ────────────────────────────────────────
+# After GitHub OAuth, Supabase redirects back with tokens in the URL fragment.
+# This small JS snippet extracts them and reloads with query params so Python
+# can read them on the next render cycle.
+components.html(
+    """
+    <script>
+    (function () {
+        var hash = window.location.hash;
+        if (hash && hash.includes('access_token=')) {
+            var params = new URLSearchParams(hash.substring(1));
+            var at = params.get('access_token');
+            var rt = params.get('refresh_token') || '';
+            if (at) {
+                var url = new URL(window.location.href);
+                url.hash = '';
+                url.searchParams.set('ns_at', at);
+                url.searchParams.set('ns_rt', rt);
+                window.location.replace(url.toString());
+            }
+        }
+    })();
+    </script>
+    """,
+    height=0,
+)
+
+# ── Handle OAuth callback ────────────────────────────────────────────────────
+qp = st.query_params
+if "ns_at" in qp and "session" not in st.session_state:
+    ok, err = handle_oauth_tokens(qp["ns_at"], qp.get("ns_rt", ""))
+    if ok:
+        st.query_params.clear()
+        st.rerun()
+    else:
+        st.error(f"GitHub sign-in failed: {err}")
+        st.query_params.clear()
+
+
+# ── Sidebar (authenticated) ──────────────────────────────────────────────────
 def render_sidebar() -> None:
-    """Render the shared authenticated sidebar."""
     profile = get_profile()
     render_sidebar_shell(
         active_page=None,
         user_email=st.session_state["user"].email,
         risk_profile=profile.get("risk_profile"),
-        headline="A premium control room for signals, portfolio motion, and market tempo.",
         show_nav=False,
     )
     with st.sidebar:
@@ -53,177 +87,131 @@ def render_sidebar() -> None:
             st.rerun()
 
 
+# ── Login / sign-up page ─────────────────────────────────────────────────────
 def render_auth() -> None:
-    """Render the unauthenticated landing and auth flows."""
-    hero_col, form_col = st.columns([1.35, 0.95], gap="large")
+    # Determine the app's public URL for OAuth redirect
+    site_url = get_setting("SITE_URL", "http://localhost:8501")
 
-    with hero_col:
-        render_page_hero(
-            kicker="Signal atelier",
-            title="Read the pulse of Indian equities like a crafted editorial.",
-            body=(
-                "NiveshSutra turns raw market data, sentiment, and portfolio math into a cinematic "
-                "operating surface. Track conviction, shape risk, and move from noise to action."
-            ),
-            pills=[
-                "Live NSE universe",
-                "FinBERT news sentiment",
-                "Signal + optimizer workflow",
-            ],
-            aside_title="Inside the experience",
-            aside_rows=[
-                ("Atmosphere", "Editorial trading floor"),
-                ("Core loop", "Scan, accept, rebalance"),
-                ("Built for", "Indian equity investors"),
-            ],
+    # Center the auth card
+    _, center, _ = st.columns([1, 1.1, 1])
+    with center:
+        # Brand mark
+        st.markdown(
+            """
+            <div style="text-align:center;margin-bottom:1.75rem;margin-top:2rem">
+                <div style="display:inline-flex;align-items:center;justify-content:center;
+                            width:44px;height:44px;background:var(--accent);border-radius:12px;
+                            font-weight:800;font-size:1.2rem;color:#fff;margin-bottom:0.75rem">
+                    N
+                </div>
+                <div style="font-size:1.375rem;font-weight:700;color:var(--text);letter-spacing:-0.02em">
+                    NiveshSutra
+                </div>
+                <div style="font-size:0.8125rem;color:var(--text-2);margin-top:0.25rem">
+                    AI-powered Indian equity intelligence
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
-        render_metric_grid(
-            [
-                {
-                    "label": "Universe",
-                    "value": "Nifty + beyond",
-                    "detail": "Explore benchmark names and onboard additional NSE symbols on demand.",
-                    "tone": "emerald",
-                },
-                {
-                    "label": "Decision layer",
-                    "value": "Signals with context",
-                    "detail": "Technical momentum, sentiment flow, and risk-aware conviction in one place.",
-                    "tone": "amber",
-                },
-                {
-                    "label": "Portfolio motion",
-                    "value": "Rebalance intelligently",
-                    "detail": "Translate holdings into weight, drift, and optimization actions without leaving the app.",
-                    "tone": "rose",
-                },
-            ]
-        )
+        tab_login, tab_signup = st.tabs(["Sign in", "Create account"])
 
-    with form_col:
-        render_section_heading(
-            "Enter the studio",
-            "Create an account or return to your workspace. The app keeps the operational flows native to Streamlit while giving the interface a stronger brand presence.",
-            kicker="Access",
-        )
-
-        tab_login, tab_signup = st.tabs(["Login", "Sign Up"])
-
+        # ── Login ──
         with tab_login:
             with st.form("login_form"):
-                email = st.text_input("Email", placeholder="you@domain.com")
-                password = st.text_input("Password", type="password")
-                submitted = st.form_submit_button("Open workspace", use_container_width=True)
+                email = st.text_input("Email", placeholder="you@example.com")
+                password = st.text_input("Password", type="password", placeholder="••••••••")
+                submitted = st.form_submit_button("Sign in", use_container_width=True)
             if submitted:
                 if not email or not password:
-                    st.error("Fill in both fields before continuing.")
+                    st.error("Enter your email and password.")
                 else:
-                    with st.spinner("Opening your workspace..."):
+                    with st.spinner("Signing in…"):
                         ok, err = login(email, password)
                     if ok:
                         st.rerun()
                     else:
-                        st.error(f"Login failed: {err}")
+                        st.error(f"Sign-in failed: {err}")
 
+        # ── Sign up ──
         with tab_signup:
             with st.form("signup_form"):
-                new_email = st.text_input("Email", key="signup_email", placeholder="you@domain.com")
-                new_pass = st.text_input("Password", type="password", key="signup_password")
-                confirm = st.text_input("Confirm password", type="password", key="signup_confirm")
+                new_email = st.text_input("Email", key="signup_email", placeholder="you@example.com")
+                new_pass = st.text_input("Password", type="password", key="signup_pw", placeholder="Min. 6 characters")
+                confirm = st.text_input("Confirm password", type="password", key="signup_confirm", placeholder="••••••••")
                 submitted_signup = st.form_submit_button("Create account", use_container_width=True)
             if submitted_signup:
                 if not new_email or not new_pass:
-                    st.error("Fill in all fields before creating your account.")
+                    st.error("Fill in all fields.")
                 elif new_pass != confirm:
                     st.error("Passwords do not match.")
                 elif len(new_pass) < 6:
                     st.error("Password must be at least 6 characters.")
                 else:
-                    with st.spinner("Creating your account..."):
+                    with st.spinner("Creating account…"):
                         ok, message = signup(new_email, new_pass)
                     if ok and message == "CHECK_EMAIL":
-                        st.success("Account created. Confirm your email, then return here to log in.")
+                        st.success("Check your email to confirm your account, then sign in.")
                     elif ok:
                         st.rerun()
                     else:
-                        st.error(f"Signup failed: {message}")
+                        st.error(f"Sign-up failed: {message}")
 
-        render_info_band(
-            "What changes after login",
-            "Your risk questionnaire shapes signal ranking, confidence thresholds, and portfolio recommendations across the entire product.",
+        # ── GitHub OAuth ──
+        st.markdown(
+            """
+            <div style="display:flex;align-items:center;gap:0.75rem;
+                        margin:1rem 0;color:var(--muted);font-size:0.75rem">
+                <div style="flex:1;height:1px;background:var(--border)"></div>
+                or continue with
+                <div style="flex:1;height:1px;background:var(--border)"></div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
-    st.markdown("")
-    render_section_heading(
-        "Why the redesign works in Streamlit",
-        "The new direction leans on custom CSS, native page routing, Plotly theming, and interactive forms that Streamlit handles reliably. That keeps the look expressive without compromising maintainability.",
-        kicker="Implementation logic",
-    )
-    story_cols = st.columns(3, gap="large")
-    with story_cols[0]:
-        render_note_card(
-            "Poster-like first impression",
-            "The landing screen behaves like a brand poster first and a form second, with a strong visual hierarchy and tight copy.",
-            rows=[
-                ("Headline", "Editorial serif scale"),
-                ("Mood", "Copper + emerald over midnight"),
-            ],
-        )
-    with story_cols[1]:
-        render_note_card(
-            "Navigation with intent",
-            "Default multipage chrome is replaced by a custom sidebar shell so every page feels connected to the same product system.",
-            rows=[
-                ("Routing", "Native page links"),
-                ("State", "Session-aware sidebar"),
-            ],
-        )
-    with story_cols[2]:
-        render_note_card(
-            "Data views that still feel premium",
-            "Dense market information is presented through themed metric cards, panel blocks, and charts instead of a generic dashboard grid.",
-            rows=[
-                ("Charts", "Shared Plotly skin"),
-                ("Controls", "Styled native widgets"),
-            ],
-        )
+        ok_gh, gh_url = get_github_oauth_url(site_url)
+        if ok_gh:
+            st.link_button(
+                "⬡  GitHub",
+                url=gh_url,
+                use_container_width=True,
+            )
+        else:
+            st.caption("GitHub sign-in unavailable — enable GitHub OAuth in your Supabase project.")
 
 
+# ── Onboarding (risk questionnaire) ─────────────────────────────────────────
 def render_onboarding() -> None:
-    """Render the risk questionnaire."""
-    render_page_hero(
-        kicker="Calibration",
-        title="Shape the tone of your portfolio engine.",
-        body=(
-            "Answer five quick questions so NiveshSutra can tune signal ordering, confidence cutoffs, "
-            "and allocation guidance to your investment posture."
-        ),
-        pills=["5 prompts", "Immediate personalization", "Used across signals and optimizer"],
-        aside_title="What gets tuned",
-        aside_rows=[
-            ("Signals", "Ranking and confidence filters"),
-            ("Portfolio", "Optimizer recommendations"),
-            ("Alerts", "Sharper relevance"),
-        ],
+    st.markdown(
+        """
+        <div class="ns-page-header">
+            <h1>Set up your risk profile</h1>
+            <p>Answer five quick questions so NiveshSutra can personalise signal ranking,
+               confidence thresholds, and allocation guidance to your investing style.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    info_cols = st.columns(3, gap="large")
-    with info_cols[0]:
-        render_note_card(
-            "Conservative",
-            "Higher-confidence ideas surface first, with smaller suggested position sizes and less noise.",
-        )
-    with info_cols[1]:
-        render_note_card(
-            "Moderate",
-            "Balanced ranking between conviction and optionality, designed for steady decision-making.",
-        )
-    with info_cols[2]:
-        render_note_card(
-            "Aggressive",
-            "Directional opportunities show up earlier, with broader signal coverage and larger sizing hints.",
-        )
+    profile_cols = st.columns(3, gap="small")
+    profiles = [
+        ("Conservative", "Higher-confidence signals, smaller sizing guidance, lower noise."),
+        ("Moderate", "Balanced conviction, breadth, and optionality across the signal list."),
+        ("Aggressive", "Directional ideas surface earlier with broader coverage and larger size hints."),
+    ]
+    for col, (name, desc) in zip(profile_cols, profiles):
+        with col:
+            st.markdown(
+                f"""
+                <div class="ns-card" style="margin-bottom:0.75rem">
+                    <h4>{name}</h4>
+                    <div class="ns-card-body">{desc}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     with st.form("onboarding_form"):
         answers = []
@@ -231,7 +219,7 @@ def render_onboarding() -> None:
             labels = [option[0] for option in item["options"]]
             choice = st.radio(item["q"], labels, key=item["q"])
             answers.append(dict(item["options"])[choice])
-        submitted = st.form_submit_button("Save my risk profile", use_container_width=True)
+        submitted = st.form_submit_button("Save risk profile", use_container_width=True)
 
     if submitted:
         total, risk_profile = compute_risk_profile(answers)
@@ -245,12 +233,13 @@ def render_onboarding() -> None:
                 }
             ).eq("id", get_user_id()).execute()
             refresh_profile()
-            st.success(f"Profile set to {risk_profile.capitalize()} with a score of {total}/15.")
+            st.success(f"Profile set to {risk_profile.capitalize()} (score {total}/15).")
             st.rerun()
         except Exception as exc:
             st.error(f"Failed to save profile: {exc}")
 
 
+# ── Main ─────────────────────────────────────────────────────────────────────
 def main() -> None:
     if "session" not in st.session_state:
         render_auth()
