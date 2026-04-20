@@ -9,7 +9,7 @@
       "source_file": "app.py",
       "source_location": "L1",
       "id": "app_py",
-      "community": 18,
+      "community": 19,
       "norm_label": "app.py"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "NiveshSutra\\scripts\\run_daily_pipeline.py",
       "source_location": "L1",
       "id": "niveshsutra_scripts_run_daily_pipeline_py",
-      "community": 2,
+      "community": 1,
       "norm_label": "run_daily_pipeline.py"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "NiveshSutra\\scripts\\run_daily_pipeline.py",
       "source_location": "L28",
       "id": "run_daily_pipeline_main",
-      "community": 2,
+      "community": 1,
       "norm_label": "main()"
     },
     {
@@ -35,7 +35,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\scripts\\run_daily_pipeline.py",
       "source_location": "L1",
-      "community": 2,
+      "community": 1,
       "norm_label": "daily pipeline orchestrator.  runs the full niveshsutra ml pipeline in order:",
       "id": "run_daily_pipeline_rationale_1"
     },
@@ -45,7 +45,7 @@
       "source_file": "NiveshSutra\\scripts\\seed_nifty50.py",
       "source_location": "L1",
       "id": "niveshsutra_scripts_seed_nifty50_py",
-      "community": 2,
+      "community": 1,
       "norm_label": "seed_nifty50.py"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "NiveshSutra\\scripts\\seed_nifty50.py",
       "source_location": "L375",
       "id": "seed_nifty50_main",
-      "community": 2,
+      "community": 1,
       "norm_label": "main()"
     },
     {
@@ -62,7 +62,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\scripts\\seed_nifty50.py",
       "source_location": "L1",
-      "community": 2,
+      "community": 1,
       "norm_label": "seed script: insert all 50 nifty 50 stocks into the stocks table.  usage:     py",
       "id": "seed_nifty50_rationale_1"
     },
@@ -126,7 +126,7 @@
       "source_file": "services\\api\\dependencies.py",
       "source_location": "L1",
       "id": "services_api_dependencies_py",
-      "community": 13,
+      "community": 14,
       "norm_label": "dependencies.py"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "services\\api\\dependencies.py",
       "source_location": "L9",
       "id": "dependencies_get_supabase_client",
-      "community": 13,
+      "community": 14,
       "norm_label": "get_supabase_client()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "services\\api\\dependencies.py",
       "source_location": "L13",
       "id": "dependencies_get_supabase_admin",
-      "community": 13,
+      "community": 14,
       "norm_label": "get_supabase_admin()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "services\\api\\dependencies.py",
       "source_location": "L18",
       "id": "dependencies_get_current_user",
-      "community": 13,
+      "community": 14,
       "norm_label": "get_current_user()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "services\\api\\main.py",
       "source_location": "L1",
       "id": "services_api_main_py",
-      "community": 16,
+      "community": 17,
       "norm_label": "main.py"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "services\\api\\main.py",
       "source_location": "L32",
       "id": "main_root",
-      "community": 16,
+      "community": 17,
       "norm_label": "root()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "NiveshSutra\\services\\api\\__init__.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_init_py",
-      "community": 19,
+      "community": 20,
       "norm_label": "__init__.py"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "NiveshSutra\\services\\api\\models\\__init__.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_models_init_py",
-      "community": 20,
+      "community": 21,
       "norm_label": "__init__.py"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\alerts.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_routers_alerts_py",
-      "community": 14,
+      "community": 15,
       "norm_label": "alerts.py"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\alerts.py",
       "source_location": "L9",
       "id": "alerts_list_alerts",
-      "community": 14,
+      "community": 15,
       "norm_label": "list_alerts()"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\alerts.py",
       "source_location": "L22",
       "id": "alerts_mark_read",
-      "community": 14,
+      "community": 15,
       "norm_label": "mark_read()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\alerts.py",
       "source_location": "L38",
       "id": "alerts_mark_all_read",
-      "community": 14,
+      "community": 15,
       "norm_label": "mark_all_read()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\health.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_routers_health_py",
-      "community": 17,
+      "community": 18,
       "norm_label": "health.py"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\health.py",
       "source_location": "L7",
       "id": "health_health_check",
-      "community": 17,
+      "community": 18,
       "norm_label": "health_check()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\holdings.py",
       "source_location": "L23",
       "id": "holdings_list_holdings_live",
-      "community": 0,
+      "community": 6,
       "norm_label": "list_holdings_live()"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\portfolio.py",
       "source_location": "L10",
       "id": "portfolio_optimize_portfolio",
-      "community": 3,
+      "community": 2,
       "norm_label": "optimize_portfolio()"
     },
     {
@@ -549,7 +549,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\sentiment.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_routers_sentiment_py",
-      "community": 15,
+      "community": 16,
       "norm_label": "sentiment.py"
     },
     {
@@ -558,7 +558,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\sentiment.py",
       "source_location": "L9",
       "id": "sentiment_get_sentiment",
-      "community": 15,
+      "community": 16,
       "norm_label": "get_sentiment()"
     },
     {
@@ -567,7 +567,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\sentiment.py",
       "source_location": "L26",
       "id": "sentiment_get_news",
-      "community": 15,
+      "community": 16,
       "norm_label": "get_news()"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\sentiment.py",
       "source_location": "L43",
       "id": "sentiment_market_sentiment",
-      "community": 15,
+      "community": 16,
       "norm_label": "market_sentiment()"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\signals.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_routers_signals_py",
-      "community": 12,
+      "community": 13,
       "norm_label": "signals.py"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\signals.py",
       "source_location": "L9",
       "id": "signals_list_signals",
-      "community": 12,
+      "community": 13,
       "norm_label": "list_signals()"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\signals.py",
       "source_location": "L29",
       "id": "signals_signals_summary",
-      "community": 12,
+      "community": 13,
       "norm_label": "signals_summary()"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\signals.py",
       "source_location": "L42",
       "id": "signals_get_signal_history",
-      "community": 12,
+      "community": 13,
       "norm_label": "get_signal_history()"
     },
     {
@@ -621,7 +621,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\signals.py",
       "source_location": "L59",
       "id": "signals_get_latest_signal",
-      "community": 12,
+      "community": 13,
       "norm_label": "get_latest_signal()"
     },
     {
@@ -693,7 +693,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_routers_stock_search_py",
-      "community": 0,
+      "community": 8,
       "norm_label": "stock_search.py"
     },
     {
@@ -702,7 +702,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
       "source_location": "L10",
       "id": "stock_search_search_stock",
-      "community": 0,
+      "community": 8,
       "norm_label": "search_stock()"
     },
     {
@@ -711,7 +711,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
       "source_location": "L69",
       "id": "stock_search_fetch_initial_ohlcv",
-      "community": 0,
+      "community": 8,
       "norm_label": "_fetch_initial_ohlcv()"
     },
     {
@@ -719,7 +719,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
       "source_location": "L15",
-      "community": 0,
+      "community": 8,
       "norm_label": "search for a stock by symbol. if it exists in the db, return it.     if not, val",
       "id": "stock_search_rationale_15"
     },
@@ -728,7 +728,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
       "source_location": "L70",
-      "community": 0,
+      "community": 8,
       "norm_label": "fetch last 90 days of ohlcv data for a newly added stock.",
       "id": "stock_search_rationale_70"
     },
@@ -783,7 +783,7 @@
       "source_file": "NiveshSutra\\services\\api\\routers\\__init__.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_routers_init_py",
-      "community": 21,
+      "community": 22,
       "norm_label": "__init__.py"
     },
     {
@@ -1071,7 +1071,7 @@
       "source_file": "NiveshSutra\\services\\api\\services\\__init__.py",
       "source_location": "L1",
       "id": "niveshsutra_services_api_services_init_py",
-      "community": 22,
+      "community": 23,
       "norm_label": "__init__.py"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "NiveshSutra\\services\\ml\\config.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_config_py",
-      "community": 2,
+      "community": 1,
       "norm_label": "config.py"
     },
     {
@@ -1089,7 +1089,7 @@
       "source_file": "NiveshSutra\\services\\ml\\config.py",
       "source_location": "L12",
       "id": "config_get_supabase",
-      "community": 2,
+      "community": 1,
       "norm_label": "get_supabase()"
     },
     {
@@ -1098,7 +1098,7 @@
       "source_file": "NiveshSutra\\services\\ml\\run_ingest.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_run_ingest_py",
-      "community": 2,
+      "community": 1,
       "norm_label": "run_ingest.py"
     },
     {
@@ -1107,7 +1107,7 @@
       "source_file": "NiveshSutra\\services\\ml\\run_ingest.py",
       "source_location": "L10",
       "id": "run_ingest_main",
-      "community": 2,
+      "community": 1,
       "norm_label": "main()"
     },
     {
@@ -1115,7 +1115,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\run_ingest.py",
       "source_location": "L1",
-      "community": 2,
+      "community": 1,
       "norm_label": "cli entry point: orchestrates ohlcv fetch -> compute indicators -> store in supa",
       "id": "run_ingest_rationale_1"
     },
@@ -1125,7 +1125,7 @@
       "source_file": "NiveshSutra\\services\\ml\\run_sentiment.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_run_sentiment_py",
-      "community": 2,
+      "community": 1,
       "norm_label": "run_sentiment.py"
     },
     {
@@ -1134,7 +1134,7 @@
       "source_file": "NiveshSutra\\services\\ml\\run_sentiment.py",
       "source_location": "L9",
       "id": "run_sentiment_main",
-      "community": 2,
+      "community": 1,
       "norm_label": "main()"
     },
     {
@@ -1142,7 +1142,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\run_sentiment.py",
       "source_location": "L1",
-      "community": 2,
+      "community": 1,
       "norm_label": "cli entry point: run the full sentiment analysis pipeline.  usage:     python -m",
       "id": "run_sentiment_rationale_1"
     },
@@ -1179,7 +1179,7 @@
       "source_file": "NiveshSutra\\services\\ml\\__init__.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_init_py",
-      "community": 23,
+      "community": 24,
       "norm_label": "__init__.py"
     },
     {
@@ -1269,7 +1269,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_ingest_compute_indicators_py",
-      "community": 10,
+      "community": 11,
       "norm_label": "compute_indicators.py"
     },
     {
@@ -1278,7 +1278,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L11",
       "id": "compute_indicators_compute_indicators",
-      "community": 10,
+      "community": 11,
       "norm_label": "compute_indicators()"
     },
     {
@@ -1287,7 +1287,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L96",
       "id": "compute_indicators_safe_round",
-      "community": 10,
+      "community": 11,
       "norm_label": "_safe_round()"
     },
     {
@@ -1295,7 +1295,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L1",
-      "community": 10,
+      "community": 11,
       "norm_label": "compute technical indicators for each stock symbol using pandas-ta. indicators:",
       "id": "compute_indicators_rationale_1"
     },
@@ -1304,7 +1304,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L12",
-      "community": 10,
+      "community": 11,
       "norm_label": "compute technical indicators for each symbol in the ohlcv dataframe.      args:",
       "id": "compute_indicators_rationale_12"
     },
@@ -1313,7 +1313,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L97",
-      "community": 10,
+      "community": 11,
       "norm_label": "safely extract and round a value from a pandas series.",
       "id": "compute_indicators_rationale_97"
     },
@@ -1323,7 +1323,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_ingest_fetch_ohlcv_py",
-      "community": 9,
+      "community": 10,
       "norm_label": "fetch_ohlcv.py"
     },
     {
@@ -1332,7 +1332,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L14",
       "id": "fetch_ohlcv_get_stock_list",
-      "community": 9,
+      "community": 10,
       "norm_label": "get_stock_list()"
     },
     {
@@ -1341,7 +1341,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L21",
       "id": "fetch_ohlcv_fetch_ohlcv",
-      "community": 9,
+      "community": 10,
       "norm_label": "fetch_ohlcv()"
     },
     {
@@ -1349,7 +1349,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L1",
-      "community": 9,
+      "community": 10,
       "norm_label": "fetch ohlcv data for all active stocks using yfinance-backed market data helpers",
       "id": "fetch_ohlcv_rationale_1"
     },
@@ -1358,7 +1358,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L15",
-      "community": 9,
+      "community": 10,
       "norm_label": "read all stocks from supabase stocks table.",
       "id": "fetch_ohlcv_rationale_15"
     },
@@ -1367,7 +1367,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L22",
-      "community": 9,
+      "community": 10,
       "norm_label": "fetch ohlcv data for all active stocks using free market data providers.      ar",
       "id": "fetch_ohlcv_rationale_22"
     },
@@ -1377,7 +1377,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_ingest_store_py",
-      "community": 2,
+      "community": 1,
       "norm_label": "store.py"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L14",
       "id": "store_upsert_ohlcv",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert_ohlcv()"
     },
     {
@@ -1395,7 +1395,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L47",
       "id": "store_upsert_indicators",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert_indicators()"
     },
     {
@@ -1404,7 +1404,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L80",
       "id": "store_upsert_news_articles",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert_news_articles()"
     },
     {
@@ -1413,7 +1413,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L97",
       "id": "store_upsert_article_sentiments",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert_article_sentiments()"
     },
     {
@@ -1422,7 +1422,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L116",
       "id": "store_upsert_daily_sentiment",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert_daily_sentiment()"
     },
     {
@@ -1431,7 +1431,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L135",
       "id": "store_upsert_signals",
-      "community": 2,
+      "community": 4,
       "norm_label": "upsert_signals()"
     },
     {
@@ -1440,7 +1440,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L152",
       "id": "store_df_to_records",
-      "community": 2,
+      "community": 1,
       "norm_label": "_df_to_records()"
     },
     {
@@ -1448,7 +1448,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L1",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert ohlcv and indicator data to supabase. batches in chunks of 500 rows with",
       "id": "store_rationale_1"
     },
@@ -1457,7 +1457,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L15",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert ohlcv rows to supabase ohlcv table.      args:         df: dataframe with",
       "id": "store_rationale_15"
     },
@@ -1466,7 +1466,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L48",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert indicator rows to supabase technical_indicators table.      args:",
       "id": "store_rationale_48"
     },
@@ -1475,7 +1475,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L81",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert news articles to supabase news_articles table.",
       "id": "store_rationale_81"
     },
@@ -1484,7 +1484,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L98",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert article sentiments to supabase article_sentiments table.",
       "id": "store_rationale_98"
     },
@@ -1493,7 +1493,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L117",
-      "community": 2,
+      "community": 1,
       "norm_label": "upsert daily aggregated sentiment to supabase sentiment_daily table.",
       "id": "store_rationale_117"
     },
@@ -1502,7 +1502,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L136",
-      "community": 2,
+      "community": 4,
       "norm_label": "upsert signals to supabase signals table.",
       "id": "store_rationale_136"
     },
@@ -1511,7 +1511,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L153",
-      "community": 2,
+      "community": 1,
       "norm_label": "convert dataframe to list of dicts, replacing nan with none.",
       "id": "store_rationale_153"
     },
@@ -1521,7 +1521,7 @@
       "source_file": "NiveshSutra\\services\\ml\\ingest\\__init__.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_ingest_init_py",
-      "community": 24,
+      "community": 25,
       "norm_label": "__init__.py"
     },
     {
@@ -1575,7 +1575,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L1",
       "id": "niveshsutra_services_ml_sentiment_init_py",
-      "community": 2,
+      "community": 1,
       "norm_label": "__init__.py"
     },
     {
@@ -1584,7 +1584,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L181",
       "id": "init_get_finbert",
-      "community": 2,
+      "community": 1,
       "norm_label": "_get_finbert()"
     },
     {
@@ -1593,7 +1593,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L205",
       "id": "init_parse_moneycontrol_datetime",
-      "community": 2,
+      "community": 1,
       "norm_label": "_parse_moneycontrol_datetime()"
     },
     {
@@ -1602,7 +1602,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L224",
       "id": "init_normalize_news_item",
-      "community": 2,
+      "community": 1,
       "norm_label": "_normalize_news_item()"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L252",
       "id": "init_iter_moneycontrol_results",
-      "community": 2,
+      "community": 1,
       "norm_label": "_iter_moneycontrol_results()"
     },
     {
@@ -1620,7 +1620,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L265",
       "id": "init_fetch_news",
-      "community": 2,
+      "community": 1,
       "norm_label": "fetch_news()"
     },
     {
@@ -1629,7 +1629,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L316",
       "id": "init_map_articles_to_symbols",
-      "community": 2,
+      "community": 1,
       "norm_label": "map_articles_to_symbols()"
     },
     {
@@ -1638,7 +1638,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L354",
       "id": "init_score_sentiments",
-      "community": 2,
+      "community": 1,
       "norm_label": "score_sentiments()"
     },
     {
@@ -1647,7 +1647,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L414",
       "id": "init_aggregate_daily",
-      "community": 2,
+      "community": 1,
       "norm_label": "aggregate_daily()"
     },
     {
@@ -1656,7 +1656,7 @@
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L460",
       "id": "init_run_sentiment_pipeline",
-      "community": 2,
+      "community": 1,
       "norm_label": "run_sentiment_pipeline()"
     },
     {
@@ -1664,7 +1664,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L182",
-      "community": 2,
+      "community": 1,
       "norm_label": "lazy-load prosusai/finbert as a singleton.",
       "id": "init_rationale_182"
     },
@@ -1673,7 +1673,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L266",
-      "community": 2,
+      "community": 1,
       "norm_label": "fetch articles from moneycontrol via moneycontrol-api.      returns:         lis",
       "id": "init_rationale_266"
     },
@@ -1682,7 +1682,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L317",
-      "community": 2,
+      "community": 1,
       "norm_label": "map articles to stock symbols by scanning titles for company names/aliases.",
       "id": "init_rationale_317"
     },
@@ -1691,7 +1691,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L355",
-      "community": 2,
+      "community": 1,
       "norm_label": "run finbert on article titles and return per-article per-symbol sentiment scores",
       "id": "init_rationale_355"
     },
@@ -1700,7 +1700,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L415",
-      "community": 2,
+      "community": 1,
       "norm_label": "aggregate per-article sentiments into daily sentiment per symbol.      returns:",
       "id": "init_rationale_415"
     },
@@ -1709,7 +1709,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L461",
-      "community": 2,
+      "community": 1,
       "norm_label": "run the full sentiment pipeline end-to-end.",
       "id": "init_rationale_461"
     },
@@ -1908,7 +1908,7 @@
       "source_file": "NiveshSutra\\services\\notifications\\email.py",
       "source_location": "L1",
       "id": "niveshsutra_services_notifications_email_py",
-      "community": 11,
+      "community": 4,
       "norm_label": "email.py"
     },
     {
@@ -1917,7 +1917,7 @@
       "source_file": "NiveshSutra\\services\\notifications\\email.py",
       "source_location": "L18",
       "id": "email_send_signal_change_email",
-      "community": 11,
+      "community": 4,
       "norm_label": "send_signal_change_email()"
     },
     {
@@ -1926,7 +1926,7 @@
       "source_file": "NiveshSutra\\services\\notifications\\email.py",
       "source_location": "L92",
       "id": "email_format_signal",
-      "community": 11,
+      "community": 4,
       "norm_label": "_format_signal()"
     },
     {
@@ -1935,7 +1935,7 @@
       "source_file": "NiveshSutra\\services\\notifications\\email.py",
       "source_location": "L96",
       "id": "email_signal_color",
-      "community": 11,
+      "community": 4,
       "norm_label": "_signal_color()"
     },
     {
@@ -1943,7 +1943,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\notifications\\email.py",
       "source_location": "L1",
-      "community": 11,
+      "community": 4,
       "norm_label": "email notification service using resend api.  sends signal change alerts to user",
       "id": "email_rationale_1"
     },
@@ -1952,7 +1952,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\notifications\\email.py",
       "source_location": "L25",
-      "community": 11,
+      "community": 4,
       "norm_label": "send an email notifying the user that a tracked signal has changed.      returns",
       "id": "email_rationale_25"
     },
@@ -1971,7 +1971,7 @@
       "source_file": "streamlit_app\\api_client.py",
       "source_location": "L1",
       "id": "streamlit_app_api_client_py",
-      "community": 8,
+      "community": 2,
       "norm_label": "api_client.py"
     },
     {
@@ -1980,7 +1980,7 @@
       "source_file": "streamlit_app\\api_client.py",
       "source_location": "L12",
       "id": "api_client_build_url",
-      "community": 8,
+      "community": 2,
       "norm_label": "_build_url()"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "streamlit_app\\api_client.py",
       "source_location": "L19",
       "id": "api_client_request_json",
-      "community": 8,
+      "community": 2,
       "norm_label": "request_json()"
     },
     {
@@ -1997,9 +1997,9 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\api_client.py",
       "source_location": "L1",
-      "id": "api_client_rationale_1",
-      "community": 8,
-      "norm_label": "thin http client for calling the separately hosted fastapi service."
+      "community": 2,
+      "norm_label": "thin http client for calling the separately hosted fastapi service.",
+      "id": "api_client_rationale_1"
     },
     {
       "label": "app.py",
@@ -2007,7 +2007,7 @@
       "source_file": "streamlit_app\\app.py",
       "source_location": "L1",
       "id": "streamlit_app_app_py",
-      "community": 1,
+      "community": 3,
       "norm_label": "app.py"
     },
     {
@@ -2016,7 +2016,7 @@
       "source_file": "streamlit_app\\app.py",
       "source_location": "L39",
       "id": "app_render_sidebar",
-      "community": 1,
+      "community": 9,
       "norm_label": "render_sidebar()"
     },
     {
@@ -2025,7 +2025,7 @@
       "source_file": "streamlit_app\\app.py",
       "source_location": "L56",
       "id": "app_render_auth",
-      "community": 1,
+      "community": 3,
       "norm_label": "render_auth()"
     },
     {
@@ -2034,7 +2034,7 @@
       "source_file": "streamlit_app\\app.py",
       "source_location": "L193",
       "id": "app_render_onboarding",
-      "community": 1,
+      "community": 3,
       "norm_label": "render_onboarding()"
     },
     {
@@ -2043,7 +2043,7 @@
       "source_file": "streamlit_app\\app.py",
       "source_location": "L254",
       "id": "app_main",
-      "community": 1,
+      "community": 3,
       "norm_label": "main()"
     },
     {
@@ -2051,7 +2051,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\app.py",
       "source_location": "L1",
-      "community": 1,
+      "community": 3,
       "norm_label": "niveshsutra \u2014 streamlit entry point.  flow:   1. not logged in   \u2192 show login /",
       "id": "app_rationale_1"
     },
@@ -2060,27 +2060,27 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\app.py",
       "source_location": "L40",
-      "id": "app_rationale_40",
-      "community": 1,
-      "norm_label": "render the shared authenticated sidebar."
+      "community": 9,
+      "norm_label": "render the shared authenticated sidebar.",
+      "id": "app_rationale_40"
     },
     {
       "label": "Render the unauthenticated landing and auth flows.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\app.py",
       "source_location": "L57",
-      "id": "app_rationale_57",
-      "community": 1,
-      "norm_label": "render the unauthenticated landing and auth flows."
+      "community": 3,
+      "norm_label": "render the unauthenticated landing and auth flows.",
+      "id": "app_rationale_57"
     },
     {
       "label": "Render the risk questionnaire.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\app.py",
       "source_location": "L194",
-      "id": "app_rationale_194",
-      "community": 1,
-      "norm_label": "render the risk questionnaire."
+      "community": 3,
+      "norm_label": "render the risk questionnaire.",
+      "id": "app_rationale_194"
     },
     {
       "label": "auth.py",
@@ -2088,7 +2088,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L1",
       "id": "niveshsutra_streamlit_app_auth_py",
-      "community": 1,
+      "community": 3,
       "norm_label": "auth.py"
     },
     {
@@ -2097,7 +2097,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L13",
       "id": "auth_login",
-      "community": 1,
+      "community": 3,
       "norm_label": "login()"
     },
     {
@@ -2106,7 +2106,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L28",
       "id": "auth_signup",
-      "community": 1,
+      "community": 3,
       "norm_label": "signup()"
     },
     {
@@ -2115,7 +2115,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L47",
       "id": "auth_logout",
-      "community": 1,
+      "community": 9,
       "norm_label": "logout()"
     },
     {
@@ -2124,7 +2124,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L53",
       "id": "auth_require_auth",
-      "community": 1,
+      "community": 3,
       "norm_label": "require_auth()"
     },
     {
@@ -2133,7 +2133,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L62",
       "id": "auth_get_access_token",
-      "community": 1,
+      "community": 3,
       "norm_label": "get_access_token()"
     },
     {
@@ -2142,7 +2142,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L66",
       "id": "auth_get_user_id",
-      "community": 1,
+      "community": 3,
       "norm_label": "get_user_id()"
     },
     {
@@ -2151,7 +2151,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L70",
       "id": "auth_get_profile",
-      "community": 1,
+      "community": 9,
       "norm_label": "get_profile()"
     },
     {
@@ -2160,7 +2160,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L74",
       "id": "auth_load_profile",
-      "community": 1,
+      "community": 3,
       "norm_label": "_load_profile()"
     },
     {
@@ -2169,7 +2169,7 @@
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L83",
       "id": "auth_refresh_profile",
-      "community": 1,
+      "community": 3,
       "norm_label": "refresh_profile()"
     },
     {
@@ -2177,7 +2177,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L1",
-      "community": 1,
+      "community": 3,
       "norm_label": "auth helpers for streamlit session management.  session state keys:   st.session",
       "id": "auth_rationale_1"
     },
@@ -2186,7 +2186,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L14",
-      "community": 1,
+      "community": 3,
       "norm_label": "sign in. returns (success, error_message).",
       "id": "auth_rationale_14"
     },
@@ -2195,7 +2195,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L29",
-      "community": 1,
+      "community": 3,
       "norm_label": "sign up a new user. returns (success, error_message).",
       "id": "auth_rationale_29"
     },
@@ -2204,7 +2204,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L54",
-      "community": 1,
+      "community": 3,
       "norm_label": "call at the top of every protected page.     redirects to app.py if session is m",
       "id": "auth_rationale_54"
     },
@@ -2213,7 +2213,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L84",
-      "community": 1,
+      "community": 3,
       "norm_label": "re-fetch profile from db and update session state.",
       "id": "auth_rationale_84"
     },
@@ -2223,7 +2223,7 @@
       "source_file": "streamlit_app\\config.py",
       "source_location": "L1",
       "id": "streamlit_app_config_py",
-      "community": 8,
+      "community": 12,
       "norm_label": "config.py"
     },
     {
@@ -2232,7 +2232,7 @@
       "source_file": "streamlit_app\\config.py",
       "source_location": "L19",
       "id": "config_streamlit_secret",
-      "community": 8,
+      "community": 12,
       "norm_label": "_streamlit_secret()"
     },
     {
@@ -2241,7 +2241,7 @@
       "source_file": "streamlit_app\\config.py",
       "source_location": "L28",
       "id": "config_get_setting",
-      "community": 8,
+      "community": 12,
       "norm_label": "get_setting()"
     },
     {
@@ -2250,7 +2250,7 @@
       "source_file": "streamlit_app\\config.py",
       "source_location": "L35",
       "id": "config_get_required_setting",
-      "community": 8,
+      "community": 12,
       "norm_label": "get_required_setting()"
     },
     {
@@ -2259,7 +2259,7 @@
       "source_file": "streamlit_app\\config.py",
       "source_location": "L42",
       "id": "config_get_api_base_url",
-      "community": 8,
+      "community": 12,
       "norm_label": "get_api_base_url()"
     },
     {
@@ -2267,9 +2267,9 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\config.py",
       "source_location": "L1",
-      "id": "config_rationale_1",
-      "community": 8,
-      "norm_label": "runtime configuration helpers for local and hosted streamlit environments."
+      "community": 12,
+      "norm_label": "runtime configuration helpers for local and hosted streamlit environments.",
+      "id": "config_rationale_1"
     },
     {
       "label": "design.py",
@@ -2277,7 +2277,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L1",
       "id": "streamlit_app_design_py",
-      "community": 1,
+      "community": 3,
       "norm_label": "design.py"
     },
     {
@@ -2286,7 +2286,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L19",
       "id": "design_apply_theme",
-      "community": 1,
+      "community": 3,
       "norm_label": "apply_theme()"
     },
     {
@@ -2295,7 +2295,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L528",
       "id": "design_render_sidebar_shell",
-      "community": 1,
+      "community": 9,
       "norm_label": "render_sidebar_shell()"
     },
     {
@@ -2304,7 +2304,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L561",
       "id": "design_render_page_hero",
-      "community": 1,
+      "community": 3,
       "norm_label": "render_page_hero()"
     },
     {
@@ -2313,7 +2313,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L607",
       "id": "design_render_section_heading",
-      "community": 1,
+      "community": 3,
       "norm_label": "render_section_heading()"
     },
     {
@@ -2322,7 +2322,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L623",
       "id": "design_render_metric_grid",
-      "community": 1,
+      "community": 3,
       "norm_label": "render_metric_grid()"
     },
     {
@@ -2331,7 +2331,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L645",
       "id": "design_render_info_band",
-      "community": 1,
+      "community": 3,
       "norm_label": "render_info_band()"
     },
     {
@@ -2340,7 +2340,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L658",
       "id": "design_render_note_card",
-      "community": 1,
+      "community": 3,
       "norm_label": "render_note_card()"
     },
     {
@@ -2349,7 +2349,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L681",
       "id": "design_render_empty_state",
-      "community": 1,
+      "community": 3,
       "norm_label": "render_empty_state()"
     },
     {
@@ -2358,7 +2358,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L694",
       "id": "design_style_plotly_figure",
-      "community": 1,
+      "community": 3,
       "norm_label": "style_plotly_figure()"
     },
     {
@@ -2366,90 +2366,198 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L1",
-      "id": "design_rationale_1",
-      "community": 1,
-      "norm_label": "shared visual system for the streamlit experience."
+      "community": 3,
+      "norm_label": "shared visual system for the streamlit experience.",
+      "id": "design_rationale_1"
     },
     {
       "label": "Inject the shared CSS skin once per page.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L20",
-      "id": "design_rationale_20",
-      "community": 1,
-      "norm_label": "inject the shared css skin once per page."
+      "community": 3,
+      "norm_label": "inject the shared css skin once per page.",
+      "id": "design_rationale_20"
     },
     {
       "label": "Render the shared sidebar shell.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L536",
-      "id": "design_rationale_536",
-      "community": 1,
-      "norm_label": "render the shared sidebar shell."
+      "community": 9,
+      "norm_label": "render the shared sidebar shell.",
+      "id": "design_rationale_536"
     },
     {
       "label": "Render a large editorial hero block.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L570",
-      "id": "design_rationale_570",
-      "community": 1,
-      "norm_label": "render a large editorial hero block."
+      "community": 3,
+      "norm_label": "render a large editorial hero block.",
+      "id": "design_rationale_570"
     },
     {
       "label": "Render a consistent section heading.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L608",
-      "id": "design_rationale_608",
-      "community": 1,
-      "norm_label": "render a consistent section heading."
+      "community": 3,
+      "norm_label": "render a consistent section heading.",
+      "id": "design_rationale_608"
     },
     {
       "label": "Render a row of branded metric cards.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L624",
-      "id": "design_rationale_624",
-      "community": 1,
-      "norm_label": "render a row of branded metric cards."
+      "community": 3,
+      "norm_label": "render a row of branded metric cards.",
+      "id": "design_rationale_624"
     },
     {
       "label": "Render a short information band.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L646",
-      "id": "design_rationale_646",
-      "community": 1,
-      "norm_label": "render a short information band."
+      "community": 3,
+      "norm_label": "render a short information band.",
+      "id": "design_rationale_646"
     },
     {
       "label": "Render a compact explanatory card.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L659",
-      "id": "design_rationale_659",
-      "community": 1,
-      "norm_label": "render a compact explanatory card."
+      "community": 3,
+      "norm_label": "render a compact explanatory card.",
+      "id": "design_rationale_659"
     },
     {
       "label": "Render a branded empty state.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L682",
-      "id": "design_rationale_682",
-      "community": 1,
-      "norm_label": "render a branded empty state."
+      "community": 3,
+      "norm_label": "render a branded empty state.",
+      "id": "design_rationale_682"
     },
     {
       "label": "Apply the shared visual theme to Plotly figures.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L695",
-      "id": "design_rationale_695",
-      "community": 1,
-      "norm_label": "apply the shared visual theme to plotly figures."
+      "community": 3,
+      "norm_label": "apply the shared visual theme to plotly figures.",
+      "id": "design_rationale_695"
+    },
+    {
+      "label": "live_market.py",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L1",
+      "id": "streamlit_app_live_market_py",
+      "community": 8,
+      "norm_label": "live_market.py"
+    },
+    {
+      "label": "_normalize_symbol()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L17",
+      "id": "live_market_normalize_symbol",
+      "community": 8,
+      "norm_label": "_normalize_symbol()"
+    },
+    {
+      "label": "_candidate_tickers()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L25",
+      "id": "live_market_candidate_tickers",
+      "community": 8,
+      "norm_label": "_candidate_tickers()"
+    },
+    {
+      "label": "_coerce_float()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L39",
+      "id": "live_market_coerce_float",
+      "community": 8,
+      "norm_label": "_coerce_float()"
+    },
+    {
+      "label": "_coerce_int()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L48",
+      "id": "live_market_coerce_int",
+      "community": 8,
+      "norm_label": "_coerce_int()"
+    },
+    {
+      "label": "_safe_history()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L57",
+      "id": "live_market_safe_history",
+      "community": 8,
+      "norm_label": "_safe_history()"
+    },
+    {
+      "label": "_safe_fast_info()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L81",
+      "id": "live_market_safe_fast_info",
+      "community": 8,
+      "norm_label": "_safe_fast_info()"
+    },
+    {
+      "label": "_quote_from_ticker()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L88",
+      "id": "live_market_quote_from_ticker",
+      "community": 8,
+      "norm_label": "_quote_from_ticker()"
+    },
+    {
+      "label": "fetch_live_quotes_batch()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L136",
+      "id": "live_market_fetch_live_quotes_batch",
+      "community": 8,
+      "norm_label": "fetch_live_quotes_batch()"
+    },
+    {
+      "label": "fetch_live_quote()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L172",
+      "id": "live_market_fetch_live_quote",
+      "community": 8,
+      "norm_label": "fetch_live_quote()"
+    },
+    {
+      "label": "fetch_historical_daily()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L176",
+      "id": "live_market_fetch_historical_daily",
+      "community": 8,
+      "norm_label": "fetch_historical_daily()"
+    },
+    {
+      "label": "Direct market-data helpers for the Streamlit frontend.  This module keeps live p",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L1",
+      "community": 8,
+      "norm_label": "direct market-data helpers for the streamlit frontend.  this module keeps live p",
+      "id": "live_market_rationale_1"
     },
     {
       "label": "supabase_client.py",
@@ -2457,7 +2565,7 @@
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L1",
       "id": "streamlit_app_supabase_client_py",
-      "community": 3,
+      "community": 2,
       "norm_label": "supabase_client.py"
     },
     {
@@ -2466,7 +2574,7 @@
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L19",
       "id": "supabase_client_get_anon_client",
-      "community": 3,
+      "community": 2,
       "norm_label": "get_anon_client()"
     },
     {
@@ -2475,7 +2583,7 @@
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L25",
       "id": "supabase_client_get_authed_client",
-      "community": 3,
+      "community": 2,
       "norm_label": "get_authed_client()"
     },
     {
@@ -2484,7 +2592,7 @@
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L35",
       "id": "supabase_client_get_admin_client",
-      "community": 3,
+      "community": 2,
       "norm_label": "get_admin_client()"
     },
     {
@@ -2492,7 +2600,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\supabase_client.py",
       "source_location": "L1",
-      "community": 3,
+      "community": 2,
       "norm_label": "supabase client factory.  - get_anon_client()          \u2192 public read operations",
       "id": "supabase_client_rationale_1"
     },
@@ -2501,9 +2609,9 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L26",
-      "id": "supabase_client_rationale_26",
-      "community": 3,
-      "norm_label": "return a supabase client that sends the user jwt on every postgrest call."
+      "community": 2,
+      "norm_label": "return a supabase client that sends the user jwt on every postgrest call.",
+      "id": "supabase_client_rationale_26"
     },
     {
       "label": "utils.py",
@@ -2627,18 +2735,18 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L49",
-      "id": "utils_rationale_49",
       "community": 7,
-      "norm_label": "format a number as an inr currency string using ascii-safe text."
+      "norm_label": "format a number as an inr currency string using ascii-safe text.",
+      "id": "utils_rationale_49"
     },
     {
       "label": "Given a list of answer scores, return (total_score, risk_profile).",
       "file_type": "rationale",
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L133",
-      "id": "utils_rationale_133",
       "community": 7,
-      "norm_label": "given a list of answer scores, return (total_score, risk_profile)."
+      "norm_label": "given a list of answer scores, return (total_score, risk_profile).",
+      "id": "utils_rationale_133"
     },
     {
       "label": "1_Dashboard.py",
@@ -2646,70 +2754,70 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_1_dashboard_py",
-      "community": 3,
+      "community": 2,
       "norm_label": "1_dashboard.py"
     },
     {
       "label": "_render_sidebar()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L29",
+      "source_location": "L31",
       "id": "1_dashboard_render_sidebar",
-      "community": 1,
+      "community": 9,
       "norm_label": "_render_sidebar()"
     },
     {
       "label": "fetch_portfolio_performance()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L44",
+      "source_location": "L46",
       "id": "1_dashboard_fetch_portfolio_performance",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_portfolio_performance()"
     },
     {
       "label": "fetch_nifty50()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L88",
+      "source_location": "L110",
       "id": "1_dashboard_fetch_nifty50",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_nifty50()"
     },
     {
       "label": "fetch_market_sentiment()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L113",
+      "source_location": "L134",
       "id": "1_dashboard_fetch_market_sentiment",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_market_sentiment()"
     },
     {
       "label": "fetch_latest_signals()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L149",
+      "source_location": "L170",
       "id": "1_dashboard_fetch_latest_signals",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_latest_signals()"
     },
     {
       "label": "fetch_watchlist_live()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L175",
+      "source_location": "L196",
       "id": "1_dashboard_fetch_watchlist_live",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_watchlist_live()"
     },
     {
       "label": "fetch_alerts()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L219",
+      "source_location": "L247",
       "id": "1_dashboard_fetch_alerts",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_alerts()"
     },
     {
@@ -2718,53 +2826,53 @@
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_2_stocks_py",
-      "community": 8,
+      "community": 2,
       "norm_label": "2_stocks.py"
     },
     {
       "label": "_render_sidebar()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L30",
+      "source_location": "L31",
       "id": "2_stocks_render_sidebar",
-      "community": 1,
+      "community": 9,
       "norm_label": "_render_sidebar()"
     },
     {
       "label": "fetch_stocks()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L45",
+      "source_location": "L46",
       "id": "2_stocks_fetch_stocks",
-      "community": 8,
+      "community": 2,
       "norm_label": "fetch_stocks()"
     },
     {
       "label": "add_stock()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L111",
+      "source_location": "L108",
       "id": "2_stocks_add_stock",
-      "community": 8,
+      "community": 2,
       "norm_label": "add_stock()"
     },
     {
-      "label": "Fetch stocks with latest close price and signal.",
+      "label": "Fetch stocks from the live FastAPI market endpoint.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L46",
-      "id": "2_stocks_rationale_46",
-      "community": 8,
-      "norm_label": "fetch stocks with latest close price and signal."
+      "source_location": "L47",
+      "community": 2,
+      "norm_label": "fetch stocks from the live fastapi market endpoint.",
+      "id": "2_stocks_rationale_47"
     },
     {
       "label": "Validate and add a symbol through the FastAPI backend.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L112",
-      "id": "2_stocks_rationale_112",
-      "community": 8,
-      "norm_label": "validate and add a symbol through the fastapi backend."
+      "source_location": "L109",
+      "community": 2,
+      "norm_label": "validate and add a symbol through the fastapi backend.",
+      "id": "2_stocks_rationale_109"
     },
     {
       "label": "3_Stock_Detail.py",
@@ -2772,79 +2880,88 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_3_stock_detail_py",
-      "community": 3,
+      "community": 2,
       "norm_label": "3_stock_detail.py"
     },
     {
       "label": "_render_sidebar()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L32",
+      "source_location": "L34",
       "id": "3_stock_detail_render_sidebar",
-      "community": 1,
+      "community": 9,
       "norm_label": "_render_sidebar()"
     },
     {
       "label": "fetch_stock_info()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L48",
+      "source_location": "L50",
       "id": "3_stock_detail_fetch_stock_info",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_stock_info()"
     },
     {
       "label": "fetch_ohlcv()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L59",
+      "source_location": "L64",
       "id": "3_stock_detail_fetch_ohlcv",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_ohlcv()"
+    },
+    {
+      "label": "fetch_stock_quote()",
+      "file_type": "code",
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L73",
+      "id": "3_stock_detail_fetch_stock_quote",
+      "community": 2,
+      "norm_label": "fetch_stock_quote()"
     },
     {
       "label": "fetch_indicators()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L78",
+      "source_location": "L97",
       "id": "3_stock_detail_fetch_indicators",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_indicators()"
     },
     {
       "label": "fetch_sentiment()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L97",
+      "source_location": "L116",
       "id": "3_stock_detail_fetch_sentiment",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_sentiment()"
     },
     {
       "label": "fetch_latest_signal()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L116",
+      "source_location": "L135",
       "id": "3_stock_detail_fetch_latest_signal",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_latest_signal()"
     },
     {
       "label": "is_in_watchlist()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L134",
+      "source_location": "L153",
       "id": "3_stock_detail_is_in_watchlist",
-      "community": 3,
+      "community": 2,
       "norm_label": "is_in_watchlist()"
     },
     {
       "label": "toggle_watchlist()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L151",
+      "source_location": "L170",
       "id": "3_stock_detail_toggle_watchlist",
-      "community": 3,
+      "community": 2,
       "norm_label": "toggle_watchlist()"
     },
     {
@@ -2853,7 +2970,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_4_signals_py",
-      "community": 3,
+      "community": 7,
       "norm_label": "4_signals.py"
     },
     {
@@ -2862,7 +2979,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L36",
       "id": "4_signals_render_sidebar",
-      "community": 1,
+      "community": 9,
       "norm_label": "_render_sidebar()"
     },
     {
@@ -2871,7 +2988,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L52",
       "id": "4_signals_fetch_signals",
-      "community": 3,
+      "community": 7,
       "norm_label": "fetch_signals()"
     },
     {
@@ -2880,7 +2997,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L73",
       "id": "4_signals_fetch_accepted_signals",
-      "community": 3,
+      "community": 7,
       "norm_label": "fetch_accepted_signals()"
     },
     {
@@ -2898,7 +3015,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L111",
       "id": "4_signals_stop_tracking",
-      "community": 3,
+      "community": 7,
       "norm_label": "stop_tracking()"
     },
     {
@@ -2916,61 +3033,61 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_5_portfolio_py",
-      "community": 3,
+      "community": 2,
       "norm_label": "5_portfolio.py"
     },
     {
       "label": "_render_sidebar()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L43",
+      "source_location": "L44",
       "id": "5_portfolio_render_sidebar",
-      "community": 1,
+      "community": 9,
       "norm_label": "_render_sidebar()"
     },
     {
       "label": "fetch_holdings()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L59",
+      "source_location": "L60",
       "id": "5_portfolio_fetch_holdings",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_holdings()"
     },
     {
       "label": "fetch_all_symbols()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L106",
+      "source_location": "L135",
       "id": "5_portfolio_fetch_all_symbols",
-      "community": 3,
+      "community": 2,
       "norm_label": "fetch_all_symbols()"
     },
     {
       "label": "add_holding()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L119",
+      "source_location": "L148",
       "id": "5_portfolio_add_holding",
-      "community": 3,
+      "community": 2,
       "norm_label": "add_holding()"
     },
     {
       "label": "delete_holding()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L130",
+      "source_location": "L159",
       "id": "5_portfolio_delete_holding",
-      "community": 3,
+      "community": 2,
       "norm_label": "delete_holding()"
     },
     {
       "label": "run_optimization()",
       "file_type": "code",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L136",
+      "source_location": "L165",
       "id": "5_portfolio_run_optimization",
-      "community": 3,
+      "community": 2,
       "norm_label": "run_optimization()"
     },
     {
@@ -2979,7 +3096,7 @@
       "source_file": "streamlit_app\\pages\\6_Settings.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_6_settings_py",
-      "community": 1,
+      "community": 9,
       "norm_label": "6_settings.py"
     },
     {
@@ -2988,15 +3105,51 @@
       "source_file": "streamlit_app\\pages\\6_Settings.py",
       "source_location": "L35",
       "id": "6_settings_render_sidebar",
-      "community": 1,
+      "community": 9,
       "norm_label": "_render_sidebar()"
+    },
+    {
+      "label": "Fetch stocks from the live FastAPI market endpoint.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\pages\\2_Stocks.py",
+      "source_location": "L45",
+      "community": 26,
+      "norm_label": "fetch stocks from the live fastapi market endpoint.",
+      "id": "2_stocks_rationale_45"
+    },
+    {
+      "label": "Validate and add a symbol through the FastAPI backend.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\pages\\2_Stocks.py",
+      "source_location": "L67",
+      "community": 27,
+      "norm_label": "validate and add a symbol through the fastapi backend.",
+      "id": "2_stocks_rationale_67"
+    },
+    {
+      "label": "Fetch stocks with latest close price and signal.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\pages\\2_Stocks.py",
+      "source_location": "L46",
+      "community": 28,
+      "norm_label": "fetch stocks with latest close price and signal.",
+      "id": "2_stocks_rationale_46"
+    },
+    {
+      "label": "Validate and add a symbol through the FastAPI backend.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\pages\\2_Stocks.py",
+      "source_location": "L112",
+      "community": 29,
+      "norm_label": "validate and add a symbol through the fastapi backend.",
+      "id": "2_stocks_rationale_112"
     },
     {
       "label": "Return a Supabase client that sends the user JWT on every PostgREST call.",
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\supabase_client.py",
       "source_location": "L27",
-      "community": 25,
+      "community": 30,
       "norm_label": "return a supabase client that sends the user jwt on every postgrest call.",
       "id": "supabase_client_rationale_27"
     },
@@ -3005,7 +3158,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\utils.py",
       "source_location": "L9",
-      "community": 26,
+      "community": 31,
       "norm_label": "format a number as inr currency string.",
       "id": "utils_rationale_9"
     },
@@ -3014,7 +3167,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\utils.py",
       "source_location": "L105",
-      "community": 27,
+      "community": 32,
       "norm_label": "given a list of answer scores, return (total_score, risk_profile).",
       "id": "utils_rationale_105"
     },
@@ -3023,7 +3176,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L1",
-      "community": 28,
+      "community": 33,
       "norm_label": "dashboard \u2014 portfolio overview, nifty 50, sentiment, signals, watchlist, alerts.",
       "id": "1_dashboard_rationale_1"
     },
@@ -3032,7 +3185,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L1",
-      "community": 29,
+      "community": 34,
       "norm_label": "stocks \u2014 browse/filter nifty 50 + all stocks, add custom stocks.",
       "id": "2_stocks_rationale_1"
     },
@@ -3041,7 +3194,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L21",
-      "community": 30,
+      "community": 35,
       "norm_label": "fetch stocks with latest close price and signal.",
       "id": "2_stocks_rationale_21"
     },
@@ -3050,7 +3203,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L81",
-      "community": 31,
+      "community": 36,
       "norm_label": "validate a symbol and upsert it into the stocks table.",
       "id": "2_stocks_rationale_81"
     },
@@ -3059,7 +3212,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L1",
-      "community": 32,
+      "community": 37,
       "norm_label": "stock detail \u2014 candlestick chart, technical indicators, sentiment, news.",
       "id": "3_stock_detail_rationale_1"
     },
@@ -3068,7 +3221,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\4_Signals.py",
       "source_location": "L1",
-      "community": 33,
+      "community": 38,
       "norm_label": "signals \u2014 ai trading signals with risk-profile personalization.",
       "id": "4_signals_rationale_1"
     },
@@ -3077,7 +3230,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L1",
-      "community": 34,
+      "community": 39,
       "norm_label": "portfolio \u2014 holdings table, p&l metrics, allocation pie, mvo optimization.",
       "id": "5_portfolio_rationale_1"
     },
@@ -3086,7 +3239,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\6_Settings.py",
       "source_location": "L1",
-      "community": 35,
+      "community": 40,
       "norm_label": "settings \u2014 profile update, risk re-assessment, notification preferences.",
       "id": "6_settings_rationale_1"
     }
@@ -3676,9 +3829,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "_src": "holdings_list_holdings_live",
-      "_tgt": "market_data_fetch_live_quotes_batch",
+      "_tgt": "live_market_fetch_live_quotes_batch",
       "source": "holdings_list_holdings_live",
-      "target": "market_data_fetch_live_quotes_batch"
+      "target": "live_market_fetch_live_quotes_batch"
     },
     {
       "relation": "calls",
@@ -3691,6 +3844,18 @@
       "_tgt": "market_data_get_quote_with_fallback",
       "source": "holdings_list_holdings_live",
       "target": "market_data_get_quote_with_fallback"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\services\\api\\routers\\holdings.py",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_src": "holdings_list_holdings_live",
+      "_tgt": "market_data_fetch_live_quotes_batch",
+      "source": "holdings_list_holdings_live",
+      "target": "market_data_fetch_live_quotes_batch"
     },
     {
       "relation": "imports_from",
@@ -4084,9 +4249,9 @@
       "source_location": "L53",
       "weight": 1.0,
       "_src": "stocks_list_stocks_live",
-      "_tgt": "market_data_fetch_live_quotes_batch",
+      "_tgt": "live_market_fetch_live_quotes_batch",
       "source": "stocks_list_stocks_live",
-      "target": "market_data_fetch_live_quotes_batch"
+      "target": "live_market_fetch_live_quotes_batch"
     },
     {
       "relation": "calls",
@@ -4099,6 +4264,18 @@
       "_tgt": "market_data_get_quote_with_fallback",
       "source": "stocks_list_stocks_live",
       "target": "market_data_get_quote_with_fallback"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\services\\api\\routers\\stocks.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_src": "stocks_list_stocks_live",
+      "_tgt": "market_data_fetch_live_quotes_batch",
+      "source": "stocks_list_stocks_live",
+      "target": "market_data_fetch_live_quotes_batch"
     },
     {
       "relation": "calls",
@@ -4120,9 +4297,9 @@
       "source_location": "L123",
       "weight": 1.0,
       "_src": "stocks_get_ohlcv",
-      "_tgt": "market_data_fetch_historical_daily",
+      "_tgt": "live_market_fetch_historical_daily",
       "source": "stocks_get_ohlcv",
-      "target": "market_data_fetch_historical_daily"
+      "target": "live_market_fetch_historical_daily"
     },
     {
       "relation": "calls",
@@ -4147,6 +4324,18 @@
       "_tgt": "market_data_merge_live_quote_into_history",
       "source": "stocks_get_ohlcv",
       "target": "market_data_merge_live_quote_into_history"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\services\\api\\routers\\stocks.py",
+      "source_location": "L123",
+      "weight": 1.0,
+      "_src": "stocks_get_ohlcv",
+      "_tgt": "market_data_fetch_historical_daily",
+      "source": "stocks_get_ohlcv",
+      "target": "market_data_fetch_historical_daily"
     },
     {
       "relation": "imports_from",
@@ -4228,6 +4417,18 @@
       "source_location": "L29",
       "weight": 1.0,
       "_src": "stock_search_search_stock",
+      "_tgt": "live_market_fetch_live_quote",
+      "source": "stock_search_search_stock",
+      "target": "live_market_fetch_live_quote"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_src": "stock_search_search_stock",
       "_tgt": "market_data_fetch_live_quote",
       "source": "stock_search_search_stock",
       "target": "market_data_fetch_live_quote"
@@ -4243,6 +4444,18 @@
       "source": "stock_search_fetch_initial_ohlcv",
       "target": "stock_search_rationale_70",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_src": "stock_search_fetch_initial_ohlcv",
+      "_tgt": "live_market_fetch_historical_daily",
+      "source": "stock_search_fetch_initial_ohlcv",
+      "target": "live_market_fetch_historical_daily"
     },
     {
       "relation": "calls",
@@ -4324,9 +4537,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "_src": "watchlist_get_watchlist_live",
-      "_tgt": "market_data_fetch_live_quotes_batch",
+      "_tgt": "live_market_fetch_live_quotes_batch",
       "source": "watchlist_get_watchlist_live",
-      "target": "market_data_fetch_live_quotes_batch"
+      "target": "live_market_fetch_live_quotes_batch"
     },
     {
       "relation": "calls",
@@ -4339,6 +4552,18 @@
       "_tgt": "market_data_get_quote_with_fallback",
       "source": "watchlist_get_watchlist_live",
       "target": "market_data_get_quote_with_fallback"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\services\\api\\routers\\watchlist.py",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_src": "watchlist_get_watchlist_live",
+      "_tgt": "market_data_fetch_live_quotes_batch",
+      "source": "watchlist_get_watchlist_live",
+      "target": "market_data_fetch_live_quotes_batch"
     },
     {
       "relation": "contains",
@@ -5781,6 +6006,18 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_src": "fetch_ohlcv_fetch_ohlcv",
+      "_tgt": "live_market_fetch_historical_daily",
+      "source": "fetch_ohlcv_fetch_ohlcv",
+      "target": "live_market_fetch_historical_daily"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
@@ -6852,13 +7089,109 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_src": "api_client_request_json",
+      "_tgt": "1_dashboard_fetch_portfolio_performance",
+      "source": "api_client_request_json",
+      "target": "1_dashboard_fetch_portfolio_performance"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L76",
+      "weight": 1.0,
+      "_src": "api_client_request_json",
+      "_tgt": "1_dashboard_fetch_nifty50",
+      "source": "api_client_request_json",
+      "target": "1_dashboard_fetch_nifty50"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L154",
+      "weight": 1.0,
+      "_src": "api_client_request_json",
+      "_tgt": "1_dashboard_fetch_watchlist_live",
+      "source": "api_client_request_json",
+      "target": "1_dashboard_fetch_watchlist_live"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\2_Stocks.py",
+      "source_location": "L46",
+      "weight": 1.0,
+      "_src": "api_client_request_json",
+      "_tgt": "2_stocks_fetch_stocks",
+      "source": "api_client_request_json",
+      "target": "2_stocks_fetch_stocks"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L114",
       "weight": 1.0,
-      "_src": "2_stocks_add_stock",
-      "_tgt": "api_client_request_json",
+      "_src": "api_client_request_json",
+      "_tgt": "2_stocks_add_stock",
       "source": "api_client_request_json",
       "target": "2_stocks_add_stock"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L51",
+      "weight": 1.0,
+      "_src": "api_client_request_json",
+      "_tgt": "3_stock_detail_fetch_stock_info",
+      "source": "api_client_request_json",
+      "target": "3_stock_detail_fetch_stock_info"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L59",
+      "weight": 1.0,
+      "_src": "api_client_request_json",
+      "_tgt": "3_stock_detail_fetch_ohlcv",
+      "source": "api_client_request_json",
+      "target": "3_stock_detail_fetch_ohlcv"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L67",
+      "weight": 1.0,
+      "_src": "api_client_request_json",
+      "_tgt": "3_stock_detail_fetch_stock_quote",
+      "source": "api_client_request_json",
+      "target": "3_stock_detail_fetch_stock_quote"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\5_Portfolio.py",
+      "source_location": "L60",
+      "weight": 1.0,
+      "_src": "api_client_request_json",
+      "_tgt": "5_portfolio_fetch_holdings",
+      "source": "api_client_request_json",
+      "target": "5_portfolio_fetch_holdings"
     },
     {
       "relation": "calls",
@@ -6867,8 +7200,8 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L137",
       "weight": 1.0,
-      "_src": "5_portfolio_run_optimization",
-      "_tgt": "api_client_request_json",
+      "_src": "api_client_request_json",
+      "_tgt": "5_portfolio_run_optimization",
       "source": "api_client_request_json",
       "target": "5_portfolio_run_optimization"
     },
@@ -7419,8 +7752,8 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L39",
       "weight": 1.0,
-      "_src": "1_dashboard_render_sidebar",
-      "_tgt": "auth_logout",
+      "_src": "auth_logout",
+      "_tgt": "1_dashboard_render_sidebar",
       "source": "auth_logout",
       "target": "1_dashboard_render_sidebar"
     },
@@ -7431,8 +7764,8 @@
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L40",
       "weight": 1.0,
-      "_src": "2_stocks_render_sidebar",
-      "_tgt": "auth_logout",
+      "_src": "auth_logout",
+      "_tgt": "2_stocks_render_sidebar",
       "source": "auth_logout",
       "target": "2_stocks_render_sidebar"
     },
@@ -7443,8 +7776,8 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L43",
       "weight": 1.0,
-      "_src": "3_stock_detail_render_sidebar",
-      "_tgt": "auth_logout",
+      "_src": "auth_logout",
+      "_tgt": "3_stock_detail_render_sidebar",
       "source": "auth_logout",
       "target": "3_stock_detail_render_sidebar"
     },
@@ -7455,8 +7788,8 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L47",
       "weight": 1.0,
-      "_src": "4_signals_render_sidebar",
-      "_tgt": "auth_logout",
+      "_src": "auth_logout",
+      "_tgt": "4_signals_render_sidebar",
       "source": "auth_logout",
       "target": "4_signals_render_sidebar"
     },
@@ -7467,8 +7800,8 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L54",
       "weight": 1.0,
-      "_src": "5_portfolio_render_sidebar",
-      "_tgt": "auth_logout",
+      "_src": "auth_logout",
+      "_tgt": "5_portfolio_render_sidebar",
       "source": "auth_logout",
       "target": "5_portfolio_render_sidebar"
     },
@@ -7479,8 +7812,8 @@
       "source_file": "streamlit_app\\pages\\6_Settings.py",
       "source_location": "L46",
       "weight": 1.0,
-      "_src": "6_settings_render_sidebar",
-      "_tgt": "auth_logout",
+      "_src": "auth_logout",
+      "_tgt": "6_settings_render_sidebar",
       "source": "auth_logout",
       "target": "6_settings_render_sidebar"
     },
@@ -7527,8 +7860,8 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L30",
       "weight": 1.0,
-      "_src": "1_dashboard_render_sidebar",
-      "_tgt": "auth_get_profile",
+      "_src": "auth_get_profile",
+      "_tgt": "1_dashboard_render_sidebar",
       "source": "auth_get_profile",
       "target": "1_dashboard_render_sidebar"
     },
@@ -7539,8 +7872,8 @@
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L31",
       "weight": 1.0,
-      "_src": "2_stocks_render_sidebar",
-      "_tgt": "auth_get_profile",
+      "_src": "auth_get_profile",
+      "_tgt": "2_stocks_render_sidebar",
       "source": "auth_get_profile",
       "target": "2_stocks_render_sidebar"
     },
@@ -7551,8 +7884,8 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L33",
       "weight": 1.0,
-      "_src": "3_stock_detail_render_sidebar",
-      "_tgt": "auth_get_profile",
+      "_src": "auth_get_profile",
+      "_tgt": "3_stock_detail_render_sidebar",
       "source": "auth_get_profile",
       "target": "3_stock_detail_render_sidebar"
     },
@@ -7563,8 +7896,8 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L37",
       "weight": 1.0,
-      "_src": "4_signals_render_sidebar",
-      "_tgt": "auth_get_profile",
+      "_src": "auth_get_profile",
+      "_tgt": "4_signals_render_sidebar",
       "source": "auth_get_profile",
       "target": "4_signals_render_sidebar"
     },
@@ -7575,8 +7908,8 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L44",
       "weight": 1.0,
-      "_src": "5_portfolio_render_sidebar",
-      "_tgt": "auth_get_profile",
+      "_src": "auth_get_profile",
+      "_tgt": "5_portfolio_render_sidebar",
       "source": "auth_get_profile",
       "target": "5_portfolio_render_sidebar"
     },
@@ -7587,8 +7920,8 @@
       "source_file": "streamlit_app\\pages\\6_Settings.py",
       "source_location": "L36",
       "weight": 1.0,
-      "_src": "6_settings_render_sidebar",
-      "_tgt": "auth_get_profile",
+      "_src": "auth_get_profile",
+      "_tgt": "6_settings_render_sidebar",
       "source": "auth_get_profile",
       "target": "6_settings_render_sidebar"
     },
@@ -7875,8 +8208,8 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L31",
       "weight": 1.0,
-      "_src": "1_dashboard_render_sidebar",
-      "_tgt": "design_render_sidebar_shell",
+      "_src": "design_render_sidebar_shell",
+      "_tgt": "1_dashboard_render_sidebar",
       "source": "design_render_sidebar_shell",
       "target": "1_dashboard_render_sidebar"
     },
@@ -7887,8 +8220,8 @@
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L32",
       "weight": 1.0,
-      "_src": "2_stocks_render_sidebar",
-      "_tgt": "design_render_sidebar_shell",
+      "_src": "design_render_sidebar_shell",
+      "_tgt": "2_stocks_render_sidebar",
       "source": "design_render_sidebar_shell",
       "target": "2_stocks_render_sidebar"
     },
@@ -7899,8 +8232,8 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L34",
       "weight": 1.0,
-      "_src": "3_stock_detail_render_sidebar",
-      "_tgt": "design_render_sidebar_shell",
+      "_src": "design_render_sidebar_shell",
+      "_tgt": "3_stock_detail_render_sidebar",
       "source": "design_render_sidebar_shell",
       "target": "3_stock_detail_render_sidebar"
     },
@@ -7911,8 +8244,8 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L38",
       "weight": 1.0,
-      "_src": "4_signals_render_sidebar",
-      "_tgt": "design_render_sidebar_shell",
+      "_src": "design_render_sidebar_shell",
+      "_tgt": "4_signals_render_sidebar",
       "source": "design_render_sidebar_shell",
       "target": "4_signals_render_sidebar"
     },
@@ -7923,8 +8256,8 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L45",
       "weight": 1.0,
-      "_src": "5_portfolio_render_sidebar",
-      "_tgt": "design_render_sidebar_shell",
+      "_src": "design_render_sidebar_shell",
+      "_tgt": "5_portfolio_render_sidebar",
       "source": "design_render_sidebar_shell",
       "target": "5_portfolio_render_sidebar"
     },
@@ -7935,8 +8268,8 @@
       "source_file": "streamlit_app\\pages\\6_Settings.py",
       "source_location": "L37",
       "weight": 1.0,
-      "_src": "6_settings_render_sidebar",
-      "_tgt": "design_render_sidebar_shell",
+      "_src": "design_render_sidebar_shell",
+      "_tgt": "6_settings_render_sidebar",
       "source": "design_render_sidebar_shell",
       "target": "6_settings_render_sidebar"
     },
@@ -7971,8 +8304,8 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L169",
       "weight": 1.0,
-      "_src": "4_signals_render_signal_row",
-      "_tgt": "design_render_section_heading",
+      "_src": "design_render_section_heading",
+      "_tgt": "4_signals_render_signal_row",
       "source": "design_render_section_heading",
       "target": "4_signals_render_signal_row"
     },
@@ -8039,6 +8372,366 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_normalize_symbol",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_normalize_symbol",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_candidate_tickers",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_candidate_tickers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_coerce_float",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_coerce_float",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_coerce_int",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_coerce_int",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L57",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_safe_history",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_safe_history",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_safe_fast_info",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_safe_fast_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L88",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_quote_from_ticker",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_quote_from_ticker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L136",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_fetch_live_quotes_batch",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_fetch_live_quotes_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L172",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_fetch_live_quote",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_fetch_live_quote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L176",
+      "weight": 1.0,
+      "_src": "streamlit_app_live_market_py",
+      "_tgt": "live_market_fetch_historical_daily",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_fetch_historical_daily",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "live_market_rationale_1",
+      "_tgt": "streamlit_app_live_market_py",
+      "source": "streamlit_app_live_market_py",
+      "target": "live_market_rationale_1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_src": "live_market_candidate_tickers",
+      "_tgt": "live_market_normalize_symbol",
+      "source": "live_market_normalize_symbol",
+      "target": "live_market_candidate_tickers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L145",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quotes_batch",
+      "_tgt": "live_market_candidate_tickers",
+      "source": "live_market_candidate_tickers",
+      "target": "live_market_fetch_live_quotes_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L177",
+      "weight": 1.0,
+      "_src": "live_market_fetch_historical_daily",
+      "_tgt": "live_market_candidate_tickers",
+      "source": "live_market_candidate_tickers",
+      "target": "live_market_fetch_historical_daily",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L98",
+      "weight": 1.0,
+      "_src": "live_market_quote_from_ticker",
+      "_tgt": "live_market_coerce_float",
+      "source": "live_market_coerce_float",
+      "target": "live_market_quote_from_ticker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L186",
+      "weight": 1.0,
+      "_src": "live_market_fetch_historical_daily",
+      "_tgt": "live_market_coerce_float",
+      "source": "live_market_coerce_float",
+      "target": "live_market_fetch_historical_daily",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L127",
+      "weight": 1.0,
+      "_src": "live_market_quote_from_ticker",
+      "_tgt": "live_market_coerce_int",
+      "source": "live_market_coerce_int",
+      "target": "live_market_quote_from_ticker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L190",
+      "weight": 1.0,
+      "_src": "live_market_fetch_historical_daily",
+      "_tgt": "live_market_coerce_int",
+      "source": "live_market_coerce_int",
+      "target": "live_market_fetch_historical_daily",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L89",
+      "weight": 1.0,
+      "_src": "live_market_quote_from_ticker",
+      "_tgt": "live_market_safe_history",
+      "source": "live_market_safe_history",
+      "target": "live_market_quote_from_ticker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L180",
+      "weight": 1.0,
+      "_src": "live_market_fetch_historical_daily",
+      "_tgt": "live_market_safe_history",
+      "source": "live_market_safe_history",
+      "target": "live_market_fetch_historical_daily",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L90",
+      "weight": 1.0,
+      "_src": "live_market_quote_from_ticker",
+      "_tgt": "live_market_safe_fast_info",
+      "source": "live_market_safe_fast_info",
+      "target": "live_market_quote_from_ticker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L157",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quotes_batch",
+      "_tgt": "live_market_quote_from_ticker",
+      "source": "live_market_quote_from_ticker",
+      "target": "live_market_fetch_live_quotes_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\live_market.py",
+      "source_location": "L173",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quote",
+      "_tgt": "live_market_fetch_live_quotes_batch",
+      "source": "live_market_fetch_live_quotes_batch",
+      "target": "live_market_fetch_live_quote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L83",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quotes_batch",
+      "_tgt": "1_dashboard_fetch_portfolio_performance",
+      "source": "live_market_fetch_live_quotes_batch",
+      "target": "1_dashboard_fetch_portfolio_performance"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L226",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quotes_batch",
+      "_tgt": "1_dashboard_fetch_watchlist_live",
+      "source": "live_market_fetch_live_quotes_batch",
+      "target": "1_dashboard_fetch_watchlist_live"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\2_Stocks.py",
+      "source_location": "L91",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quotes_batch",
+      "_tgt": "2_stocks_fetch_stocks",
+      "source": "live_market_fetch_live_quotes_batch",
+      "target": "2_stocks_fetch_stocks"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\5_Portfolio.py",
+      "source_location": "L101",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quotes_batch",
+      "_tgt": "5_portfolio_fetch_holdings",
+      "source": "live_market_fetch_live_quotes_batch",
+      "target": "5_portfolio_fetch_holdings"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L122",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quote",
+      "_tgt": "1_dashboard_fetch_nifty50",
+      "source": "live_market_fetch_live_quote",
+      "target": "1_dashboard_fetch_nifty50"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L78",
+      "weight": 1.0,
+      "_src": "live_market_fetch_live_quote",
+      "_tgt": "3_stock_detail_fetch_stock_quote",
+      "source": "live_market_fetch_live_quote",
+      "target": "3_stock_detail_fetch_stock_quote"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L69",
+      "weight": 1.0,
+      "_src": "live_market_fetch_historical_daily",
+      "_tgt": "3_stock_detail_fetch_ohlcv",
+      "source": "live_market_fetch_historical_daily",
+      "target": "3_stock_detail_fetch_ohlcv"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L19",
       "weight": 1.0,
@@ -8089,30 +8782,6 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L39",
-      "weight": 1.0,
-      "_src": "supabase_client_get_anon_client",
-      "_tgt": "1_dashboard_fetch_portfolio_performance",
-      "source": "supabase_client_get_anon_client",
-      "target": "1_dashboard_fetch_portfolio_performance"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L69",
-      "weight": 1.0,
-      "_src": "supabase_client_get_anon_client",
-      "_tgt": "1_dashboard_fetch_nifty50",
-      "source": "supabase_client_get_anon_client",
-      "target": "1_dashboard_fetch_nifty50"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L93",
       "weight": 1.0,
       "_src": "supabase_client_get_anon_client",
@@ -8131,18 +8800,6 @@
       "_tgt": "1_dashboard_fetch_latest_signals",
       "source": "supabase_client_get_anon_client",
       "target": "1_dashboard_fetch_latest_signals"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L164",
-      "weight": 1.0,
-      "_src": "supabase_client_get_anon_client",
-      "_tgt": "1_dashboard_fetch_watchlist_live",
-      "source": "supabase_client_get_anon_client",
-      "target": "1_dashboard_fetch_watchlist_live"
     },
     {
       "relation": "calls",
@@ -8167,18 +8824,6 @@
       "_tgt": "3_stock_detail_fetch_stock_info",
       "source": "supabase_client_get_anon_client",
       "target": "3_stock_detail_fetch_stock_info"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "NiveshSutra\\streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L53",
-      "weight": 1.0,
-      "_src": "supabase_client_get_anon_client",
-      "_tgt": "3_stock_detail_fetch_ohlcv",
-      "source": "supabase_client_get_anon_client",
-      "target": "3_stock_detail_fetch_ohlcv"
     },
     {
       "relation": "calls",
@@ -8233,24 +8878,72 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "NiveshSutra\\streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L42",
-      "weight": 1.0,
-      "_src": "supabase_client_get_anon_client",
-      "_tgt": "5_portfolio_fetch_holdings",
-      "source": "supabase_client_get_anon_client",
-      "target": "5_portfolio_fetch_holdings"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "NiveshSutra\\streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L75",
       "weight": 1.0,
       "_src": "supabase_client_get_anon_client",
       "_tgt": "5_portfolio_fetch_all_symbols",
       "source": "supabase_client_get_anon_client",
       "target": "5_portfolio_fetch_all_symbols"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_src": "supabase_client_get_anon_client",
+      "_tgt": "1_dashboard_fetch_portfolio_performance",
+      "source": "supabase_client_get_anon_client",
+      "target": "1_dashboard_fetch_portfolio_performance"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L69",
+      "weight": 1.0,
+      "_src": "supabase_client_get_anon_client",
+      "_tgt": "1_dashboard_fetch_nifty50",
+      "source": "supabase_client_get_anon_client",
+      "target": "1_dashboard_fetch_nifty50"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
+      "source_location": "L164",
+      "weight": 1.0,
+      "_src": "supabase_client_get_anon_client",
+      "_tgt": "1_dashboard_fetch_watchlist_live",
+      "source": "supabase_client_get_anon_client",
+      "target": "1_dashboard_fetch_watchlist_live"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_src": "supabase_client_get_anon_client",
+      "_tgt": "3_stock_detail_fetch_ohlcv",
+      "source": "supabase_client_get_anon_client",
+      "target": "3_stock_detail_fetch_ohlcv"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "NiveshSutra\\streamlit_app\\pages\\5_Portfolio.py",
+      "source_location": "L42",
+      "weight": 1.0,
+      "_src": "supabase_client_get_anon_client",
+      "_tgt": "5_portfolio_fetch_holdings",
+      "source": "supabase_client_get_anon_client",
+      "target": "5_portfolio_fetch_holdings"
     },
     {
       "relation": "rationale_for",
@@ -8652,7 +9345,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L29",
+      "source_location": "L31",
       "weight": 1.0,
       "_src": "streamlit_app_pages_1_dashboard_py",
       "_tgt": "1_dashboard_render_sidebar",
@@ -8664,7 +9357,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L44",
+      "source_location": "L46",
       "weight": 1.0,
       "_src": "streamlit_app_pages_1_dashboard_py",
       "_tgt": "1_dashboard_fetch_portfolio_performance",
@@ -8676,7 +9369,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L88",
+      "source_location": "L110",
       "weight": 1.0,
       "_src": "streamlit_app_pages_1_dashboard_py",
       "_tgt": "1_dashboard_fetch_nifty50",
@@ -8688,7 +9381,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L113",
+      "source_location": "L134",
       "weight": 1.0,
       "_src": "streamlit_app_pages_1_dashboard_py",
       "_tgt": "1_dashboard_fetch_market_sentiment",
@@ -8700,7 +9393,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L149",
+      "source_location": "L170",
       "weight": 1.0,
       "_src": "streamlit_app_pages_1_dashboard_py",
       "_tgt": "1_dashboard_fetch_latest_signals",
@@ -8712,7 +9405,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L175",
+      "source_location": "L196",
       "weight": 1.0,
       "_src": "streamlit_app_pages_1_dashboard_py",
       "_tgt": "1_dashboard_fetch_watchlist_live",
@@ -8724,7 +9417,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
-      "source_location": "L219",
+      "source_location": "L247",
       "weight": 1.0,
       "_src": "streamlit_app_pages_1_dashboard_py",
       "_tgt": "1_dashboard_fetch_alerts",
@@ -8736,7 +9429,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0,
       "_src": "streamlit_app_pages_2_stocks_py",
       "_tgt": "2_stocks_render_sidebar",
@@ -8748,7 +9441,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0,
       "_src": "streamlit_app_pages_2_stocks_py",
       "_tgt": "2_stocks_fetch_stocks",
@@ -8760,7 +9453,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L111",
+      "source_location": "L108",
       "weight": 1.0,
       "_src": "streamlit_app_pages_2_stocks_py",
       "_tgt": "2_stocks_add_stock",
@@ -8772,31 +9465,31 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L46",
+      "source_location": "L47",
       "weight": 1.0,
-      "_src": "2_stocks_rationale_46",
+      "_src": "2_stocks_rationale_47",
       "_tgt": "2_stocks_fetch_stocks",
       "source": "2_stocks_fetch_stocks",
-      "target": "2_stocks_rationale_46",
+      "target": "2_stocks_rationale_47",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
-      "source_location": "L112",
+      "source_location": "L109",
       "weight": 1.0,
-      "_src": "2_stocks_rationale_112",
+      "_src": "2_stocks_rationale_109",
       "_tgt": "2_stocks_add_stock",
       "source": "2_stocks_add_stock",
-      "target": "2_stocks_rationale_112",
+      "target": "2_stocks_rationale_109",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0,
       "_src": "streamlit_app_pages_3_stock_detail_py",
       "_tgt": "3_stock_detail_render_sidebar",
@@ -8808,7 +9501,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L48",
+      "source_location": "L50",
       "weight": 1.0,
       "_src": "streamlit_app_pages_3_stock_detail_py",
       "_tgt": "3_stock_detail_fetch_stock_info",
@@ -8820,7 +9513,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L59",
+      "source_location": "L64",
       "weight": 1.0,
       "_src": "streamlit_app_pages_3_stock_detail_py",
       "_tgt": "3_stock_detail_fetch_ohlcv",
@@ -8832,7 +9525,19 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L78",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_src": "streamlit_app_pages_3_stock_detail_py",
+      "_tgt": "3_stock_detail_fetch_stock_quote",
+      "source": "streamlit_app_pages_3_stock_detail_py",
+      "target": "3_stock_detail_fetch_stock_quote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L97",
       "weight": 1.0,
       "_src": "streamlit_app_pages_3_stock_detail_py",
       "_tgt": "3_stock_detail_fetch_indicators",
@@ -8844,7 +9549,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L97",
+      "source_location": "L116",
       "weight": 1.0,
       "_src": "streamlit_app_pages_3_stock_detail_py",
       "_tgt": "3_stock_detail_fetch_sentiment",
@@ -8856,7 +9561,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L116",
+      "source_location": "L135",
       "weight": 1.0,
       "_src": "streamlit_app_pages_3_stock_detail_py",
       "_tgt": "3_stock_detail_fetch_latest_signal",
@@ -8868,7 +9573,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L134",
+      "source_location": "L153",
       "weight": 1.0,
       "_src": "streamlit_app_pages_3_stock_detail_py",
       "_tgt": "3_stock_detail_is_in_watchlist",
@@ -8880,12 +9585,36 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
-      "source_location": "L151",
+      "source_location": "L170",
       "weight": 1.0,
       "_src": "streamlit_app_pages_3_stock_detail_py",
       "_tgt": "3_stock_detail_toggle_watchlist",
       "source": "streamlit_app_pages_3_stock_detail_py",
       "target": "3_stock_detail_toggle_watchlist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L68",
+      "weight": 1.0,
+      "_src": "3_stock_detail_fetch_ohlcv",
+      "_tgt": "3_stock_detail_fetch_stock_info",
+      "source": "3_stock_detail_fetch_stock_info",
+      "target": "3_stock_detail_fetch_ohlcv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
+      "source_location": "L77",
+      "weight": 1.0,
+      "_src": "3_stock_detail_fetch_stock_quote",
+      "_tgt": "3_stock_detail_fetch_stock_info",
+      "source": "3_stock_detail_fetch_stock_info",
+      "target": "3_stock_detail_fetch_stock_quote",
       "confidence_score": 1.0
     },
     {
@@ -8976,7 +9705,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_src": "streamlit_app_pages_5_portfolio_py",
       "_tgt": "5_portfolio_render_sidebar",
@@ -8988,7 +9717,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L59",
+      "source_location": "L60",
       "weight": 1.0,
       "_src": "streamlit_app_pages_5_portfolio_py",
       "_tgt": "5_portfolio_fetch_holdings",
@@ -9000,7 +9729,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L106",
+      "source_location": "L135",
       "weight": 1.0,
       "_src": "streamlit_app_pages_5_portfolio_py",
       "_tgt": "5_portfolio_fetch_all_symbols",
@@ -9012,7 +9741,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L119",
+      "source_location": "L148",
       "weight": 1.0,
       "_src": "streamlit_app_pages_5_portfolio_py",
       "_tgt": "5_portfolio_add_holding",
@@ -9024,7 +9753,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L130",
+      "source_location": "L159",
       "weight": 1.0,
       "_src": "streamlit_app_pages_5_portfolio_py",
       "_tgt": "5_portfolio_delete_holding",
@@ -9036,7 +9765,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
-      "source_location": "L136",
+      "source_location": "L165",
       "weight": 1.0,
       "_src": "streamlit_app_pages_5_portfolio_py",
       "_tgt": "5_portfolio_run_optimization",

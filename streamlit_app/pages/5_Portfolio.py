@@ -21,7 +21,8 @@ from design import (
     render_sidebar_shell,
     style_plotly_figure,
 )
-from supabase_client import get_anon_client, get_authed_client
+from live_market import fetch_live_quotes_batch
+from supabase_client import get_authed_client
 from utils import format_currency, format_pct
 
 st.set_page_config(page_title="Portfolio | NiveshSutra", layout="wide")
@@ -55,51 +56,79 @@ def _render_sidebar() -> None:
             st.switch_page("app.py")
 
 
-@st.cache_data(ttl=30, show_spinner=False)
+@st.cache_data(ttl=15, show_spinner=False)
 def fetch_holdings(user_id: str, access_token: str) -> list[dict]:
-    rows = (
-        get_authed_client(access_token)
-        .table("holdings")
-        .select("id, symbol, quantity, avg_buy_price")
-        .eq("user_id", user_id)
-        .execute()
-        .data
-        or []
-    )
-    enriched = []
-    for holding in rows:
-        ohlcv = (
-            get_anon_client()
-            .table("ohlcv")
-            .select("close")
-            .eq("symbol", holding["symbol"])
-            .order("date", desc=True)
-            .limit(1)
+    try:
+        rows = request_json(
+            "GET",
+            "/api/v1/holdings/live",
+            access_token=access_token,
+        )
+        enriched = []
+        for holding in rows:
+            quantity = float(holding["quantity"])
+            average_price = float(holding["avg_price"])
+            current_price = float(holding["current_price"])
+            invested = quantity * average_price
+            value = float(holding["value"])
+            pnl = float(holding["pnl"])
+            pnl_pct = float(holding["pnl_pct"])
+            enriched.append(
+                {
+                    "id": holding["id"],
+                    "symbol": holding["symbol"],
+                    "quantity": quantity,
+                    "avg_price": average_price,
+                    "current_price": current_price,
+                    "invested": invested,
+                    "value": value,
+                    "pnl": pnl,
+                    "pnl_pct": pnl_pct,
+                    "provider": holding.get("provider") or "",
+                }
+            )
+        return enriched
+    except Exception:
+        rows = (
+            get_authed_client(access_token)
+            .table("holdings")
+            .select("id, symbol, quantity, avg_buy_price, stocks(yf_ticker)")
+            .eq("user_id", user_id)
             .execute()
             .data
             or []
         )
-        price = float(ohlcv[0]["close"]) if ohlcv else float(holding["avg_buy_price"])
-        quantity = float(holding["quantity"])
-        average_price = float(holding["avg_buy_price"])
-        invested = quantity * average_price
-        value = quantity * price
-        pnl = value - invested
-        pnl_pct = (pnl / invested * 100) if invested else 0.0
-        enriched.append(
+        quote_map = fetch_live_quotes_batch(
             {
-                "id": holding["id"],
-                "symbol": holding["symbol"],
-                "quantity": quantity,
-                "avg_price": average_price,
-                "current_price": price,
-                "invested": invested,
-                "value": value,
-                "pnl": pnl,
-                "pnl_pct": pnl_pct,
+                row["symbol"]: (row.get("stocks") or {}).get("yf_ticker")
+                for row in rows
             }
         )
-    return enriched
+        enriched = []
+        for holding in rows:
+            quantity = float(holding["quantity"])
+            average_price = float(holding["avg_buy_price"])
+            quote = quote_map.get(holding["symbol"]) or {}
+            current_price = float(quote.get("price") or average_price)
+            invested = quantity * average_price
+            value = quantity * current_price
+            pnl = value - invested
+            pnl_pct = (pnl / invested * 100) if invested else 0.0
+            enriched.append(
+                {
+                    "id": holding["id"],
+                    "symbol": holding["symbol"],
+                    "quantity": quantity,
+                    "avg_price": average_price,
+                    "current_price": current_price,
+                    "invested": invested,
+                    "value": value,
+                    "pnl": pnl,
+                    "pnl_pct": pnl_pct,
+                    "provider": quote.get("provider") or "",
+                }
+            )
+        return enriched
 
 
 @st.cache_data(ttl=30, show_spinner=False)

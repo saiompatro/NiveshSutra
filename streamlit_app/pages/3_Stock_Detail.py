@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import plotly.graph_objects as go
 import streamlit as st
 
+from api_client import request_json
 from auth import get_access_token, get_profile, get_user_id, logout, require_auth
 from design import (
     apply_theme,
@@ -21,6 +22,7 @@ from design import (
     render_sidebar_shell,
     style_plotly_figure,
 )
+from live_market import fetch_historical_daily, fetch_live_quote
 from supabase_client import get_anon_client, get_authed_client
 from utils import signal_badge_html
 
@@ -47,31 +49,48 @@ def _render_sidebar() -> None:
 @st.cache_data(ttl=60, show_spinner=False)
 def fetch_stock_info(symbol: str) -> dict:
     try:
-        return (
-            get_anon_client().table("stocks").select("*").eq("symbol", symbol).single().execute().data
-            or {}
-        )
+        return request_json("GET", f"/api/v1/stocks/{symbol}") or {}
     except Exception:
-        return {}
+        try:
+            return (
+                get_anon_client().table("stocks").select("*").eq("symbol", symbol).single().execute().data
+                or {}
+            )
+        except Exception:
+            return {}
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=15, show_spinner=False)
 def fetch_ohlcv(symbol: str, days: int = 365) -> list[dict]:
     try:
-        rows = (
-            get_anon_client()
-            .table("ohlcv")
-            .select("date, open, high, low, close, volume")
-            .eq("symbol", symbol)
-            .order("date", desc=True)
-            .limit(days)
-            .execute()
-            .data
-            or []
-        )
-        return sorted(rows, key=lambda row: row["date"])
+        return request_json("GET", f"/api/v1/stocks/{symbol}/ohlcv", params={"days": days}) or []
     except Exception:
-        return []
+        info = fetch_stock_info(symbol)
+        return fetch_historical_daily(symbol, info.get("yf_ticker"), days)
+
+
+@st.cache_data(ttl=15, show_spinner=False)
+def fetch_stock_quote(symbol: str) -> dict:
+    try:
+        return request_json("GET", f"/api/v1/stocks/{symbol}/quote") or {}
+    except Exception:
+        info = fetch_stock_info(symbol)
+        quote = fetch_live_quote(symbol, info.get("yf_ticker"))
+        if not quote:
+            return {}
+        return {
+            "symbol": symbol,
+            "company_name": info.get("company_name") or "",
+            "sector": info.get("sector") or "",
+            "current_price": float(quote.get("price") or 0),
+            "change_pct": float(quote.get("change_pct") or 0),
+            "change": float(quote.get("change") or 0),
+            "day_high": float(quote.get("high") or 0),
+            "day_low": float(quote.get("low") or 0),
+            "volume": int(quote.get("volume") or 0),
+            "provider": quote.get("provider") or "",
+            "latest_trading_day": quote.get("latest_trading_day") or "",
+        }
 
 
 @st.cache_data(ttl=120, show_spinner=False)
@@ -173,6 +192,7 @@ user_id = get_user_id()
 
 with st.spinner("Loading stock detail..."):
     info = fetch_stock_info(symbol)
+    quote = fetch_stock_quote(symbol)
     ohlcv = fetch_ohlcv(symbol)
     indicators = fetch_indicators(symbol)
     sentiment_data = fetch_sentiment(symbol)
@@ -182,11 +202,13 @@ with st.spinner("Loading stock detail..."):
 company = info.get("company_name", symbol)
 sector = info.get("sector", "Sector pending")
 latest = ohlcv[-1] if ohlcv else {}
-previous = ohlcv[-2] if len(ohlcv) > 1 else latest
-price = float(latest.get("close", 0) or 0)
-previous_close = float(previous.get("close", price) or price)
-price_change = price - previous_close
-price_change_pct = (price_change / previous_close * 100) if previous_close else 0.0
+price = float(quote.get("current_price") or latest.get("close") or 0)
+price_change = float(quote.get("change") or 0)
+price_change_pct = float(quote.get("change_pct") or 0)
+day_low = float(quote.get("day_low") or latest.get("low") or 0)
+day_high = float(quote.get("day_high") or latest.get("high") or 0)
+day_open = float(latest.get("open") or 0)
+volume = int(quote.get("volume") or latest.get("volume") or 0)
 
 render_page_hero(
     kicker="Single-name story",
@@ -227,14 +249,14 @@ render_metric_grid(
         },
         {
             "label": "Session range",
-            "value": f"{float(latest.get('low', 0) or 0):,.2f} - {float(latest.get('high', 0) or 0):,.2f}",
-            "detail": f"Open {float(latest.get('open', 0) or 0):,.2f}",
+            "value": f"{day_low:,.2f} - {day_high:,.2f}",
+            "detail": f"Open {day_open:,.2f}",
             "tone": "amber",
         },
         {
             "label": "Volume",
-            "value": f"{int(latest.get('volume', 0) or 0):,}",
-            "detail": "Latest recorded turnover in the local OHLCV store.",
+            "value": f"{volume:,}",
+            "detail": "Latest live turnover when the quote feed provides it.",
             "tone": "amber",
         },
         {

@@ -19,6 +19,7 @@ from design import (
     render_section_heading,
     render_sidebar_shell,
 )
+from live_market import fetch_live_quotes_batch
 from supabase_client import get_anon_client
 from utils import format_pct, signal_badge_html
 
@@ -41,71 +42,67 @@ def _render_sidebar() -> None:
             st.switch_page("app.py")
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=15, show_spinner=False)
 def fetch_stocks(nifty50_only: bool = False) -> list[dict]:
-    """Fetch stocks with latest close price and signal."""
-    client = get_anon_client()
-    query = (
-        client.table("stocks")
-        .select("symbol, company_name, sector, is_nifty50, yf_ticker")
-        .eq("active", True)
-    )
-    if nifty50_only:
-        query = query.eq("is_nifty50", True)
-    stocks = query.order("symbol").execute().data or []
+    """Fetch stocks from the live FastAPI market endpoint."""
+    try:
+        rows = request_json(
+            "GET",
+            "/api/v1/stocks/live",
+            params={"nifty50_only": str(nifty50_only).lower()},
+        )
+        return [
+            {
+                "symbol": row["symbol"],
+                "company_name": row.get("company_name") or "",
+                "sector": row.get("sector") or "",
+                "is_nifty50": bool(row.get("is_nifty50", False)),
+                "price": float(row.get("current_price") or 0),
+                "change_pct": float(row.get("change_pct") or 0),
+                "signal": row.get("signal") or "",
+                "provider": row.get("provider") or "",
+            }
+            for row in rows
+        ]
+    except Exception:
+        client = get_anon_client()
+        query = (
+            client.table("stocks")
+            .select("symbol, company_name, sector, is_nifty50, yf_ticker")
+            .eq("active", True)
+        )
+        if nifty50_only:
+            query = query.eq("is_nifty50", True)
+        stocks = query.order("symbol").execute().data or []
 
-    signal_rows = (
-        client.table("signals")
-        .select("symbol, signal, date")
-        .order("date", desc=True)
-        .limit(max(50, len(stocks) * 2))
-        .execute()
-        .data
-        or []
-    )
-    signal_map: dict[str, str] = {}
-    for row in signal_rows:
-        signal_map.setdefault(row["symbol"], row["signal"])
-
-    symbols = [stock["symbol"] for stock in stocks]
-    price_map: dict[str, dict] = {}
-    if symbols:
-        ohlcv = (
-            client.table("ohlcv")
-            .select("symbol, close, date")
-            .in_("symbol", symbols)
+        signal_rows = (
+            client.table("signals")
+            .select("symbol, signal, date")
             .order("date", desc=True)
-            .limit(len(symbols) * 2)
+            .limit(max(50, len(stocks) * 2))
             .execute()
             .data
             or []
         )
-        grouped: dict[str, list] = {}
-        for row in ohlcv:
-            grouped.setdefault(row["symbol"], [])
-            if len(grouped[row["symbol"]]) < 2:
-                grouped[row["symbol"]].append(row)
-        for symbol, rows in grouped.items():
-            latest = float(rows[0]["close"]) if rows else 0.0
-            previous = float(rows[1]["close"]) if len(rows) > 1 else latest
-            change_pct = ((latest - previous) / previous * 100) if previous else 0.0
-            price_map[symbol] = {"price": latest, "change_pct": change_pct}
+        signal_map: dict[str, str] = {}
+        for row in signal_rows:
+            signal_map.setdefault(row["symbol"], row["signal"])
 
-    enriched = []
-    for stock in stocks:
-        price_data = price_map.get(stock["symbol"], {"price": 0.0, "change_pct": 0.0})
-        enriched.append(
+        quote_map = fetch_live_quotes_batch({stock["symbol"]: stock.get("yf_ticker") for stock in stocks})
+
+        return [
             {
                 "symbol": stock["symbol"],
                 "company_name": stock.get("company_name") or "",
                 "sector": stock.get("sector") or "",
-                "is_nifty50": stock.get("is_nifty50", False),
-                "price": price_data["price"],
-                "change_pct": price_data["change_pct"],
+                "is_nifty50": bool(stock.get("is_nifty50", False)),
+                "price": float((quote_map.get(stock["symbol"]) or {}).get("price") or 0),
+                "change_pct": float((quote_map.get(stock["symbol"]) or {}).get("change_pct") or 0),
                 "signal": signal_map.get(stock["symbol"], ""),
+                "provider": (quote_map.get(stock["symbol"]) or {}).get("provider") or "",
             }
-        )
-    return enriched
+            for stock in stocks
+        ]
 
 
 def add_stock(symbol: str, access_token: str) -> tuple[bool, str]:

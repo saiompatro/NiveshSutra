@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
 
+from api_client import request_json
 from auth import get_access_token, get_profile, get_user_id, logout, require_auth
 from design import (
     apply_theme,
@@ -18,6 +19,7 @@ from design import (
     render_section_heading,
     render_sidebar_shell,
 )
+from live_market import fetch_live_quote, fetch_live_quotes_batch
 from supabase_client import get_anon_client, get_authed_client
 from utils import format_currency, format_pct, signal_badge_html
 
@@ -40,36 +42,21 @@ def _render_sidebar() -> None:
             st.switch_page("app.py")
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=15, show_spinner=False)
 def fetch_portfolio_performance(user_id: str, access_token: str) -> dict:
     try:
-        client = get_authed_client(access_token)
-        holdings = (
-            client.table("holdings")
-            .select("symbol, quantity, avg_buy_price")
-            .eq("user_id", user_id)
-            .execute()
-            .data
-            or []
+        holdings = request_json(
+            "GET",
+            "/api/v1/holdings/live",
+            access_token=access_token,
         )
         if not holdings:
             return {}
         total_invested = 0.0
         current_value = 0.0
         for holding in holdings:
-            ohlcv = (
-                get_anon_client()
-                .table("ohlcv")
-                .select("close")
-                .eq("symbol", holding["symbol"])
-                .order("date", desc=True)
-                .limit(1)
-                .execute()
-                .data
-            )
-            price = float(ohlcv[0]["close"]) if ohlcv else float(holding["avg_buy_price"])
-            invested = float(holding["quantity"]) * float(holding["avg_buy_price"])
-            value = float(holding["quantity"]) * price
+            invested = float(holding["quantity"]) * float(holding["avg_price"])
+            value = float(holding["quantity"]) * float(holding["current_price"])
             total_invested += invested
             current_value += value
         pnl = current_value - total_invested
@@ -81,32 +68,66 @@ def fetch_portfolio_performance(user_id: str, access_token: str) -> dict:
             "total_pnl_pct": pnl_pct,
         }
     except Exception:
-        return {}
+        try:
+            client = get_authed_client(access_token)
+            holdings = (
+                client.table("holdings")
+                .select("symbol, quantity, avg_buy_price, stocks(yf_ticker)")
+                .eq("user_id", user_id)
+                .execute()
+                .data
+                or []
+            )
+            if not holdings:
+                return {}
+            quote_map = fetch_live_quotes_batch(
+                {
+                    holding["symbol"]: (holding.get("stocks") or {}).get("yf_ticker")
+                    for holding in holdings
+                }
+            )
+            total_invested = 0.0
+            current_value = 0.0
+            for holding in holdings:
+                quote = quote_map.get(holding["symbol"]) or {}
+                invested = float(holding["quantity"]) * float(holding["avg_buy_price"])
+                value = float(holding["quantity"]) * float(quote.get("price") or holding["avg_buy_price"])
+                total_invested += invested
+                current_value += value
+            pnl = current_value - total_invested
+            pnl_pct = (pnl / total_invested * 100) if total_invested else 0.0
+            return {
+                "total_invested": total_invested,
+                "total_value": current_value,
+                "total_pnl": pnl,
+                "total_pnl_pct": pnl_pct,
+            }
+        except Exception:
+            return {}
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=15, show_spinner=False)
 def fetch_nifty50() -> dict:
     try:
-        data = (
-            get_anon_client()
-            .table("ohlcv")
-            .select("close, date")
-            .eq("symbol", "^NSEI")
-            .order("date", desc=True)
-            .limit(2)
-            .execute()
-            .data
-            or []
-        )
+        data = request_json("GET", "/api/v1/market/index-overview")
         if not data:
             return {}
-        latest = float(data[0]["close"])
-        previous = float(data[1]["close"]) if len(data) > 1 else latest
-        change = latest - previous
-        change_pct = (change / previous * 100) if previous else 0.0
-        return {"value": latest, "change": change, "change_pct": change_pct}
+        return {
+            "value": float(data.get("nifty50_value") or 0),
+            "change": float(data.get("nifty50_change") or 0),
+            "change_pct": float(data.get("nifty50_change_pct") or 0),
+            "provider": data.get("provider") or "",
+        }
     except Exception:
-        return {}
+        quote = fetch_live_quote("^NSEI")
+        if not quote:
+            return {}
+        return {
+            "value": float(quote.get("price") or 0),
+            "change": float(quote.get("change") or 0),
+            "change_pct": float(quote.get("change_pct") or 0),
+            "provider": quote.get("provider") or "",
+        }
 
 
 @st.cache_data(ttl=120, show_spinner=False)
@@ -171,48 +192,55 @@ def fetch_latest_signals(limit: int = 5) -> list[dict]:
         return []
 
 
-@st.cache_data(ttl=30, show_spinner=False)
+@st.cache_data(ttl=15, show_spinner=False)
 def fetch_watchlist_live(user_id: str, access_token: str) -> list[dict]:
     try:
-        client = get_authed_client(access_token)
-        rows = (
-            client.table("watchlist")
-            .select("symbol, stocks(company_name)")
-            .eq("user_id", user_id)
-            .order("added_at", desc=True)
-            .limit(8)
-            .execute()
-            .data
-            or []
+        rows = request_json(
+            "GET",
+            "/api/v1/watchlist/live",
+            access_token=access_token,
         )
-        enriched = []
-        for row in rows:
-            stock_info = row.get("stocks") or {}
-            ohlcv = (
-                get_anon_client()
-                .table("ohlcv")
-                .select("close, date")
-                .eq("symbol", row["symbol"])
-                .order("date", desc=True)
-                .limit(2)
+        return [
+            {
+                "symbol": row["symbol"],
+                "company_name": row.get("company_name", ""),
+                "price": float(row.get("current_price") or 0),
+                "change_pct": float(row.get("change_pct") or 0),
+                "provider": row.get("provider") or "",
+            }
+            for row in rows[:8]
+        ]
+    except Exception:
+        try:
+            client = get_authed_client(access_token)
+            rows = (
+                client.table("watchlist")
+                .select("symbol, stocks(company_name, yf_ticker)")
+                .eq("user_id", user_id)
+                .order("added_at", desc=True)
+                .limit(8)
                 .execute()
                 .data
                 or []
             )
-            price = float(ohlcv[0]["close"]) if ohlcv else 0.0
-            previous = float(ohlcv[1]["close"]) if len(ohlcv) > 1 else price
-            change_pct = ((price - previous) / previous * 100) if previous else 0.0
-            enriched.append(
+            quote_map = fetch_live_quotes_batch(
                 {
-                    "symbol": row["symbol"],
-                    "company_name": stock_info.get("company_name", ""),
-                    "price": price,
-                    "change_pct": change_pct,
+                    row["symbol"]: (row.get("stocks") or {}).get("yf_ticker")
+                    for row in rows
                 }
             )
-        return enriched
-    except Exception:
-        return []
+            return [
+                {
+                    "symbol": row["symbol"],
+                    "company_name": (row.get("stocks") or {}).get("company_name", ""),
+                    "price": float((quote_map.get(row["symbol"]) or {}).get("price") or 0),
+                    "change_pct": float((quote_map.get(row["symbol"]) or {}).get("change_pct") or 0),
+                    "provider": (quote_map.get(row["symbol"]) or {}).get("provider") or "",
+                }
+                for row in rows
+            ]
+        except Exception:
+            return []
 
 
 @st.cache_data(ttl=30, show_spinner=False)
