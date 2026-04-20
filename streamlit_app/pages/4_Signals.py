@@ -1,31 +1,55 @@
-"""Signals — AI trading signals with risk-profile personalization."""
+"""Signals page."""
+
 import sys
+from datetime import datetime
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
-from auth import require_auth, get_access_token, get_user_id, get_profile
+
+from auth import get_access_token, get_profile, get_user_id, logout, require_auth
+from design import (
+    apply_theme,
+    render_empty_state,
+    render_info_band,
+    render_metric_grid,
+    render_note_card,
+    render_page_hero,
+    render_section_heading,
+    render_sidebar_shell,
+)
 from supabase_client import get_anon_client, get_authed_client
 from utils import (
-    signal_badge_html, format_signal, signal_color,
-    personalize_signals, get_confidence_threshold, get_position_size_hint,
+    format_signal,
+    get_confidence_threshold,
+    get_position_size_hint,
+    personalize_signals,
+    signal_badge_html,
 )
 
-st.set_page_config(page_title="Signals — NiveshSutra", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Signals | NiveshSutra", layout="wide")
+apply_theme()
 require_auth()
 
-token = get_access_token()
-uid = get_user_id()
-profile = get_profile()
-risk_profile = profile.get("risk_profile", "moderate")
 
+def _render_sidebar() -> None:
+    profile = get_profile()
+    render_sidebar_shell(
+        active_page="Signals",
+        user_email=st.session_state["user"].email,
+        risk_profile=profile.get("risk_profile"),
+        headline="The conviction engine: ranked ideas, sizing hints, and tracked signal changes in one theatrical lane.",
+    )
+    with st.sidebar:
+        st.markdown("")
+        if st.button("Sign out", use_container_width=True):
+            logout()
+            st.switch_page("app.py")
 
-# ---------------------------------------------------------------------------
-# Data
-# ---------------------------------------------------------------------------
 
 @st.cache_data(ttl=60, show_spinner=False)
-def fetch_signals() -> list:
+def fetch_signals() -> list[dict]:
     rows = (
         get_anon_client()
         .table("signals")
@@ -33,18 +57,20 @@ def fetch_signals() -> list:
         .order("date", desc=True)
         .limit(200)
         .execute()
-        .data or []
+        .data
+        or []
     )
-    seen, latest = set(), []
-    for r in rows:
-        if r["symbol"] not in seen:
-            seen.add(r["symbol"])
-            latest.append(r)
+    seen = set()
+    latest = []
+    for row in rows:
+        if row["symbol"] not in seen:
+            seen.add(row["symbol"])
+            latest.append(row)
     return latest
 
 
 @st.cache_data(ttl=60, show_spinner=False)
-def fetch_accepted_signals(user_id: str, access_token: str) -> list:
+def fetch_accepted_signals(user_id: str, access_token: str) -> list[dict]:
     try:
         return (
             get_authed_client(access_token)
@@ -54,16 +80,22 @@ def fetch_accepted_signals(user_id: str, access_token: str) -> list:
             .eq("is_active", True)
             .order("created_at", desc=True)
             .execute()
-            .data or []
+            .data
+            or []
         )
     except Exception:
         return []
 
 
-def accept_signal(symbol: str, signal_type: str, composite_score: float,
-                  signal_date: str, user_id: str, access_token: str):
-    client = get_authed_client(access_token)
-    client.table("signal_notifications").upsert(
+def accept_signal(
+    symbol: str,
+    signal_type: str,
+    composite_score: float,
+    signal_date: str,
+    user_id: str,
+    access_token: str,
+) -> None:
+    get_authed_client(access_token).table("signal_notifications").upsert(
         {
             "user_id": user_id,
             "symbol": symbol,
@@ -76,228 +108,294 @@ def accept_signal(symbol: str, signal_type: str, composite_score: float,
     ).execute()
 
 
-def stop_tracking(notification_id: str, user_id: str, access_token: str):
-    get_authed_client(access_token).table("signal_notifications").update(
-        {"is_active": False}
-    ).eq("id", notification_id).eq("user_id", user_id).execute()
+def stop_tracking(notification_id: str, user_id: str, access_token: str) -> None:
+    get_authed_client(access_token).table("signal_notifications").update({"is_active": False}).eq(
+        "id", notification_id
+    ).eq("user_id", user_id).execute()
 
 
-# ---------------------------------------------------------------------------
-# Render
-# ---------------------------------------------------------------------------
-
-st.title("⚡ Signals")
-st.caption("AI-generated trading signals personalised for your risk profile")
-
-with st.spinner("Loading signals…"):
-    all_signals = fetch_signals()
-    accepted = fetch_accepted_signals(uid, token)
-
-accepted_symbols = {a["symbol"] for a in accepted}
-confidence_threshold = get_confidence_threshold(risk_profile)
-
-# Risk profile banner
-risk_color = {"conservative": "#22c55e", "moderate": "#3b82f6", "aggressive": "#f97316"}.get(
-    risk_profile, "#94a3b8"
-)
-risk_desc = {
-    "conservative": "Higher-confidence signals shown first. Aggressive calls are de-prioritised.",
-    "moderate": "Balanced signal view with standard confidence thresholds.",
-    "aggressive": "All signals shown. Strong directional signals are prioritised.",
-}.get(risk_profile, "")
-st.markdown(
-    f"<div style='background:#1e293b;border:1px solid {risk_color}30;border-radius:8px;"
-    f"padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px'>"
-    f"<span style='font-size:1.3rem'>🛡️</span>"
-    f"<div><strong style='color:{risk_color}'>Personalised for {risk_profile.capitalize()} profile</strong>"
-    f"<br><span style='font-size:0.8rem;color:#94a3b8'>{risk_desc}</span></div></div>",
-    unsafe_allow_html=True,
-)
-
-# Summary counts
-counts: dict[str, int] = {}
-for s in all_signals:
-    counts[s["signal"]] = counts.get(s["signal"], 0) + 1
-
-sc1, sc2, sc3, sc4, sc5 = st.columns(5)
-for col, key, label, color in [
-    (sc1, "strong_buy",  "Strong Buy",  "#22c55e"),
-    (sc2, "buy",         "Buy",         "#10b981"),
-    (sc3, "hold",        "Hold",        "#eab308"),
-    (sc4, "sell",        "Sell",        "#f97316"),
-    (sc5, "strong_sell", "Strong Sell", "#ef4444"),
-]:
-    col.markdown(
-        f"<div style='background:#1e293b;border-radius:8px;padding:12px;text-align:center'>"
-        f"<p style='margin:0;font-size:0.75rem;color:#94a3b8'>{label}</p>"
-        f"<p style='margin:0;font-size:1.8rem;font-weight:700;color:{color}'>"
-        f"{counts.get(key, 0)}</p></div>",
-        unsafe_allow_html=True,
-    )
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# Filter + sort
-filter_col, _ = st.columns([2, 4])
-with filter_col:
-    SIGNAL_TYPES = ["all", "strong_buy", "buy", "hold", "sell", "strong_sell"]
-    sig_filter = st.selectbox(
-        "Filter by signal",
-        SIGNAL_TYPES,
-        format_func=lambda x: "All Signals" if x == "all" else format_signal(x),
-    )
-
-filtered = [s for s in all_signals if sig_filter == "all" or s["signal"] == sig_filter]
-filtered = personalize_signals(filtered, risk_profile)
-
-recommended = [
-    s for s in filtered
-    if (s.get("confidence") or 0) >= confidence_threshold and s["signal"] != "hold"
-]
-other = [s for s in filtered if s not in recommended]
-
-# Table helper
-def render_signal_row(s: dict, dimmed: bool = False):
-    row = st.columns([2, 2, 2, 2, 2, 2, 3, 2])
-    opacity = "0.5" if dimmed else "1"
-
-    # Symbol
+def render_signal_row(
+    signal_row: dict,
+    *,
+    accepted_symbols: set[str],
+    user_id: str,
+    access_token: str,
+    confidence_threshold: float,
+    dimmed: bool = False,
+    risk_profile: str,
+) -> None:
+    opacity = "0.55" if dimmed else "1"
+    row = st.columns([1.2, 1.4, 1, 1, 1, 1, 2.1, 1], gap="small")
+    confidence = (signal_row.get("confidence") or 0) * 100
     row[0].markdown(
-        f"<span style='opacity:{opacity};font-weight:600'>{s['symbol']}</span>",
+        f"<span style='opacity:{opacity};font-weight:700'>{signal_row['symbol']}</span>",
         unsafe_allow_html=True,
     )
-    # Signal badge
     row[1].markdown(
-        f"<span style='opacity:{opacity}'>{signal_badge_html(s['signal'])}</span>",
+        f"<span style='opacity:{opacity}'>{signal_badge_html(signal_row['signal'])}</span>",
         unsafe_allow_html=True,
     )
-    # Confidence bar
-    conf = (s.get("confidence") or 0) * 100
     row[2].markdown(
-        f"<div style='opacity:{opacity}'>"
-        f"<div style='background:#334155;border-radius:4px;height:6px;margin-top:8px'>"
-        f"<div style='background:#3b82f6;width:{conf:.0f}%;height:6px;border-radius:4px'></div></div>"
-        f"<span style='font-size:0.75rem;color:#94a3b8'>{conf:.0f}%</span></div>",
+        f"<span style='opacity:{opacity}'>{confidence:.0f}%</span>",
         unsafe_allow_html=True,
     )
-    # Component scores
-    for i, key in enumerate(["technical_score", "sentiment_score", "momentum_score"]):
-        val = (s.get(key) or 0) * 100
-        row[3 + i].markdown(
-            f"<span style='opacity:{opacity};font-size:0.85rem'>{val:.0f}%</span>",
-            unsafe_allow_html=True,
-        )
-    # Size hint
-    hint = get_position_size_hint(risk_profile, s["signal"])
+    row[3].markdown(
+        f"<span style='opacity:{opacity}'>{(signal_row.get('technical_score') or 0) * 100:.0f}%</span>",
+        unsafe_allow_html=True,
+    )
+    row[4].markdown(
+        f"<span style='opacity:{opacity}'>{(signal_row.get('sentiment_score') or 0) * 100:.0f}%</span>",
+        unsafe_allow_html=True,
+    )
+    row[5].markdown(
+        f"<span style='opacity:{opacity}'>{(signal_row.get('momentum_score') or 0) * 100:.0f}%</span>",
+        unsafe_allow_html=True,
+    )
     row[6].markdown(
-        f"<span style='opacity:{opacity};font-size:0.75rem;color:#94a3b8'>{hint or '—'}</span>",
+        f"<span style='opacity:{opacity};color:#9aabc4'>{get_position_size_hint(risk_profile, signal_row['signal']) or 'Observe only'}</span>",
         unsafe_allow_html=True,
     )
-    # Action
-    if s["symbol"] in accepted_symbols:
-        row[7].markdown(
-            "<span style='color:#22c55e;font-size:0.8rem'>✓ Tracked</span>",
-            unsafe_allow_html=True,
-        )
+
+    if signal_row["symbol"] in accepted_symbols:
+        row[7].markdown("<span style='color:#5de4c7'>Tracked</span>", unsafe_allow_html=True)
     else:
-        if row[7].button("Accept", key=f"acc_{s['symbol']}"):
-            st.session_state[f"accept_dialog_{s['symbol']}"] = True
-            st.session_state["accept_signal_data"] = s
+        if row[7].button("Accept", key=f"accept_{signal_row['symbol']}", use_container_width=True):
+            st.session_state[f"accept_dialog_{signal_row['symbol']}"] = True
+            st.session_state["accept_signal_data"] = signal_row
             st.rerun()
 
-    # Accept dialog
-    if st.session_state.get(f"accept_dialog_{s['symbol']}"):
-        with st.form(f"accept_form_{s['symbol']}"):
-            st.markdown(f"**Accept signal: {s['symbol']} — {format_signal(s['signal'])}**")
-            st.caption(f"Confidence: {(s.get('confidence', 0) or 0) * 100:.0f}%")
-            qty = price_input = None
-            if s["signal"] in ("buy", "strong_buy"):
-                st.markdown("Optionally add to portfolio:")
-                q1, q2 = st.columns(2)
-                qty = q1.number_input("Quantity", min_value=0, step=1, key=f"qty_{s['symbol']}")
-                price_input = q2.number_input("Buy price (₹)", min_value=0.0, step=0.01, key=f"px_{s['symbol']}")
-            btn_ok = st.form_submit_button("Accept Signal")
-            btn_cancel = st.form_submit_button("Cancel")
-        if btn_cancel:
-            st.session_state.pop(f"accept_dialog_{s['symbol']}", None)
+    if st.session_state.get(f"accept_dialog_{signal_row['symbol']}"):
+        with st.form(f"accept_form_{signal_row['symbol']}"):
+            render_section_heading(
+                f"Accept {signal_row['symbol']}",
+                "Track the signal and optionally convert buy-side conviction into a holding.",
+                kicker="Action",
+            )
+            st.markdown(
+                f"{signal_badge_html(signal_row['signal'])} "
+                f"<span style='color:#9aabc4;font-size:0.85rem'>Confidence {confidence:.0f}%</span>",
+                unsafe_allow_html=True,
+            )
+            quantity = None
+            price_input = None
+            if signal_row["signal"] in {"buy", "strong_buy"}:
+                qty_col, price_col = st.columns(2, gap="medium")
+                quantity = qty_col.number_input(
+                    "Quantity",
+                    min_value=0,
+                    step=1,
+                    key=f"qty_{signal_row['symbol']}",
+                )
+                price_input = price_col.number_input(
+                    "Buy price",
+                    min_value=0.0,
+                    step=0.01,
+                    key=f"price_{signal_row['symbol']}",
+                )
+            submit_col, cancel_col = st.columns(2, gap="medium")
+            confirmed = submit_col.form_submit_button("Track signal", use_container_width=True)
+            cancelled = cancel_col.form_submit_button("Cancel", use_container_width=True)
+
+        if cancelled:
+            st.session_state.pop(f"accept_dialog_{signal_row['symbol']}", None)
             st.rerun()
-        if btn_ok:
+        if confirmed:
             try:
                 accept_signal(
-                    s["symbol"], s["signal"],
-                    s.get("confidence", 0) or 0,
-                    s.get("date") or s.get("created_at", ""),
-                    uid, token,
+                    signal_row["symbol"],
+                    signal_row["signal"],
+                    signal_row.get("confidence", 0) or 0,
+                    signal_row.get("date") or signal_row.get("created_at", ""),
+                    user_id,
+                    access_token,
                 )
-                if s["signal"] in ("buy", "strong_buy") and qty and price_input:
-                    get_authed_client(token).table("holdings").insert({
-                        "user_id": uid,
-                        "symbol": s["symbol"],
-                        "quantity": qty,
-                        "avg_buy_price": price_input,
-                    }).execute()
+                if signal_row["signal"] in {"buy", "strong_buy"} and quantity and price_input:
+                    get_authed_client(access_token).table("holdings").insert(
+                        {
+                            "user_id": user_id,
+                            "symbol": signal_row["symbol"],
+                            "quantity": quantity,
+                            "avg_buy_price": price_input,
+                        }
+                    ).execute()
                 fetch_accepted_signals.clear()
-                st.success(f"Signal for {s['symbol']} accepted!")
-                st.session_state.pop(f"accept_dialog_{s['symbol']}", None)
+                st.success(f"Signal for {signal_row['symbol']} accepted.")
+                st.session_state.pop(f"accept_dialog_{signal_row['symbol']}", None)
                 st.rerun()
-            except Exception as e:
-                st.error(f"Failed: {e}")
+            except Exception as exc:
+                st.error(f"Failed: {exc}")
 
-    st.markdown("<hr style='margin:3px 0;border-color:#1e293b'>", unsafe_allow_html=True)
+    st.markdown('<div class="ns-row-divider"></div>', unsafe_allow_html=True)
 
 
-# Table headers
-hdr = st.columns([2, 2, 2, 2, 2, 2, 3, 2])
-for col, label in zip(hdr, ["Symbol", "Signal", "Confidence", "Technical", "Sentiment", "Momentum", "Suggested Size", "Action"]):
-    col.markdown(f"**{label}**")
-st.markdown("<hr style='margin:4px 0 6px;border-color:#334155'>", unsafe_allow_html=True)
+_render_sidebar()
+token = get_access_token()
+user_id = get_user_id()
+profile = get_profile()
+risk_profile = profile.get("risk_profile", "moderate")
+
+with st.spinner("Loading signals..."):
+    all_signals = fetch_signals()
+    accepted = fetch_accepted_signals(user_id, token)
+
+accepted_symbols = {item["symbol"] for item in accepted}
+confidence_threshold = get_confidence_threshold(risk_profile)
+
+render_page_hero(
+    kicker="Conviction engine",
+    title="Signals staged around your risk posture.",
+    body=(
+        "This page ranks current ideas, separates high-confidence action from lower-priority noise, and lets you turn a signal into a tracked workflow without leaving the scene."
+    ),
+    pills=[
+        f"Profile: {risk_profile.capitalize()}",
+        f"Threshold: {confidence_threshold * 100:.0f}%+",
+        f"Tracked signals: {len(accepted)}",
+    ],
+    aside_title="How it adapts",
+    aside_rows=[
+        ("Conservative", "Higher-confidence ideas first"),
+        ("Moderate", "Balanced ranking"),
+        ("Aggressive", "Broader directional coverage"),
+    ],
+)
+
+counts: dict[str, int] = {}
+for signal_row in all_signals:
+    counts[signal_row["signal"]] = counts.get(signal_row["signal"], 0) + 1
+
+render_metric_grid(
+    [
+        {
+            "label": "Strong buy",
+            "value": str(counts.get("strong_buy", 0)),
+            "detail": "Top-end bullish conviction in the current signal set.",
+            "tone": "emerald",
+        },
+        {
+            "label": "Buy",
+            "value": str(counts.get("buy", 0)),
+            "detail": "Positive directional calls that can still graduate into tracked positions.",
+            "tone": "emerald",
+        },
+        {
+            "label": "Hold",
+            "value": str(counts.get("hold", 0)),
+            "detail": "Names that currently read as neutral.",
+            "tone": "amber",
+        },
+        {
+            "label": "Sell side",
+            "value": str(counts.get("sell", 0) + counts.get("strong_sell", 0)),
+            "detail": "Bearish names or exit-oriented calls across the active universe.",
+            "tone": "rose",
+        },
+    ],
+    columns=4,
+)
+
+render_info_band(
+    "Ranking logic",
+    f"Signals above {confidence_threshold * 100:.0f}% confidence for your {risk_profile} profile are staged first. Lower-confidence names remain visible, but intentionally dimmed to keep the eye on the main action.",
+)
+
+filter_col, rail_col = st.columns([1.4, 0.9], gap="large")
+with filter_col:
+    signal_filter = st.selectbox(
+        "Filter by signal",
+        ["all", "strong_buy", "buy", "hold", "sell", "strong_sell"],
+        format_func=lambda value: "All signals" if value == "all" else format_signal(value),
+    )
+
+filtered = [row for row in all_signals if signal_filter == "all" or row["signal"] == signal_filter]
+filtered = personalize_signals(filtered, risk_profile)
+recommended = [
+    row
+    for row in filtered
+    if (row.get("confidence") or 0) >= confidence_threshold and row["signal"] != "hold"
+]
+other = [row for row in filtered if row not in recommended]
+
+with rail_col:
+    render_note_card(
+        "Signal posture",
+        "The right rail explains the logic instead of duplicating the table. That keeps the page more legible than a grid of dashboards.",
+        rows=[
+            ("Recommended", str(len(recommended))),
+            ("Other visible", str(len(other))),
+            ("Tracked", str(len(accepted))),
+        ],
+    )
+
+render_section_heading(
+    "Recommended first",
+    "High-confidence names aligned with your posture appear at the top, ready to be tracked or turned into holdings.",
+    kicker="Main lane",
+)
+
+header = st.columns([1.2, 1.4, 1, 1, 1, 1, 2.1, 1], gap="small")
+for column, label in zip(
+    header,
+    ["Symbol", "Signal", "Confidence", "Technical", "Sentiment", "Momentum", "Sizing note", "Action"],
+    strict=False,
+):
+    column.markdown(f"**{label}**")
+st.markdown('<div class="ns-row-divider"></div>', unsafe_allow_html=True)
 
 if recommended:
-    st.markdown(
-        f"<p style='color:#3b82f6;font-size:0.82rem;margin:4px 0'>⭐ Recommended "
-        f"(≥{confidence_threshold * 100:.0f}% confidence for {risk_profile})</p>",
-        unsafe_allow_html=True,
+    for signal_row in recommended:
+        render_signal_row(
+            signal_row,
+            accepted_symbols=accepted_symbols,
+            user_id=user_id,
+            access_token=token,
+            confidence_threshold=confidence_threshold,
+            risk_profile=risk_profile,
+        )
+else:
+    render_empty_state("No signals meet the current threshold", "Lower-confidence names may still appear below, or the signal filter may be too narrow.")
+
+if other:
+    render_section_heading(
+        "Lower-priority ideas",
+        "Still visible for context, but visually quieter so the page retains a clear focal point.",
+        kicker="Supporting lane",
     )
-    for s in recommended:
-        render_signal_row(s)
-
-if recommended and other:
-    st.markdown(
-        "<p style='text-align:center;color:#475569;font-size:0.78rem;padding:6px'>"
-        "ℹ Other signals (below confidence threshold)</p>",
-        unsafe_allow_html=True,
-    )
-
-for s in other:
-    render_signal_row(s, dimmed=bool(recommended))
-
-if not recommended and not other:
-    st.info("No signals found.")
-
-# ---------------------------------------------------------------------------
-# Tracked signals
-# ---------------------------------------------------------------------------
+    for signal_row in other:
+        render_signal_row(
+            signal_row,
+            accepted_symbols=accepted_symbols,
+            user_id=user_id,
+            access_token=token,
+            confidence_threshold=confidence_threshold,
+            dimmed=bool(recommended),
+            risk_profile=risk_profile,
+        )
 
 if accepted:
-    st.divider()
-    st.subheader("✅ Tracked Signals")
-    st.caption("You'll receive email alerts when these signals change")
-
-    for a in accepted:
-        ac1, ac2, ac3, ac4 = st.columns([2, 2, 3, 2])
-        ac1.markdown(f"**{a['symbol']}**")
-        sig_key = a.get("last_signal", "")
-        ac2.markdown(signal_badge_html(sig_key), unsafe_allow_html=True)
-        notified = a.get("last_notified_at", a.get("created_at", ""))
+    render_section_heading(
+        "Tracked signals",
+        "These names stay in your notification loop until you stop following them.",
+        kicker="Monitoring",
+    )
+    for item in accepted:
+        row = st.columns([1.2, 1.4, 1.6, 1], gap="small")
+        row[0].markdown(f"**{item['symbol']}**")
+        row[1].markdown(signal_badge_html(item.get("last_signal", "")), unsafe_allow_html=True)
+        timestamp = item.get("last_notified_at", item.get("created_at", ""))
         try:
-            from datetime import datetime
-            dt = datetime.fromisoformat(notified.replace("Z", "+00:00"))
-            ac3.markdown(f"<span style='color:#94a3b8;font-size:0.8rem'>{dt.strftime('%d %b %Y')}</span>",
-                         unsafe_allow_html=True)
+            pretty_date = datetime.fromisoformat(timestamp.replace("Z", "+00:00")).strftime("%d %b %Y")
         except Exception:
-            ac3.markdown("")
-        if ac4.button("Stop", key=f"stop_{a['id']}"):
-            stop_tracking(a["id"], uid, token)
-            fetch_accepted_signals.clear()
-            st.rerun()
-        st.markdown("<hr style='margin:3px 0;border-color:#1e293b'>", unsafe_allow_html=True)
+            pretty_date = timestamp or "Unknown"
+        row[2].markdown(f"<span style='color:#9aabc4'>{pretty_date}</span>", unsafe_allow_html=True)
+        with row[3]:
+            if st.button("Stop", key=f"stop_{item['id']}", use_container_width=True):
+                stop_tracking(item["id"], user_id, token)
+                fetch_accepted_signals.clear()
+                st.rerun()
+        st.markdown('<div class="ns-row-divider"></div>', unsafe_allow_html=True)
+else:
+    render_note_card(
+        "No tracked signals yet",
+        "Accept any buy, strong buy, sell, or strong sell call above to create your first monitored lane.",
+    )

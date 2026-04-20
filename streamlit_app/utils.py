@@ -1,21 +1,61 @@
-"""Shared utilities: formatting, signal colors, personalization logic."""
+"""Shared utilities: formatting, signal colors, and personalization logic."""
 
 
-# ---------------------------------------------------------------------------
-# Formatting
-# ---------------------------------------------------------------------------
+RISK_QUESTIONS = [
+    {
+        "q": "1. What is your primary investment goal?",
+        "options": [
+            ("Preserve capital with minimal risk", 1),
+            ("Steady income with moderate growth", 2),
+            ("Long-term capital growth", 3),
+        ],
+    },
+    {
+        "q": "2. How long is your investment horizon?",
+        "options": [
+            ("Less than 2 years", 1),
+            ("2-5 years", 2),
+            ("More than 5 years", 3),
+        ],
+    },
+    {
+        "q": "3. How would you react to a 20% portfolio drop?",
+        "options": [
+            ("Sell immediately to cut losses", 1),
+            ("Wait and see if it recovers", 2),
+            ("Buy more at the lower price", 3),
+        ],
+    },
+    {
+        "q": "4. What percentage of your savings is this investment?",
+        "options": [
+            ("More than 75%", 1),
+            ("25-75%", 2),
+            ("Less than 25%", 3),
+        ],
+    },
+    {
+        "q": "5. How familiar are you with equity markets?",
+        "options": [
+            ("Not familiar", 1),
+            ("Some knowledge", 2),
+            ("Experienced investor", 3),
+        ],
+    },
+]
+
 
 def format_currency(value: float) -> str:
-    """Format a number as INR currency string."""
+    """Format a number as an INR currency string using ASCII-safe text."""
     try:
-        v = float(value)
+        numeric_value = float(value)
     except (TypeError, ValueError):
-        return "₹0"
-    if abs(v) >= 1_00_00_000:  # 1 crore
-        return f"₹{v / 1_00_00_000:.2f} Cr"
-    if abs(v) >= 1_00_000:     # 1 lakh
-        return f"₹{v / 1_00_000:.2f} L"
-    return f"₹{v:,.0f}"
+        return "Rs 0"
+    if abs(numeric_value) >= 1_00_00_000:
+        return f"Rs {numeric_value / 1_00_00_000:.2f} Cr"
+    if abs(numeric_value) >= 1_00_000:
+        return f"Rs {numeric_value / 1_00_000:.2f} L"
+    return f"Rs {numeric_value:,.0f}"
 
 
 def format_pct(value: float, decimals: int = 2) -> str:
@@ -27,24 +67,20 @@ def format_signal(signal: str) -> str:
     return signal.replace("_", " ").title()
 
 
-# ---------------------------------------------------------------------------
-# Signal colors (as hex strings for Plotly / st.markdown HTML)
-# ---------------------------------------------------------------------------
-
 SIGNAL_COLORS = {
-    "strong_buy":  "#22c55e",
-    "buy":         "#10b981",
-    "hold":        "#eab308",
-    "sell":        "#f97316",
-    "strong_sell": "#ef4444",
+    "strong_buy": "#5de4c7",
+    "buy": "#72d4ff",
+    "hold": "#f3c36f",
+    "sell": "#ff9a62",
+    "strong_sell": "#ff7f90",
 }
 
 SIGNAL_BG = {
-    "strong_buy":  "#14532d",
-    "buy":         "#064e3b",
-    "hold":        "#713f12",
-    "sell":        "#7c2d12",
-    "strong_sell": "#7f1d1d",
+    "strong_buy": "rgba(93, 228, 199, 0.14)",
+    "buy": "rgba(114, 212, 255, 0.14)",
+    "hold": "rgba(243, 195, 111, 0.16)",
+    "sell": "rgba(255, 154, 98, 0.15)",
+    "strong_sell": "rgba(255, 127, 144, 0.16)",
 }
 
 
@@ -54,30 +90,26 @@ def signal_color(signal: str) -> str:
 
 def signal_badge_html(signal: str) -> str:
     color = SIGNAL_COLORS.get(signal, "#94a3b8")
-    bg = SIGNAL_BG.get(signal, "#1e293b")
+    background = SIGNAL_BG.get(signal, "rgba(148, 163, 184, 0.14)")
     label = format_signal(signal)
     return (
-        f'<span style="background:{bg};color:{color};padding:2px 8px;'
-        f'border-radius:4px;font-size:0.78rem;font-weight:600;">{label}</span>'
+        f'<span class="ns-signal-pill" style="background:{background};'
+        f"color:{color};border-color:{color}33;\">{label}</span>"
     )
 
-
-# ---------------------------------------------------------------------------
-# Signals personalization (ported from signals/page.tsx)
-# ---------------------------------------------------------------------------
 
 def get_confidence_threshold(risk_profile: str) -> float:
     return {"conservative": 0.5, "aggressive": 0.2}.get(risk_profile, 0.3)
 
 
-def _conservative_score(s: dict) -> float:
+def _conservative_score(signal_row: dict) -> float:
     weights = {"buy": 3, "hold": 2, "strong_buy": 1, "sell": 0, "strong_sell": -1}
-    return weights.get(s.get("signal", ""), 0) + s.get("confidence", 0) * 2
+    return weights.get(signal_row.get("signal", ""), 0) + signal_row.get("confidence", 0) * 2
 
 
-def _aggressive_score(s: dict) -> float:
+def _aggressive_score(signal_row: dict) -> float:
     weights = {"strong_buy": 4, "strong_sell": 3, "buy": 2, "sell": 1, "hold": 0}
-    return weights.get(s.get("signal", ""), 0) + s.get("confidence", 0) * 2
+    return weights.get(signal_row.get("signal", ""), 0) + signal_row.get("confidence", 0) * 2
 
 
 def personalize_signals(signals: list[dict], risk_profile: str) -> list[dict]:
@@ -90,23 +122,18 @@ def personalize_signals(signals: list[dict], risk_profile: str) -> list[dict]:
 
 def get_position_size_hint(risk_profile: str, signal: str) -> str:
     hints = {
-        "conservative": {"buy": "2–3% of portfolio", "strong_buy": "3–5% of portfolio"},
-        "moderate":     {"buy": "3–5% of portfolio", "strong_buy": "5–8% of portfolio"},
-        "aggressive":   {"buy": "5–8% of portfolio", "strong_buy": "8–12% of portfolio"},
+        "conservative": {"buy": "2-3% of portfolio", "strong_buy": "3-5% of portfolio"},
+        "moderate": {"buy": "3-5% of portfolio", "strong_buy": "5-8% of portfolio"},
+        "aggressive": {"buy": "5-8% of portfolio", "strong_buy": "8-12% of portfolio"},
     }
     return hints.get(risk_profile, {}).get(signal, "")
 
-
-# ---------------------------------------------------------------------------
-# Risk assessment scoring (from profile/route.ts)
-# ---------------------------------------------------------------------------
 
 def compute_risk_profile(answers: list[int]) -> tuple[int, str]:
     """Given a list of answer scores, return (total_score, risk_profile)."""
     total = sum(answers)
     if total <= 8:
         return total, "conservative"
-    elif total <= 12:
+    if total <= 12:
         return total, "moderate"
-    else:
-        return total, "aggressive"
+    return total, "aggressive"
