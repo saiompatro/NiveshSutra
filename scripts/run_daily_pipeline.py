@@ -71,7 +71,7 @@ def main():
         print("PIPELINE STEP 1/4: OHLCV Ingestion + Indicators")
         print("=" * 60)
         try:
-            from services.ml.run_ingest import main as run_ingest
+            from data.run_ingest import main as run_ingest
 
             # Override sys.argv so argparse inside run_ingest works
             saved_argv = sys.argv
@@ -95,7 +95,7 @@ def main():
         print("PIPELINE STEP 2/4: Sentiment Analysis")
         print("=" * 60)
         try:
-            from services.ml.sentiment import run_sentiment_pipeline
+            from data.sentiment import run_sentiment_pipeline
 
             run_sentiment_pipeline()
         except Exception as exc:
@@ -115,7 +115,7 @@ def main():
         print("PIPELINE STEP 3/4: Signal Computation")
         print("=" * 60)
         try:
-            from services.ml.signals import run_signals_pipeline
+            from data.signals import run_signals_pipeline
 
             run_signals_pipeline()
         except Exception as exc:
@@ -135,7 +135,7 @@ def main():
         print("PIPELINE STEP 4/4: Alert Generation")
         print("=" * 60)
         try:
-            from services.ml.alerts import generate_alerts
+            from data.alerts import generate_alerts
 
             generate_alerts()
         except Exception as exc:
