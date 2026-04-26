@@ -231,11 +231,11 @@ with story_left:
 
         for stock in stocks:
             row = st.columns([1.3, 2.8, 2, 1.4, 1.3, 1.5, 0.9], gap="small")
-            change_color = "#3dd68c" if stock["change_pct"] >= 0 else "#f06565"
+            change_color = "#343a40" if stock["change_pct"] >= 0 else "#6c757d"
             row[0].markdown(f"**{stock['symbol']}**")
             row[1].markdown(stock["company_name"])
             row[2].markdown(
-                f"<span style='color:#8b9ab5'>{stock['sector'] or 'Unassigned'}</span>",
+                f"<span style='color:#6c757d'>{stock['sector'] or 'Unassigned'}</span>",
                 unsafe_allow_html=True,
             )
             row[3].markdown(f"{stock['price']:,.2f}")
@@ -244,7 +244,7 @@ with story_left:
                 unsafe_allow_html=True,
             )
             row[5].markdown(
-                signal_badge_html(stock["signal"]) if stock["signal"] else "<span style='color:#4d5f78'>Waiting</span>",
+                signal_badge_html(stock["signal"]) if stock["signal"] else "<span style='color:#6c757d'>Waiting</span>",
                 unsafe_allow_html=True,
             )
             with row[6]:

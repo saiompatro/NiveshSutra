@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
+from postgrest.exceptions import APIError
 from supabase import Client
-from ..dependencies import get_current_user, get_supabase_admin
+from ..dependencies import get_current_user, get_supabase_admin, get_supabase_for_user
 from ..models.portfolio import MonteCarloRiskRequest, OptimizeRequest
 from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
 from math_engine.risk import MonteCarloRiskError, get_india_risk_free_rate, run_monte_carlo_var
@@ -12,14 +13,47 @@ router = APIRouter()
 async def optimize_portfolio(
     body: OptimizeRequest,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
-    # Get user profile for risk_profile
-    profile = supabase.table("profiles").select("risk_profile").eq("id", user["id"]).single().execute()
-    risk_profile = body.method_override or (profile.data["risk_profile"] if profile.data else "moderate")
+    try:
+        profile = (
+            supabase.table("profiles")
+            .select("risk_profile")
+            .eq("id", user["id"])
+            .maybe_single()
+            .execute()
+        )
+    except APIError:
+        profile = None
 
-    # Get holdings
-    holdings = supabase.table("holdings").select("symbol, quantity, avg_buy_price").eq("user_id", user["id"]).execute()
+    risk_profile = body.method_override or (
+        (profile.data or {}).get("risk_profile") if profile and profile.data else None
+    ) or "moderate"
+    if risk_profile not in {"conservative", "moderate", "aggressive"}:
+        risk_profile = "moderate"
+
+    if not profile or not profile.data:
+        try:
+            supabase.table("profiles").upsert(
+                {
+                    "id": user["id"],
+                    "email": user.get("email") or f"{user['id']}@unknown.local",
+                    "risk_profile": risk_profile,
+                },
+                on_conflict="id",
+            ).execute()
+        except APIError as exc:
+            raise HTTPException(status_code=502, detail=f"Could not prepare user profile: {exc.message}") from exc
+
+    try:
+        holdings = (
+            supabase.table("holdings")
+            .select("symbol, quantity, avg_buy_price")
+            .eq("user_id", user["id"])
+            .execute()
+        )
+    except APIError as exc:
+        raise HTTPException(status_code=502, detail=f"Could not load holdings: {exc.message}") from exc
 
     # Store optimization request
     method_map = {"conservative": "min_volatility", "moderate": "max_sharpe", "aggressive": "efficient_return"}
@@ -31,14 +65,17 @@ async def optimize_portfolio(
         "target_risk": body.target_risk,
         "status": "pending",
     }
-    result = supabase.table("portfolio_optimizations").insert(opt_data).execute()
+    try:
+        result = supabase.table("portfolio_optimizations").insert(opt_data).execute()
+    except APIError as exc:
+        raise HTTPException(status_code=502, detail=f"Could not create optimization request: {exc.message}") from exc
     opt_id = result.data[0]["id"] if result.data else None
 
     # Try running the ML optimizer inline (PyPortfolioOpt)
     if opt_id and holdings.data:
         try:
             from math_engine.optimizer import run_optimization
-            opt_result = run_optimization(user["id"], risk_profile, opt_id)
+            opt_result = run_optimization(user["id"], risk_profile, opt_id, supabase=supabase)
             return {
                 "optimization_id": opt_id,
                 "risk_profile": risk_profile,

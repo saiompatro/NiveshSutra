@@ -295,8 +295,8 @@ with tab_chart:
                 low=lows,
                 close=closes,
                 name=symbol,
-                increasing_line_color="#3dd68c",
-                decreasing_line_color="#f06565",
+                increasing_line_color="#343a40",
+                decreasing_line_color="#6c757d",
             )
         )
         if indicators:
@@ -308,7 +308,7 @@ with tab_chart:
                         x=[row[0] for row in sma20_rows],
                         y=[row[1] for row in sma20_rows],
                         name="SMA 20",
-                        line=dict(color="#5ba4f5", width=1.6),
+                        line=dict(color="#495057", width=1.6),
                     )
                 )
             if sma50_rows:
@@ -317,7 +317,7 @@ with tab_chart:
                         x=[row[0] for row in sma50_rows],
                         y=[row[1] for row in sma50_rows],
                         name="SMA 50",
-                        line=dict(color="#f0b655", width=1.6, dash="dot"),
+                        line=dict(color="#6c757d", width=1.6, dash="dot"),
                     )
                 )
         fig.update_layout(xaxis=dict(rangeslider=dict(visible=False)))
@@ -370,11 +370,11 @@ with tab_indicators:
                     x=[row[0] for row in rsi_rows],
                     y=[row[1] for row in rsi_rows],
                     name="RSI 14",
-                    line=dict(color="#5ba4f5", width=2),
+                    line=dict(color="#495057", width=2),
                 )
             )
-            fig_rsi.add_hline(y=70, line_dash="dash", line_color="#f06565")
-            fig_rsi.add_hline(y=30, line_dash="dash", line_color="#3dd68c")
+            fig_rsi.add_hline(y=70, line_dash="dash", line_color="#6c757d")
+            fig_rsi.add_hline(y=30, line_dash="dash", line_color="#343a40")
             fig_rsi.update_layout(yaxis=dict(range=[0, 100]))
             st.plotly_chart(style_plotly_figure(fig_rsi, height=280), use_container_width=True)
     else:
@@ -397,10 +397,10 @@ with tab_sentiment:
                 y=scores,
                 name="Average sentiment",
                 fill="tozeroy",
-                line=dict(color="#3dd68c", width=2.2),
+                line=dict(color="#343a40", width=2.2),
             )
         )
-        fig_sentiment.add_hline(y=0, line_color="rgba(164,185,213,0.25)")
+        fig_sentiment.add_hline(y=0, line_color="#ced4da")
         fig_sentiment.update_layout(yaxis=dict(range=[-1, 1]))
         st.plotly_chart(style_plotly_figure(fig_sentiment, height=320), use_container_width=True)
 

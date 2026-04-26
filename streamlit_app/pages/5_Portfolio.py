@@ -30,14 +30,14 @@ apply_theme()
 require_auth()
 
 CHART_COLORS = [
-    "#5ba4f5",
-    "#3dd68c",
-    "#f0b655",
-    "#f06565",
-    "#a78bfa",
-    "#fbbf24",
-    "#34d399",
-    "#fb923c",
+    "#212529",
+    "#343a40",
+    "#495057",
+    "#6c757d",
+    "#adb5bd",
+    "#ced4da",
+    "#dee2e6",
+    "#e9ecef",
 ]
 
 
@@ -47,7 +47,7 @@ def _render_sidebar() -> None:
         active_page="Portfolio",
         user_email=st.session_state["user"].email,
         risk_profile=profile.get("risk_profile"),
-        headline="Turn holdings into an allocation story: current exposure, live PnL, and optimizer suggestions in one studio.",
+        headline="Holdings, live value, and allocation suggestions.",
     )
     with st.sidebar:
         st.markdown("")
@@ -188,7 +188,7 @@ total_pnl_pct = (total_pnl / total_invested * 100) if total_invested else 0.0
 render_page_hero(
     kicker="Portfolio",
     title="Holdings & allocation",
-    body=f"{len(holdings)} positions · Value {format_currency(total_value)} · PnL {format_pct(total_pnl_pct)}",
+    body=f"{len(holdings)} positions | Value {format_currency(total_value)} | PnL {format_pct(total_pnl_pct)}",
     pills=[],
 )
 
@@ -197,13 +197,13 @@ render_metric_grid(
         {
             "label": "Portfolio value",
             "value": format_currency(total_value),
-            "detail": "Current marked-to-market value across all holdings.",
+            "detail": "Live marked value.",
             "tone": "emerald",
         },
         {
             "label": "Capital deployed",
             "value": format_currency(total_invested),
-            "detail": "Total invested cost basis across the portfolio.",
+            "detail": "Cost basis.",
             "tone": "amber",
         },
         {
@@ -230,7 +230,7 @@ if st.session_state.get("show_add_holding"):
     with st.form("add_holding_form"):
         render_section_heading(
             "Add a holding",
-            "Translate a signal or an external position into the portfolio store.",
+            "Add one position.",
             kicker="Input",
         )
         symbol_list = [f"{item['symbol']} - {item['company_name']}" for item in all_symbols]
@@ -256,12 +256,12 @@ if st.session_state.get("show_add_holding"):
 
 render_section_heading(
     "Holdings ledger",
-    "This stays dense and operational, but the framing keeps it from feeling like a plain spreadsheet.",
+    "",
     kicker="Primary lane",
 )
 
 if holdings:
-    header = st.columns([1.2, 1, 1.3, 1.3, 1.2, 1.2, 1.3, 1], gap="small")
+    header = st.columns([1.2, 0.8, 1.1, 1.1, 1.1, 0.9, 1.2, 1.05], gap="small")
     for column, label in zip(
         header,
         ["Symbol", "Qty", "Avg price", "Current", "PnL", "PnL %", "Value", ""],
@@ -271,8 +271,8 @@ if holdings:
     st.markdown('<div class="ns-row-divider"></div>', unsafe_allow_html=True)
 
     for holding in holdings:
-        pnl_color = "#3dd68c" if holding["pnl"] >= 0 else "#f06565"
-        row = st.columns([1.2, 1, 1.3, 1.3, 1.2, 1.2, 1.3, 1], gap="small")
+        pnl_color = "#343a40" if holding["pnl"] >= 0 else "#6c757d"
+        row = st.columns([1.2, 0.8, 1.1, 1.1, 1.1, 0.9, 1.2, 1.05], gap="small")
         row[0].markdown(f"**{holding['symbol']}**")
         row[1].markdown(f"{holding['quantity']:.0f}")
         row[2].markdown(f"{holding['avg_price']:,.2f}")
@@ -287,7 +287,7 @@ if holdings:
         )
         row[6].markdown(format_currency(holding["value"]))
         with row[7]:
-            if st.button("Remove", key=f"remove_{holding['id']}", use_container_width=True):
+            if st.button("Delete", key=f"remove_{holding['id']}", use_container_width=True):
                 delete_holding(holding["id"], user_id, token)
                 fetch_holdings.clear()
                 st.rerun()
@@ -300,7 +300,7 @@ if holdings:
     with chart_left:
         render_section_heading(
             "Allocation shape",
-            "A visual read of how much capital each position currently carries.",
+            "",
             kicker="Chart lane",
         )
         fig_pie = go.Figure(
@@ -317,7 +317,7 @@ if holdings:
     with chart_right:
         render_section_heading(
             "PnL distribution",
-            "A quick way to see which positions are driving the portfolio mood.",
+            "",
             kicker="Chart lane",
         )
         sorted_holdings = sorted(holdings, key=lambda item: item["pnl"])
@@ -326,7 +326,7 @@ if holdings:
                 x=[holding["symbol"] for holding in sorted_holdings],
                 y=[holding["pnl"] for holding in sorted_holdings],
                 marker_color=[
-                    "#3dd68c" if holding["pnl"] >= 0 else "#f06565" for holding in sorted_holdings
+                    "#343a40" if holding["pnl"] >= 0 else "#6c757d" for holding in sorted_holdings
                 ],
                 text=[format_currency(holding["pnl"]) for holding in sorted_holdings],
                 textposition="outside",
@@ -348,7 +348,7 @@ optimization = st.session_state.get("opt_result")
 if optimization and optimization.get("allocations"):
     render_section_heading(
         "Optimizer output",
-        "The final scene translates portfolio math into weight changes and rebalancing moves.",
+        "",
         kicker="Optimization",
     )
     render_metric_grid(
@@ -356,19 +356,19 @@ if optimization and optimization.get("allocations"):
             {
                 "label": "Expected return",
                 "value": f"{(optimization.get('expected_return', 0) or 0) * 100:.1f}%",
-                "detail": "Projected annualized return from the optimizer.",
+                "detail": "Annualized.",
                 "tone": "emerald",
             },
             {
                 "label": "Expected volatility",
                 "value": f"{(optimization.get('expected_risk', 0) or 0) * 100:.1f}%",
-                "detail": "Annualized risk estimate based on optimizer inputs.",
+                "detail": "Annualized.",
                 "tone": "amber",
             },
             {
                 "label": "Sharpe ratio",
                 "value": f"{optimization.get('sharpe_ratio', 0) or 0:.2f}",
-                "detail": "Risk-adjusted efficiency of the proposed allocation.",
+                "detail": "Risk-adjusted.",
                 "tone": "rose",
             },
         ]
@@ -397,7 +397,7 @@ if optimization and optimization.get("allocations"):
         if actions:
             for action in actions:
                 direction = action.get("action", "")
-                color = "#3dd68c" if direction in {"increase", "buy"} else "#f06565"
+                color = "#343a40" if direction in {"increase", "buy"} else "#6c757d"
                 render_note_card(
                     action["symbol"],
                     f"{direction.upper()} from {action.get('current_weight', 0) * 100:.1f}% to {action.get('recommended_weight', 0) * 100:.1f}% target weight.",

@@ -34,25 +34,26 @@ def apply_theme() -> None:
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&display=swap');
 
         :root {
-            --bg:          #09101f;
-            --surface:     #0f1929;
-            --surface-2:   #162030;
-            --border:      rgba(255, 255, 255, 0.07);
-            --border-s:    rgba(255, 255, 255, 0.13);
-            --text:        #e2e8f0;
-            --text-2:      #8b9ab5;
-            --muted:       #4d5f78;
-            --accent:      #e07b54;
-            --accent-bg:   rgba(224, 123, 84, 0.12);
-            --accent-dim:  rgba(224, 123, 84, 0.25);
-            --blue:        #5ba4f5;
-            --blue-bg:     rgba(91,  164, 245, 0.12);
-            --green:       #3dd68c;
-            --green-bg:    rgba(61,  214, 140, 0.12);
-            --red:         #f06565;
-            --red-bg:      rgba(240, 101, 101, 0.12);
-            --amber:       #f0b655;
-            --amber-bg:    rgba(240, 182,  85, 0.12);
+            --bg:          #f8f9fa;
+            --surface:     #f8f9fa;
+            --surface-2:   #e9ecef;
+            --surface-3:   #dee2e6;
+            --border:      #dee2e6;
+            --border-s:    #ced4da;
+            --text:        #212529;
+            --text-2:      #495057;
+            --muted:       #6c757d;
+            --accent:      #343a40;
+            --accent-bg:   #e9ecef;
+            --accent-dim:  #adb5bd;
+            --blue:        #495057;
+            --blue-bg:     #e9ecef;
+            --green:       #343a40;
+            --green-bg:    #e9ecef;
+            --red:         #212529;
+            --red-bg:      #dee2e6;
+            --amber:       #6c757d;
+            --amber-bg:    #e9ecef;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -86,7 +87,7 @@ def apply_theme() -> None:
         h1, h2, h3, h4, h5, h6 {
             font-family: "Inter", sans-serif !important;
             color: var(--text) !important;
-            letter-spacing: -0.015em;
+            letter-spacing: 0;
             line-height: 1.25;
         }
         h1 { font-size: 1.625rem !important; font-weight: 700 !important; }
@@ -107,14 +108,28 @@ def apply_theme() -> None:
             color: var(--text) !important;
             font-weight: 500 !important;
             font-size: 0.875rem !important;
+            line-height: 1.1 !important;
             min-height: 2.4rem !important;
             padding: 0.4rem 0.875rem !important;
             box-shadow: none !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
             transition: border-color 0.15s ease, background 0.15s ease !important;
+        }
+        .stButton > button p,
+        .stDownloadButton > button p,
+        div[data-testid="stFormSubmitButton"] > button p {
+            margin: 0 !important;
+            color: inherit !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            line-height: 1.1 !important;
         }
         .stButton > button:hover,
         .stDownloadButton > button:hover {
-            background: rgba(255,255,255,0.07) !important;
+            background: var(--surface-3) !important;
             border-color: var(--accent-dim) !important;
             color: var(--text) !important;
         }
@@ -123,12 +138,16 @@ def apply_theme() -> None:
             background: var(--accent) !important;
             border: 1px solid transparent !important;
             border-radius: 8px !important;
-            color: #fff !important;
+            color: #f8f9fa !important;
             font-weight: 600 !important;
             font-size: 0.875rem !important;
+            line-height: 1.1 !important;
             min-height: 2.4rem !important;
             padding: 0.4rem 0.875rem !important;
             box-shadow: none !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
             transition: opacity 0.15s ease !important;
         }
         div[data-testid="stFormSubmitButton"] > button:hover {
@@ -147,14 +166,18 @@ def apply_theme() -> None:
             color: var(--text) !important;
             font-weight: 500 !important;
             font-size: 0.875rem !important;
+            line-height: 1.1 !important;
             min-height: 2.4rem !important;
             padding: 0.4rem 0.875rem !important;
             text-decoration: none !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
             transition: border-color 0.15s ease !important;
         }
         [data-testid="stLinkButton"] a:hover {
             border-color: var(--border-s) !important;
-            background: rgba(255,255,255,0.07) !important;
+            background: var(--surface-3) !important;
         }
 
         /* ── Inputs ──────────────────────────────────────────────── */
@@ -259,10 +282,10 @@ def apply_theme() -> None:
             font-size: 0.875rem !important;
         }
         .stAlert[data-baseweb="notification"][kind="positive"] {
-            border-color: rgba(61, 214, 140, 0.3) !important;
+            border-color: var(--border-s) !important;
         }
         .stAlert[data-baseweb="notification"][kind="negative"] {
-            border-color: rgba(240, 101, 101, 0.3) !important;
+            border-color: var(--text) !important;
         }
 
         /* ── Radio / Checkbox / Toggle ───────────────────────────── */
@@ -295,6 +318,9 @@ def apply_theme() -> None:
             font-size: 0.875rem !important;
             font-weight: 500 !important;
             width: 100% !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
             transition: all 0.15s ease !important;
             background: transparent !important;
         }
@@ -502,7 +528,7 @@ def apply_theme() -> None:
             justify-content: center;
             font-weight: 800;
             font-size: 0.9rem;
-            color: #fff;
+            color: #f8f9fa;
             flex-shrink: 0;
             letter-spacing: -0.02em;
         }
@@ -545,6 +571,22 @@ def apply_theme() -> None:
             font-size: 0.72rem;
             color: var(--text-2);
             margin-top: 0.2rem;
+        }
+
+        [data-testid="stHorizontalBlock"] {
+            gap: 0.75rem;
+        }
+
+        [data-testid="stHorizontalBlock"] [data-testid="stMarkdownContainer"] p {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        .stButton > button:disabled,
+        .stButton > button:disabled * {
+            color: var(--muted) !important;
+            opacity: 1 !important;
         }
 
         @media (max-width: 768px) {
@@ -716,27 +758,27 @@ def render_empty_state(title: str, body: str) -> None:
 
 
 def style_plotly_figure(fig, *, height: int = 320):
-    """Apply the shared dark theme to a Plotly figure."""
+    """Apply the shared neutral theme to a Plotly figure."""
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(22, 32, 48, 0.5)",
-        font=dict(color="#8b9ab5", family="Inter", size=12),
+        plot_bgcolor="#f8f9fa",
+        font=dict(color="#495057", family="Inter", size=12),
         xaxis=dict(
-            gridcolor="rgba(255,255,255,0.05)",
-            zerolinecolor="rgba(255,255,255,0.07)",
-            color="#8b9ab5",
+            gridcolor="#dee2e6",
+            zerolinecolor="#ced4da",
+            color="#495057",
         ),
         yaxis=dict(
-            gridcolor="rgba(255,255,255,0.05)",
-            zerolinecolor="rgba(255,255,255,0.07)",
-            color="#8b9ab5",
+            gridcolor="#dee2e6",
+            zerolinecolor="#ced4da",
+            color="#495057",
         ),
         legend=dict(
             orientation="h",
             yanchor="bottom",
             y=1.02,
             x=0,
-            font=dict(color="#8b9ab5", size=11),
+            font=dict(color="#495057", size=11),
         ),
         margin=dict(l=0, r=0, t=20, b=0),
         height=height,

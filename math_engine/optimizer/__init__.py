@@ -14,6 +14,7 @@ from __future__ import annotations
 import time
 import traceback
 from typing import Any
+import zlib
 
 import numpy as np
 import pandas as pd
@@ -26,7 +27,12 @@ from data.config import get_supabase
 RISK_FREE_RATE = 0.07  # ~7% India 10Y govt bond
 
 
-def run_optimization(user_id: str, risk_profile: str, opt_id: str) -> dict[str, Any]:
+def run_optimization(
+    user_id: str,
+    risk_profile: str,
+    opt_id: str,
+    supabase: Any | None = None,
+) -> dict[str, Any]:
     """
     Run portfolio optimization for a user.
 
@@ -39,7 +45,7 @@ def run_optimization(user_id: str, risk_profile: str, opt_id: str) -> dict[str, 
     Returns:
         dict with optimization results.
     """
-    sb = get_supabase()
+    sb = supabase or get_supabase()
     start = time.time()
 
     print(f"Running optimization for user={user_id}, risk={risk_profile}, opt_id={opt_id}")
@@ -115,9 +121,16 @@ def run_optimization(user_id: str, risk_profile: str, opt_id: str) -> dict[str, 
         sharpe_ratio = round(perf[2], 4)
 
     except Exception as exc:
-        print(f"Optimization failed: {exc}")
-        traceback.print_exc()
-        return _equal_weight_fallback(sb, user_id, risk_profile, opt_id, symbols)
+        print(f"PyPortfolioOpt unavailable or failed: {exc}")
+        try:
+            cleaned, perf = _vectorized_mean_variance(prices_df, risk_profile, RISK_FREE_RATE)
+            expected_return = round(perf[0], 6)
+            expected_risk = round(perf[1], 6)
+            sharpe_ratio = round(perf[2], 4)
+        except Exception as fallback_exc:
+            print(f"Vectorized optimizer failed: {fallback_exc}")
+            traceback.print_exc()
+            return _equal_weight_fallback(sb, user_id, risk_profile, opt_id, symbols)
 
     total_current_value = 0.0
     current_values: dict[str, float] = {}
@@ -149,6 +162,8 @@ def run_optimization(user_id: str, risk_profile: str, opt_id: str) -> dict[str, 
                 "symbol": sym,
                 "current_weight": current_weight,
                 "recommended_weight": recommended_weight,
+                "weight_change": round(recommended_weight - current_weight, 6),
+                "action": _rebalance_action(recommended_weight - current_weight),
                 "current_value": current_val,
                 "recommended_value": recommended_val,
             }
@@ -202,6 +217,8 @@ def _equal_weight_fallback(
                 "symbol": sym,
                 "current_weight": 0.0,
                 "recommended_weight": equal_weight,
+                "weight_change": equal_weight,
+                "action": "increase" if equal_weight > 0 else "hold",
                 "current_value": 0.0,
                 "recommended_value": 0.0,
             }
@@ -228,3 +245,65 @@ def _equal_weight_fallback(
         "sharpe_ratio": None,
         "allocations": allocations,
     }
+
+
+def _vectorized_mean_variance(
+    prices_df: pd.DataFrame,
+    risk_profile: str,
+    risk_free_rate: float,
+) -> tuple[dict[str, float], tuple[float, float, float]]:
+    returns = prices_df.pct_change().replace([np.inf, -np.inf], np.nan).dropna()
+    if returns.shape[0] < 30 or returns.shape[1] < 2:
+        raise ValueError("not enough return observations")
+
+    symbols = list(returns.columns)
+    n_assets = len(symbols)
+    daily_mu = returns.mean().to_numpy(dtype=float)
+    annual_mu = daily_mu * 252.0
+    annual_cov = returns.cov().to_numpy(dtype=float) * 252.0
+    annual_cov = np.nan_to_num(annual_cov, nan=0.0, posinf=0.0, neginf=0.0)
+    annual_cov = (annual_cov + annual_cov.T) / 2.0
+    annual_cov += np.eye(n_assets) * 1e-8
+
+    seed_text = "|".join(symbols) + f"|{risk_profile}"
+    rng = np.random.default_rng(zlib.crc32(seed_text.encode("utf-8")))
+    sample_count = max(20_000, n_assets * 4_000)
+    random_weights = rng.dirichlet(np.ones(n_assets), size=sample_count)
+
+    equal_weight = np.full((1, n_assets), 1.0 / n_assets)
+    asset_vol = np.sqrt(np.maximum(np.diag(annual_cov), 1e-12))
+    inv_vol = (1.0 / asset_vol)
+    inv_vol = (inv_vol / inv_vol.sum()).reshape(1, -1)
+    candidates = np.vstack([random_weights, equal_weight, inv_vol])
+
+    portfolio_returns = candidates @ annual_mu
+    variances = np.einsum("ij,jk,ik->i", candidates, annual_cov, candidates)
+    portfolio_risks = np.sqrt(np.maximum(variances, 1e-12))
+    sharpes = (portfolio_returns - risk_free_rate) / portfolio_risks
+
+    if risk_profile == "conservative":
+        best_idx = int(np.argmin(portfolio_risks))
+    elif risk_profile == "aggressive":
+        target_return = max(float(np.mean(annual_mu)) * 1.2, risk_free_rate)
+        feasible = np.flatnonzero(portfolio_returns >= target_return)
+        best_idx = int(feasible[np.argmin(portfolio_risks[feasible])]) if len(feasible) else int(np.argmax(portfolio_returns))
+    else:
+        best_idx = int(np.argmax(sharpes))
+
+    weights = candidates[best_idx]
+    weights = np.where(weights < 1e-4, 0.0, weights)
+    weights = weights / weights.sum() if weights.sum() else np.full(n_assets, 1.0 / n_assets)
+
+    expected_return = float(weights @ annual_mu)
+    expected_risk = float(np.sqrt(max(weights @ annual_cov @ weights, 1e-12)))
+    sharpe_ratio = float((expected_return - risk_free_rate) / expected_risk)
+    cleaned = {symbol: round(float(weight), 6) for symbol, weight in zip(symbols, weights, strict=False)}
+    return cleaned, (expected_return, expected_risk, sharpe_ratio)
+
+
+def _rebalance_action(weight_change: float) -> str:
+    if weight_change > 0.01:
+        return "increase"
+    if weight_change < -0.01:
+        return "decrease"
+    return "hold"

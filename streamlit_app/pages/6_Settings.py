@@ -55,8 +55,8 @@ profile = get_profile()
 render_page_hero(
     kicker="Settings",
     title="Account & preferences",
-    body=f"Risk profile: {(profile.get(‘risk_profile’) or ‘Unassigned’).capitalize()} · "
-         f"Score: {profile.get(‘risk_score’, ‘n/a’)}/15",
+    body=f"Risk profile: {(profile.get('risk_profile') or 'Unassigned').capitalize()} | "
+         f"Score: {profile.get('risk_score', 'n/a')}/15",
     pills=[],
 )
 
