@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-26)
 
 ## Corpus Check
-- 95 files · ~37,325 words
+- 95 files · ~37,785 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 491 nodes · 812 edges · 108 communities detected
+- 499 nodes · 812 edges · 116 communities detected
 - Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 304 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -118,6 +118,14 @@
 - [[_COMMUNITY_Community 105|Community 105]]
 - [[_COMMUNITY_Community 106|Community 106]]
 - [[_COMMUNITY_Community 107|Community 107]]
+- [[_COMMUNITY_Community 108|Community 108]]
+- [[_COMMUNITY_Community 109|Community 109]]
+- [[_COMMUNITY_Community 110|Community 110]]
+- [[_COMMUNITY_Community 111|Community 111]]
+- [[_COMMUNITY_Community 112|Community 112]]
+- [[_COMMUNITY_Community 113|Community 113]]
+- [[_COMMUNITY_Community 114|Community 114]]
+- [[_COMMUNITY_Community 115|Community 115]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Table()` - 82 edges
@@ -347,7 +355,7 @@ Nodes (1): Render the shared sidebar.
 
 ### Community 50 - "Community 50"
 Cohesion: 1.0
-Nodes (1): Render a consistent section heading.
+Nodes (1): Render a clean page header (replaces the editorial hero block).
 
 ### Community 51 - "Community 51"
 Cohesion: 1.0
@@ -363,7 +371,7 @@ Nodes (1): Render a compact info callout.
 
 ### Community 54 - "Community 54"
 Cohesion: 1.0
-Nodes (1): Render a branded empty state.
+Nodes (1): Render a compact info card.
 
 ### Community 55 - "Community 55"
 Cohesion: 1.0
@@ -371,214 +379,246 @@ Nodes (1): Render a centered empty state.
 
 ### Community 56 - "Community 56"
 Cohesion: 1.0
-Nodes (1): Apply the shared dark theme to a Plotly figure.
+Nodes (1): Apply the shared neutral theme to a Plotly figure.
 
 ### Community 57 - "Community 57"
 Cohesion: 1.0
-Nodes (1): Run portfolio optimization for a user.      Args:         user_id: UUID of the u
+Nodes (1): Render the shared sidebar.
 
 ### Community 58 - "Community 58"
 Cohesion: 1.0
-Nodes (1): Run portfolio optimization for a user.      Args:         user_id: UUID of the u
+Nodes (1): Render a consistent section heading.
 
 ### Community 59 - "Community 59"
 Cohesion: 1.0
-Nodes (1): Compare today's signals with yesterday's and flag changes.
+Nodes (1): Render a compact section heading.
 
 ### Community 60 - "Community 60"
 Cohesion: 1.0
-Nodes (1): Flag symbols whose daily sentiment shifted significantly.
+Nodes (1): Render a row of flat stat cards.
 
 ### Community 61 - "Community 61"
 Cohesion: 1.0
-Nodes (1): For each user with a completed optimization, check if current portfolio     has
+Nodes (1): Render a compact info callout.
 
 ### Community 62 - "Community 62"
 Cohesion: 1.0
-Nodes (1): Safely extract and round a value from a pandas Series.
+Nodes (1): Render a branded empty state.
 
 ### Community 63 - "Community 63"
 Cohesion: 1.0
-Nodes (1): Upsert OHLCV rows to Supabase ohlcv table.      Args:         df: DataFrame with
+Nodes (1): Render a centered empty state.
 
 ### Community 64 - "Community 64"
 Cohesion: 1.0
-Nodes (1): Upsert indicator rows to Supabase technical_indicators table.      Args:
+Nodes (1): Apply the shared dark theme to a Plotly figure.
 
 ### Community 65 - "Community 65"
 Cohesion: 1.0
-Nodes (1): Upsert news articles to Supabase news_articles table.
+Nodes (1): Run portfolio optimization for a user.      Args:         user_id: UUID of the u
 
 ### Community 66 - "Community 66"
 Cohesion: 1.0
-Nodes (1): Upsert article sentiments to Supabase article_sentiments table.
+Nodes (1): Run portfolio optimization for a user.      Args:         user_id: UUID of the u
 
 ### Community 67 - "Community 67"
 Cohesion: 1.0
-Nodes (1): Upsert daily aggregated sentiment to Supabase sentiment_daily table.
+Nodes (1): Compare today's signals with yesterday's and flag changes.
 
 ### Community 68 - "Community 68"
 Cohesion: 1.0
-Nodes (1): Upsert signals to Supabase signals table.
+Nodes (1): Flag symbols whose daily sentiment shifted significantly.
 
 ### Community 69 - "Community 69"
 Cohesion: 1.0
-Nodes (1): Convert DataFrame to list of dicts, replacing NaN with None.
+Nodes (1): For each user with a completed optimization, check if current portfolio     has
 
 ### Community 70 - "Community 70"
 Cohesion: 1.0
-Nodes (1): Equal-weight fallback when optimization fails (singular matrix, etc.).
+Nodes (1): Safely extract and round a value from a pandas Series.
 
 ### Community 71 - "Community 71"
 Cohesion: 1.0
-Nodes (1): Normalize RSI into [-1, +1].     30 (oversold) -> +1, 50 -> 0, 70 (overbought) -
+Nodes (1): Upsert OHLCV rows to Supabase ohlcv table.      Args:         df: DataFrame with
 
 ### Community 72 - "Community 72"
 Cohesion: 1.0
-Nodes (1): Normalize MACD histogram into [-1, +1].     Positive histogram -> bullish (+), n
+Nodes (1): Upsert indicator rows to Supabase technical_indicators table.      Args:
 
 ### Community 73 - "Community 73"
 Cohesion: 1.0
-Nodes (1): Normalize Bollinger Band position into [-1, +1].     Close near lower band -> +1
+Nodes (1): Upsert news articles to Supabase news_articles table.
 
 ### Community 74 - "Community 74"
 Cohesion: 1.0
-Nodes (1): Normalize OBV trend into [-1, +1].     Computes slope of last 20 OBV values via
+Nodes (1): Upsert article sentiments to Supabase article_sentiments table.
 
 ### Community 75 - "Community 75"
 Cohesion: 1.0
-Nodes (1): technical_score = 0.3*RSI + 0.3*MACD + 0.2*BB + 0.2*OBV
+Nodes (1): Upsert daily aggregated sentiment to Supabase sentiment_daily table.
 
 ### Community 76 - "Community 76"
 Cohesion: 1.0
-Nodes (1): momentum_score = mean(5d_return, 20d_return, SMA_crossover)     Each normalized
+Nodes (1): Upsert signals to Supabase signals table.
 
 ### Community 77 - "Community 77"
 Cohesion: 1.0
-Nodes (1): composite = 0.4*tech + 0.3*sent + 0.3*momentum      Returns (composite_score, si
+Nodes (1): Convert DataFrame to list of dicts, replacing NaN with None.
 
 ### Community 78 - "Community 78"
 Cohesion: 1.0
-Nodes (1): Generate a template-based human-readable explanation.
+Nodes (1): Equal-weight fallback when optimization fails (singular matrix, etc.).
 
 ### Community 79 - "Community 79"
 Cohesion: 1.0
-Nodes (1): Read indicators + sentiment from Supabase, compute signals for all stocks,     a
+Nodes (1): Normalize RSI into [-1, +1].     30 (oversold) -> +1, 50 -> 0, 70 (overbought) -
 
 ### Community 80 - "Community 80"
 Cohesion: 1.0
-Nodes (1): Check all active signal notifications. If a tracked signal has changed,     send
+Nodes (1): Normalize MACD histogram into [-1, +1].     Positive histogram -> bullish (+), n
 
 ### Community 81 - "Community 81"
 Cohesion: 1.0
-Nodes (1): Render the shared authenticated sidebar.
+Nodes (1): Normalize Bollinger Band position into [-1, +1].     Close near lower band -> +1
 
 ### Community 82 - "Community 82"
 Cohesion: 1.0
-Nodes (1): Render the unauthenticated landing and auth flows.
+Nodes (1): Normalize OBV trend into [-1, +1].     Computes slope of last 20 OBV values via
 
 ### Community 83 - "Community 83"
 Cohesion: 1.0
-Nodes (1): Render the risk questionnaire.
+Nodes (1): technical_score = 0.3*RSI + 0.3*MACD + 0.2*BB + 0.2*OBV
 
 ### Community 84 - "Community 84"
 Cohesion: 1.0
-Nodes (1): Call at the top of every protected page.     Redirects to app.py if session is m
+Nodes (1): momentum_score = mean(5d_return, 20d_return, SMA_crossover)     Each normalized
 
 ### Community 85 - "Community 85"
 Cohesion: 1.0
-Nodes (1): Re-fetch profile from DB and update session state.
+Nodes (1): composite = 0.4*tech + 0.3*sent + 0.3*momentum      Returns (composite_score, si
 
 ### Community 86 - "Community 86"
 Cohesion: 1.0
-Nodes (1): Inject the shared CSS skin once per page.
+Nodes (1): Generate a template-based human-readable explanation.
 
 ### Community 87 - "Community 87"
 Cohesion: 1.0
-Nodes (1): Render the shared sidebar shell.
+Nodes (1): Read indicators + sentiment from Supabase, compute signals for all stocks,     a
 
 ### Community 88 - "Community 88"
 Cohesion: 1.0
-Nodes (1): Render a large editorial hero block.
+Nodes (1): Check all active signal notifications. If a tracked signal has changed,     send
 
 ### Community 89 - "Community 89"
 Cohesion: 1.0
-Nodes (1): Render a row of branded metric cards.
+Nodes (1): Render the shared authenticated sidebar.
 
 ### Community 90 - "Community 90"
 Cohesion: 1.0
-Nodes (1): Render a short information band.
+Nodes (1): Render the unauthenticated landing and auth flows.
 
 ### Community 91 - "Community 91"
 Cohesion: 1.0
-Nodes (1): Render a compact explanatory card.
+Nodes (1): Render the risk questionnaire.
 
 ### Community 92 - "Community 92"
 Cohesion: 1.0
-Nodes (1): Apply the shared visual theme to Plotly figures.
+Nodes (1): Call at the top of every protected page.     Redirects to app.py if session is m
 
 ### Community 93 - "Community 93"
 Cohesion: 1.0
-Nodes (1): Fetch stocks from the live FastAPI market endpoint.
+Nodes (1): Re-fetch profile from DB and update session state.
 
 ### Community 94 - "Community 94"
 Cohesion: 1.0
-Nodes (1): Validate and add a symbol through the FastAPI backend.
+Nodes (1): Inject the shared CSS skin once per page.
 
 ### Community 95 - "Community 95"
 Cohesion: 1.0
-Nodes (1): Fetch stocks with latest close price and signal.
+Nodes (1): Render the shared sidebar shell.
 
 ### Community 96 - "Community 96"
 Cohesion: 1.0
-Nodes (1): Validate and add a symbol through the FastAPI backend.
+Nodes (1): Render a large editorial hero block.
 
 ### Community 97 - "Community 97"
 Cohesion: 1.0
-Nodes (1): Return a Supabase client that sends the user JWT on every PostgREST call.
+Nodes (1): Render a row of branded metric cards.
 
 ### Community 98 - "Community 98"
 Cohesion: 1.0
-Nodes (1): Format a number as INR currency string.
+Nodes (1): Render a short information band.
 
 ### Community 99 - "Community 99"
 Cohesion: 1.0
-Nodes (1): Given a list of answer scores, return (total_score, risk_profile).
+Nodes (1): Render a compact explanatory card.
 
 ### Community 100 - "Community 100"
 Cohesion: 1.0
-Nodes (1): Dashboard — portfolio overview, Nifty 50, sentiment, signals, watchlist, alerts.
+Nodes (1): Apply the shared visual theme to Plotly figures.
 
 ### Community 101 - "Community 101"
 Cohesion: 1.0
-Nodes (1): Stocks — browse/filter Nifty 50 + all stocks, add custom stocks.
+Nodes (1): Fetch stocks from the live FastAPI market endpoint.
 
 ### Community 102 - "Community 102"
 Cohesion: 1.0
-Nodes (1): Fetch stocks with latest close price and signal.
+Nodes (1): Validate and add a symbol through the FastAPI backend.
 
 ### Community 103 - "Community 103"
 Cohesion: 1.0
-Nodes (1): Validate a symbol and upsert it into the stocks table.
+Nodes (1): Fetch stocks with latest close price and signal.
 
 ### Community 104 - "Community 104"
 Cohesion: 1.0
-Nodes (1): Stock Detail — candlestick chart, technical indicators, sentiment, news.
+Nodes (1): Validate and add a symbol through the FastAPI backend.
 
 ### Community 105 - "Community 105"
 Cohesion: 1.0
-Nodes (1): Signals — AI trading signals with risk-profile personalization.
+Nodes (1): Return a Supabase client that sends the user JWT on every PostgREST call.
 
 ### Community 106 - "Community 106"
 Cohesion: 1.0
-Nodes (1): Portfolio — holdings table, P&L metrics, allocation pie, MVO optimization.
+Nodes (1): Format a number as INR currency string.
 
 ### Community 107 - "Community 107"
+Cohesion: 1.0
+Nodes (1): Given a list of answer scores, return (total_score, risk_profile).
+
+### Community 108 - "Community 108"
+Cohesion: 1.0
+Nodes (1): Dashboard — portfolio overview, Nifty 50, sentiment, signals, watchlist, alerts.
+
+### Community 109 - "Community 109"
+Cohesion: 1.0
+Nodes (1): Stocks — browse/filter Nifty 50 + all stocks, add custom stocks.
+
+### Community 110 - "Community 110"
+Cohesion: 1.0
+Nodes (1): Fetch stocks with latest close price and signal.
+
+### Community 111 - "Community 111"
+Cohesion: 1.0
+Nodes (1): Validate a symbol and upsert it into the stocks table.
+
+### Community 112 - "Community 112"
+Cohesion: 1.0
+Nodes (1): Stock Detail — candlestick chart, technical indicators, sentiment, news.
+
+### Community 113 - "Community 113"
+Cohesion: 1.0
+Nodes (1): Signals — AI trading signals with risk-profile personalization.
+
+### Community 114 - "Community 114"
+Cohesion: 1.0
+Nodes (1): Portfolio — holdings table, P&L metrics, allocation pie, MVO optimization.
+
+### Community 115 - "Community 115"
 Cohesion: 1.0
 Nodes (1): Settings — profile update, risk re-assessment, notification preferences.
 
 ## Knowledge Gaps
-- **119 isolated node(s):** `Get all actively tracked signal notifications for the current user.`, `Stop tracking a signal notification.`, `Search for a stock by symbol. If it exists in the DB, return it.     If not, val`, `Fetch last 90 days of OHLCV data for a newly added stock.`, `CLI entry point: orchestrates OHLCV fetch -> compute indicators -> store in Supa` (+114 more)
+- **127 isolated node(s):** `Get all actively tracked signal notifications for the current user.`, `Stop tracking a signal notification.`, `Search for a stock by symbol. If it exists in the DB, return it.     If not, val`, `Fetch last 90 days of OHLCV data for a newly added stock.`, `CLI entry point: orchestrates OHLCV fetch -> compute indicators -> store in Supa` (+122 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 19`** (2 nodes): `main.py`, `root()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -642,7 +682,7 @@ Nodes (1): Settings — profile update, risk re-assessment, notification prefere
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 49`** (1 nodes): `Render the shared sidebar.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `Render a consistent section heading.`
+- **Thin community `Community 50`** (1 nodes): `Render a clean page header (replaces the editorial hero block).`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 51`** (1 nodes): `Render a compact section heading.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -650,124 +690,140 @@ Nodes (1): Settings — profile update, risk re-assessment, notification prefere
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 53`** (1 nodes): `Render a compact info callout.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (1 nodes): `Render a branded empty state.`
+- **Thin community `Community 54`** (1 nodes): `Render a compact info card.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 55`** (1 nodes): `Render a centered empty state.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `Apply the shared dark theme to a Plotly figure.`
+- **Thin community `Community 56`** (1 nodes): `Apply the shared neutral theme to a Plotly figure.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `Run portfolio optimization for a user.      Args:         user_id: UUID of the u`
+- **Thin community `Community 57`** (1 nodes): `Render the shared sidebar.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `Run portfolio optimization for a user.      Args:         user_id: UUID of the u`
+- **Thin community `Community 58`** (1 nodes): `Render a consistent section heading.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (1 nodes): `Compare today's signals with yesterday's and flag changes.`
+- **Thin community `Community 59`** (1 nodes): `Render a compact section heading.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (1 nodes): `Flag symbols whose daily sentiment shifted significantly.`
+- **Thin community `Community 60`** (1 nodes): `Render a row of flat stat cards.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 61`** (1 nodes): `For each user with a completed optimization, check if current portfolio     has`
+- **Thin community `Community 61`** (1 nodes): `Render a compact info callout.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 62`** (1 nodes): `Safely extract and round a value from a pandas Series.`
+- **Thin community `Community 62`** (1 nodes): `Render a branded empty state.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 63`** (1 nodes): `Upsert OHLCV rows to Supabase ohlcv table.      Args:         df: DataFrame with`
+- **Thin community `Community 63`** (1 nodes): `Render a centered empty state.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (1 nodes): `Upsert indicator rows to Supabase technical_indicators table.      Args:`
+- **Thin community `Community 64`** (1 nodes): `Apply the shared dark theme to a Plotly figure.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 65`** (1 nodes): `Upsert news articles to Supabase news_articles table.`
+- **Thin community `Community 65`** (1 nodes): `Run portfolio optimization for a user.      Args:         user_id: UUID of the u`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 66`** (1 nodes): `Upsert article sentiments to Supabase article_sentiments table.`
+- **Thin community `Community 66`** (1 nodes): `Run portfolio optimization for a user.      Args:         user_id: UUID of the u`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 67`** (1 nodes): `Upsert daily aggregated sentiment to Supabase sentiment_daily table.`
+- **Thin community `Community 67`** (1 nodes): `Compare today's signals with yesterday's and flag changes.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 68`** (1 nodes): `Upsert signals to Supabase signals table.`
+- **Thin community `Community 68`** (1 nodes): `Flag symbols whose daily sentiment shifted significantly.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 69`** (1 nodes): `Convert DataFrame to list of dicts, replacing NaN with None.`
+- **Thin community `Community 69`** (1 nodes): `For each user with a completed optimization, check if current portfolio     has`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 70`** (1 nodes): `Equal-weight fallback when optimization fails (singular matrix, etc.).`
+- **Thin community `Community 70`** (1 nodes): `Safely extract and round a value from a pandas Series.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 71`** (1 nodes): `Normalize RSI into [-1, +1].     30 (oversold) -> +1, 50 -> 0, 70 (overbought) -`
+- **Thin community `Community 71`** (1 nodes): `Upsert OHLCV rows to Supabase ohlcv table.      Args:         df: DataFrame with`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 72`** (1 nodes): `Normalize MACD histogram into [-1, +1].     Positive histogram -> bullish (+), n`
+- **Thin community `Community 72`** (1 nodes): `Upsert indicator rows to Supabase technical_indicators table.      Args:`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 73`** (1 nodes): `Normalize Bollinger Band position into [-1, +1].     Close near lower band -> +1`
+- **Thin community `Community 73`** (1 nodes): `Upsert news articles to Supabase news_articles table.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 74`** (1 nodes): `Normalize OBV trend into [-1, +1].     Computes slope of last 20 OBV values via`
+- **Thin community `Community 74`** (1 nodes): `Upsert article sentiments to Supabase article_sentiments table.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (1 nodes): `technical_score = 0.3*RSI + 0.3*MACD + 0.2*BB + 0.2*OBV`
+- **Thin community `Community 75`** (1 nodes): `Upsert daily aggregated sentiment to Supabase sentiment_daily table.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (1 nodes): `momentum_score = mean(5d_return, 20d_return, SMA_crossover)     Each normalized`
+- **Thin community `Community 76`** (1 nodes): `Upsert signals to Supabase signals table.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 77`** (1 nodes): `composite = 0.4*tech + 0.3*sent + 0.3*momentum      Returns (composite_score, si`
+- **Thin community `Community 77`** (1 nodes): `Convert DataFrame to list of dicts, replacing NaN with None.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (1 nodes): `Generate a template-based human-readable explanation.`
+- **Thin community `Community 78`** (1 nodes): `Equal-weight fallback when optimization fails (singular matrix, etc.).`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 79`** (1 nodes): `Read indicators + sentiment from Supabase, compute signals for all stocks,     a`
+- **Thin community `Community 79`** (1 nodes): `Normalize RSI into [-1, +1].     30 (oversold) -> +1, 50 -> 0, 70 (overbought) -`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 80`** (1 nodes): `Check all active signal notifications. If a tracked signal has changed,     send`
+- **Thin community `Community 80`** (1 nodes): `Normalize MACD histogram into [-1, +1].     Positive histogram -> bullish (+), n`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 81`** (1 nodes): `Render the shared authenticated sidebar.`
+- **Thin community `Community 81`** (1 nodes): `Normalize Bollinger Band position into [-1, +1].     Close near lower band -> +1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 82`** (1 nodes): `Render the unauthenticated landing and auth flows.`
+- **Thin community `Community 82`** (1 nodes): `Normalize OBV trend into [-1, +1].     Computes slope of last 20 OBV values via`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 83`** (1 nodes): `Render the risk questionnaire.`
+- **Thin community `Community 83`** (1 nodes): `technical_score = 0.3*RSI + 0.3*MACD + 0.2*BB + 0.2*OBV`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (1 nodes): `Call at the top of every protected page.     Redirects to app.py if session is m`
+- **Thin community `Community 84`** (1 nodes): `momentum_score = mean(5d_return, 20d_return, SMA_crossover)     Each normalized`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 85`** (1 nodes): `Re-fetch profile from DB and update session state.`
+- **Thin community `Community 85`** (1 nodes): `composite = 0.4*tech + 0.3*sent + 0.3*momentum      Returns (composite_score, si`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (1 nodes): `Inject the shared CSS skin once per page.`
+- **Thin community `Community 86`** (1 nodes): `Generate a template-based human-readable explanation.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (1 nodes): `Render the shared sidebar shell.`
+- **Thin community `Community 87`** (1 nodes): `Read indicators + sentiment from Supabase, compute signals for all stocks,     a`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (1 nodes): `Render a large editorial hero block.`
+- **Thin community `Community 88`** (1 nodes): `Check all active signal notifications. If a tracked signal has changed,     send`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (1 nodes): `Render a row of branded metric cards.`
+- **Thin community `Community 89`** (1 nodes): `Render the shared authenticated sidebar.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (1 nodes): `Render a short information band.`
+- **Thin community `Community 90`** (1 nodes): `Render the unauthenticated landing and auth flows.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (1 nodes): `Render a compact explanatory card.`
+- **Thin community `Community 91`** (1 nodes): `Render the risk questionnaire.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 92`** (1 nodes): `Apply the shared visual theme to Plotly figures.`
+- **Thin community `Community 92`** (1 nodes): `Call at the top of every protected page.     Redirects to app.py if session is m`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 93`** (1 nodes): `Fetch stocks from the live FastAPI market endpoint.`
+- **Thin community `Community 93`** (1 nodes): `Re-fetch profile from DB and update session state.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 94`** (1 nodes): `Validate and add a symbol through the FastAPI backend.`
+- **Thin community `Community 94`** (1 nodes): `Inject the shared CSS skin once per page.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 95`** (1 nodes): `Fetch stocks with latest close price and signal.`
+- **Thin community `Community 95`** (1 nodes): `Render the shared sidebar shell.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 96`** (1 nodes): `Validate and add a symbol through the FastAPI backend.`
+- **Thin community `Community 96`** (1 nodes): `Render a large editorial hero block.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 97`** (1 nodes): `Return a Supabase client that sends the user JWT on every PostgREST call.`
+- **Thin community `Community 97`** (1 nodes): `Render a row of branded metric cards.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 98`** (1 nodes): `Format a number as INR currency string.`
+- **Thin community `Community 98`** (1 nodes): `Render a short information band.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 99`** (1 nodes): `Given a list of answer scores, return (total_score, risk_profile).`
+- **Thin community `Community 99`** (1 nodes): `Render a compact explanatory card.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (1 nodes): `Dashboard — portfolio overview, Nifty 50, sentiment, signals, watchlist, alerts.`
+- **Thin community `Community 100`** (1 nodes): `Apply the shared visual theme to Plotly figures.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (1 nodes): `Stocks — browse/filter Nifty 50 + all stocks, add custom stocks.`
+- **Thin community `Community 101`** (1 nodes): `Fetch stocks from the live FastAPI market endpoint.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (1 nodes): `Fetch stocks with latest close price and signal.`
+- **Thin community `Community 102`** (1 nodes): `Validate and add a symbol through the FastAPI backend.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (1 nodes): `Validate a symbol and upsert it into the stocks table.`
+- **Thin community `Community 103`** (1 nodes): `Fetch stocks with latest close price and signal.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (1 nodes): `Stock Detail — candlestick chart, technical indicators, sentiment, news.`
+- **Thin community `Community 104`** (1 nodes): `Validate and add a symbol through the FastAPI backend.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (1 nodes): `Signals — AI trading signals with risk-profile personalization.`
+- **Thin community `Community 105`** (1 nodes): `Return a Supabase client that sends the user JWT on every PostgREST call.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 106`** (1 nodes): `Portfolio — holdings table, P&L metrics, allocation pie, MVO optimization.`
+- **Thin community `Community 106`** (1 nodes): `Format a number as INR currency string.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (1 nodes): `Settings — profile update, risk re-assessment, notification preferences.`
+- **Thin community `Community 107`** (1 nodes): `Given a list of answer scores, return (total_score, risk_profile).`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 108`** (1 nodes): `Dashboard — portfolio overview, Nifty 50, sentiment, signals, watchlist, alerts.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 109`** (1 nodes): `Stocks — browse/filter Nifty 50 + all stocks, add custom stocks.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 110`** (1 nodes): `Fetch stocks with latest close price and signal.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 111`** (1 nodes): `Validate a symbol and upsert it into the stocks table.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 112`** (1 nodes): `Stock Detail — candlestick chart, technical indicators, sentiment, news.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 113`** (1 nodes): `Signals — AI trading signals with risk-profile personalization.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 114`** (1 nodes): `Portfolio — holdings table, P&L metrics, allocation pie, MVO optimization.`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 115`** (1 nodes): `Settings — profile update, risk re-assessment, notification preferences.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `GET()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 9`, `Community 13`, `Community 14`?**
-  _High betweenness centrality (0.235) - this node is a cross-community bridge._
+  _High betweenness centrality (0.228) - this node is a cross-community bridge._
 - **Why does `Table()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 13`?**
-  _High betweenness centrality (0.220) - this node is a cross-community bridge._
+  _High betweenness centrality (0.213) - this node is a cross-community bridge._
 - **Why does `run_sentiment_pipeline()` connect `Community 5` to `Community 1`, `Community 3`, `Community 7`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
 - **Are the 81 inferred relationships involving `Table()` (e.g. with `list_alerts()` and `mark_read()`) actually correct?**
   _`Table()` has 81 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 66 inferred relationships involving `GET()` (e.g. with `list_holdings_live()` and `market_overview()`) actually correct?**

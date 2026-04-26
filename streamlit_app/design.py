@@ -34,26 +34,26 @@ def apply_theme() -> None:
         @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&display=swap');
 
         :root {
-            --bg:          #f8f9fa;
-            --surface:     #f8f9fa;
-            --surface-2:   #e9ecef;
-            --surface-3:   #dee2e6;
-            --border:      #dee2e6;
-            --border-s:    #ced4da;
-            --text:        #212529;
-            --text-2:      #495057;
-            --muted:       #6c757d;
-            --accent:      #343a40;
-            --accent-bg:   #e9ecef;
-            --accent-dim:  #adb5bd;
-            --blue:        #495057;
-            --blue-bg:     #e9ecef;
-            --green:       #343a40;
-            --green-bg:    #e9ecef;
-            --red:         #212529;
-            --red-bg:      #dee2e6;
-            --amber:       #6c757d;
-            --amber-bg:    #e9ecef;
+            --bg:          #0B0E14;
+            --surface:     #161B22;
+            --surface-2:   #161B22;
+            --surface-3:   #161B22;
+            --border:      rgba(139, 148, 158, 0.18);
+            --border-s:    rgba(139, 148, 158, 0.32);
+            --text:        #F0F6FC;
+            --text-2:      #8B949E;
+            --muted:       #8B949E;
+            --accent:      #2F80ED;
+            --accent-bg:   rgba(47, 128, 237, 0.14);
+            --accent-dim:  rgba(47, 128, 237, 0.45);
+            --blue:        #2F80ED;
+            --blue-bg:     rgba(47, 128, 237, 0.14);
+            --green:       #23C55E;
+            --green-bg:    rgba(35, 197, 94, 0.14);
+            --red:         #EF4444;
+            --red-bg:      rgba(239, 68, 68, 0.14);
+            --amber:       #8B949E;
+            --amber-bg:    rgba(139, 148, 158, 0.14);
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -102,8 +102,8 @@ def apply_theme() -> None:
         /* ── Buttons ─────────────────────────────────────────────── */
         .stButton > button,
         .stDownloadButton > button {
-            background: var(--surface-2) !important;
-            border: 1px solid var(--border-s) !important;
+            background: var(--accent) !important;
+            border: 1px solid transparent !important;
             border-radius: 8px !important;
             color: var(--text) !important;
             font-weight: 500 !important;
@@ -129,16 +129,17 @@ def apply_theme() -> None:
         }
         .stButton > button:hover,
         .stDownloadButton > button:hover {
-            background: var(--surface-3) !important;
-            border-color: var(--accent-dim) !important;
+            background: var(--accent) !important;
+            border-color: transparent !important;
             color: var(--text) !important;
+            opacity: 0.88 !important;
         }
 
         div[data-testid="stFormSubmitButton"] > button {
             background: var(--accent) !important;
             border: 1px solid transparent !important;
             border-radius: 8px !important;
-            color: #f8f9fa !important;
+            color: #F0F6FC !important;
             font-weight: 600 !important;
             font-size: 0.875rem !important;
             line-height: 1.1 !important;
@@ -160,8 +161,8 @@ def apply_theme() -> None:
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            background: var(--surface-2) !important;
-            border: 1px solid var(--border-s) !important;
+            background: var(--accent) !important;
+            border: 1px solid transparent !important;
             border-radius: 8px !important;
             color: var(--text) !important;
             font-weight: 500 !important;
@@ -177,7 +178,8 @@ def apply_theme() -> None:
         }
         [data-testid="stLinkButton"] a:hover {
             border-color: var(--border-s) !important;
-            background: var(--surface-3) !important;
+            background: var(--accent) !important;
+            opacity: 0.88 !important;
         }
 
         /* ── Inputs ──────────────────────────────────────────────── */
@@ -528,7 +530,7 @@ def apply_theme() -> None:
             justify-content: center;
             font-weight: 800;
             font-size: 0.9rem;
-            color: #f8f9fa;
+            color: #F0F6FC;
             flex-shrink: 0;
             letter-spacing: -0.02em;
         }
@@ -587,6 +589,10 @@ def apply_theme() -> None:
         .stButton > button:disabled * {
             color: var(--muted) !important;
             opacity: 1 !important;
+        }
+        .stButton > button:disabled {
+            background: var(--surface-2) !important;
+            border-color: var(--border) !important;
         }
 
         @media (max-width: 768px) {
@@ -761,24 +767,24 @@ def style_plotly_figure(fig, *, height: int = 320):
     """Apply the shared neutral theme to a Plotly figure."""
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="#f8f9fa",
-        font=dict(color="#495057", family="Inter", size=12),
+        plot_bgcolor="#161B22",
+        font=dict(color="#8B949E", family="Inter", size=12),
         xaxis=dict(
-            gridcolor="#dee2e6",
-            zerolinecolor="#ced4da",
-            color="#495057",
+            gridcolor="rgba(139, 148, 158, 0.18)",
+            zerolinecolor="rgba(139, 148, 158, 0.28)",
+            color="#8B949E",
         ),
         yaxis=dict(
-            gridcolor="#dee2e6",
-            zerolinecolor="#ced4da",
-            color="#495057",
+            gridcolor="rgba(139, 148, 158, 0.18)",
+            zerolinecolor="rgba(139, 148, 158, 0.28)",
+            color="#8B949E",
         ),
         legend=dict(
             orientation="h",
             yanchor="bottom",
             y=1.02,
             x=0,
-            font=dict(color="#495057", size=11),
+            font=dict(color="#8B949E", size=11),
         ),
         margin=dict(l=0, r=0, t=20, b=0),
         height=height,

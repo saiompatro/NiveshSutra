@@ -3076,7 +3076,7 @@
       "label": "render_sidebar_shell()",
       "file_type": "code",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L601",
+      "source_location": "L607",
       "id": "design_render_sidebar_shell",
       "community": 3,
       "norm_label": "render_sidebar_shell()"
@@ -3085,7 +3085,7 @@
       "label": "render_page_hero()",
       "file_type": "code",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L641",
+      "source_location": "L647",
       "id": "design_render_page_hero",
       "community": 2,
       "norm_label": "render_page_hero()"
@@ -3094,7 +3094,7 @@
       "label": "render_section_heading()",
       "file_type": "code",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L667",
+      "source_location": "L673",
       "id": "design_render_section_heading",
       "community": 2,
       "norm_label": "render_section_heading()"
@@ -3103,7 +3103,7 @@
       "label": "render_metric_grid()",
       "file_type": "code",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L685",
+      "source_location": "L691",
       "id": "design_render_metric_grid",
       "community": 2,
       "norm_label": "render_metric_grid()"
@@ -3112,7 +3112,7 @@
       "label": "render_info_band()",
       "file_type": "code",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L708",
+      "source_location": "L714",
       "id": "design_render_info_band",
       "community": 2,
       "norm_label": "render_info_band()"
@@ -3121,7 +3121,7 @@
       "label": "render_note_card()",
       "file_type": "code",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L723",
+      "source_location": "L729",
       "id": "design_render_note_card",
       "community": 2,
       "norm_label": "render_note_card()"
@@ -3130,7 +3130,7 @@
       "label": "render_empty_state()",
       "file_type": "code",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L747",
+      "source_location": "L753",
       "id": "design_render_empty_state",
       "community": 2,
       "norm_label": "render_empty_state()"
@@ -3139,7 +3139,7 @@
       "label": "style_plotly_figure()",
       "file_type": "code",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L760",
+      "source_location": "L766",
       "id": "design_style_plotly_figure",
       "community": 2,
       "norm_label": "style_plotly_figure()"
@@ -3166,8 +3166,8 @@
       "label": "Render the shared sidebar.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L609",
-      "id": "design_rationale_609",
+      "source_location": "L615",
+      "id": "design_rationale_615",
       "community": 3,
       "norm_label": "render the shared sidebar."
     },
@@ -3175,8 +3175,8 @@
       "label": "Render a clean page header (replaces the editorial hero block).",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L650",
-      "id": "design_rationale_650",
+      "source_location": "L656",
+      "id": "design_rationale_656",
       "community": 2,
       "norm_label": "render a clean page header (replaces the editorial hero block)."
     },
@@ -3184,8 +3184,8 @@
       "label": "Render a compact section heading.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L668",
-      "id": "design_rationale_668",
+      "source_location": "L674",
+      "id": "design_rationale_674",
       "community": 2,
       "norm_label": "render a compact section heading."
     },
@@ -3193,8 +3193,8 @@
       "label": "Render a row of flat stat cards.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L686",
-      "id": "design_rationale_686",
+      "source_location": "L692",
+      "id": "design_rationale_692",
       "community": 2,
       "norm_label": "render a row of flat stat cards."
     },
@@ -3202,8 +3202,8 @@
       "label": "Render a compact info callout.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L709",
-      "id": "design_rationale_709",
+      "source_location": "L715",
+      "id": "design_rationale_715",
       "community": 2,
       "norm_label": "render a compact info callout."
     },
@@ -3211,8 +3211,8 @@
       "label": "Render a compact info card.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L724",
-      "id": "design_rationale_724",
+      "source_location": "L730",
+      "id": "design_rationale_730",
       "community": 2,
       "norm_label": "render a compact info card."
     },
@@ -3220,8 +3220,8 @@
       "label": "Render a centered empty state.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L748",
-      "id": "design_rationale_748",
+      "source_location": "L754",
+      "id": "design_rationale_754",
       "community": 2,
       "norm_label": "render a centered empty state."
     },
@@ -3229,8 +3229,8 @@
       "label": "Apply the shared neutral theme to a Plotly figure.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L761",
-      "id": "design_rationale_761",
+      "source_location": "L767",
+      "id": "design_rationale_767",
       "community": 2,
       "norm_label": "apply the shared neutral theme to a plotly figure."
     },
@@ -3895,8 +3895,80 @@
       "label": "Render the shared sidebar.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L567",
+      "source_location": "L609",
       "community": 49,
+      "norm_label": "render the shared sidebar.",
+      "id": "design_rationale_609"
+    },
+    {
+      "label": "Render a clean page header (replaces the editorial hero block).",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\design.py",
+      "source_location": "L650",
+      "community": 50,
+      "norm_label": "render a clean page header (replaces the editorial hero block).",
+      "id": "design_rationale_650"
+    },
+    {
+      "label": "Render a compact section heading.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\design.py",
+      "source_location": "L668",
+      "community": 51,
+      "norm_label": "render a compact section heading.",
+      "id": "design_rationale_668"
+    },
+    {
+      "label": "Render a row of flat stat cards.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\design.py",
+      "source_location": "L686",
+      "community": 52,
+      "norm_label": "render a row of flat stat cards.",
+      "id": "design_rationale_686"
+    },
+    {
+      "label": "Render a compact info callout.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\design.py",
+      "source_location": "L709",
+      "community": 53,
+      "norm_label": "render a compact info callout.",
+      "id": "design_rationale_709"
+    },
+    {
+      "label": "Render a compact info card.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\design.py",
+      "source_location": "L724",
+      "community": 54,
+      "norm_label": "render a compact info card.",
+      "id": "design_rationale_724"
+    },
+    {
+      "label": "Render a centered empty state.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\design.py",
+      "source_location": "L748",
+      "community": 55,
+      "norm_label": "render a centered empty state.",
+      "id": "design_rationale_748"
+    },
+    {
+      "label": "Apply the shared neutral theme to a Plotly figure.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\design.py",
+      "source_location": "L761",
+      "community": 56,
+      "norm_label": "apply the shared neutral theme to a plotly figure.",
+      "id": "design_rationale_761"
+    },
+    {
+      "label": "Render the shared sidebar.",
+      "file_type": "rationale",
+      "source_file": "streamlit_app\\design.py",
+      "source_location": "L567",
+      "community": 57,
       "norm_label": "render the shared sidebar.",
       "id": "design_rationale_567"
     },
@@ -3905,7 +3977,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L608",
-      "community": 50,
+      "community": 58,
       "norm_label": "render a consistent section heading.",
       "id": "design_rationale_608"
     },
@@ -3914,7 +3986,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L626",
-      "community": 51,
+      "community": 59,
       "norm_label": "render a compact section heading.",
       "id": "design_rationale_626"
     },
@@ -3923,7 +3995,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L644",
-      "community": 52,
+      "community": 60,
       "norm_label": "render a row of flat stat cards.",
       "id": "design_rationale_644"
     },
@@ -3932,7 +4004,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L667",
-      "community": 53,
+      "community": 61,
       "norm_label": "render a compact info callout.",
       "id": "design_rationale_667"
     },
@@ -3941,7 +4013,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L682",
-      "community": 54,
+      "community": 62,
       "norm_label": "render a branded empty state.",
       "id": "design_rationale_682"
     },
@@ -3950,7 +4022,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L706",
-      "community": 55,
+      "community": 63,
       "norm_label": "render a centered empty state.",
       "id": "design_rationale_706"
     },
@@ -3959,7 +4031,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L719",
-      "community": 56,
+      "community": 64,
       "norm_label": "apply the shared dark theme to a plotly figure.",
       "id": "design_rationale_719"
     },
@@ -3968,7 +4040,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\optimizer\\__init__.py",
       "source_location": "L35",
-      "community": 57,
+      "community": 65,
       "norm_label": "run portfolio optimization for a user.      args:         user_id: uuid of the u",
       "id": "init_rationale_35"
     },
@@ -3977,7 +4049,7 @@
       "file_type": "rationale",
       "source_file": "math_engine\\optimizer\\__init__.py",
       "source_location": "L30",
-      "community": 58,
+      "community": 66,
       "norm_label": "run portfolio optimization for a user.      args:         user_id: uuid of the u",
       "id": "init_rationale_30"
     },
@@ -3986,7 +4058,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\alerts\\__init__.py",
       "source_location": "L99",
-      "community": 59,
+      "community": 67,
       "norm_label": "compare today's signals with yesterday's and flag changes.",
       "id": "init_rationale_99"
     },
@@ -3995,7 +4067,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\alerts\\__init__.py",
       "source_location": "L150",
-      "community": 60,
+      "community": 68,
       "norm_label": "flag symbols whose daily sentiment shifted significantly.",
       "id": "init_rationale_150"
     },
@@ -4004,7 +4076,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\alerts\\__init__.py",
       "source_location": "L208",
-      "community": 61,
+      "community": 69,
       "norm_label": "for each user with a completed optimization, check if current portfolio     has",
       "id": "init_rationale_208"
     },
@@ -4013,7 +4085,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L97",
-      "community": 62,
+      "community": 70,
       "norm_label": "safely extract and round a value from a pandas series.",
       "id": "compute_indicators_rationale_97"
     },
@@ -4022,7 +4094,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L15",
-      "community": 63,
+      "community": 71,
       "norm_label": "upsert ohlcv rows to supabase ohlcv table.      args:         df: dataframe with",
       "id": "store_rationale_15"
     },
@@ -4031,7 +4103,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L48",
-      "community": 64,
+      "community": 72,
       "norm_label": "upsert indicator rows to supabase technical_indicators table.      args:",
       "id": "store_rationale_48"
     },
@@ -4040,7 +4112,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L81",
-      "community": 65,
+      "community": 73,
       "norm_label": "upsert news articles to supabase news_articles table.",
       "id": "store_rationale_81"
     },
@@ -4049,7 +4121,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L98",
-      "community": 66,
+      "community": 74,
       "norm_label": "upsert article sentiments to supabase article_sentiments table.",
       "id": "store_rationale_98"
     },
@@ -4058,7 +4130,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L117",
-      "community": 67,
+      "community": 75,
       "norm_label": "upsert daily aggregated sentiment to supabase sentiment_daily table.",
       "id": "store_rationale_117"
     },
@@ -4067,7 +4139,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L136",
-      "community": 68,
+      "community": 76,
       "norm_label": "upsert signals to supabase signals table.",
       "id": "store_rationale_136"
     },
@@ -4076,7 +4148,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L153",
-      "community": 69,
+      "community": 77,
       "norm_label": "convert dataframe to list of dicts, replacing nan with none.",
       "id": "store_rationale_153"
     },
@@ -4085,7 +4157,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\optimizer\\__init__.py",
       "source_location": "L215",
-      "community": 70,
+      "community": 78,
       "norm_label": "equal-weight fallback when optimization fails (singular matrix, etc.).",
       "id": "init_rationale_215"
     },
@@ -4094,7 +4166,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L33",
-      "community": 71,
+      "community": 79,
       "norm_label": "normalize rsi into [-1, +1].     30 (oversold) -> +1, 50 -> 0, 70 (overbought) -",
       "id": "init_rationale_33"
     },
@@ -4103,7 +4175,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L46",
-      "community": 72,
+      "community": 80,
       "norm_label": "normalize macd histogram into [-1, +1].     positive histogram -> bullish (+), n",
       "id": "init_rationale_46"
     },
@@ -4112,7 +4184,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L59",
-      "community": 73,
+      "community": 81,
       "norm_label": "normalize bollinger band position into [-1, +1].     close near lower band -> +1",
       "id": "init_rationale_59"
     },
@@ -4121,7 +4193,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L75",
-      "community": 74,
+      "community": 82,
       "norm_label": "normalize obv trend into [-1, +1].     computes slope of last 20 obv values via",
       "id": "init_rationale_75"
     },
@@ -4130,7 +4202,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L100",
-      "community": 75,
+      "community": 83,
       "norm_label": "technical_score = 0.3*rsi + 0.3*macd + 0.2*bb + 0.2*obv",
       "id": "init_rationale_100"
     },
@@ -4139,7 +4211,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L115",
-      "community": 76,
+      "community": 84,
       "norm_label": "momentum_score = mean(5d_return, 20d_return, sma_crossover)     each normalized",
       "id": "init_rationale_115"
     },
@@ -4148,7 +4220,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L158",
-      "community": 77,
+      "community": 85,
       "norm_label": "composite = 0.4*tech + 0.3*sent + 0.3*momentum      returns (composite_score, si",
       "id": "init_rationale_158"
     },
@@ -4157,7 +4229,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L188",
-      "community": 78,
+      "community": 86,
       "norm_label": "generate a template-based human-readable explanation.",
       "id": "init_rationale_188"
     },
@@ -4166,7 +4238,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L225",
-      "community": 79,
+      "community": 87,
       "norm_label": "read indicators + sentiment from supabase, compute signals for all stocks,     a",
       "id": "init_rationale_225"
     },
@@ -4175,7 +4247,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\signals\\__init__.py",
       "source_location": "L416",
-      "community": 80,
+      "community": 88,
       "norm_label": "check all active signal notifications. if a tracked signal has changed,     send",
       "id": "init_rationale_416"
     },
@@ -4184,7 +4256,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\app.py",
       "source_location": "L40",
-      "community": 81,
+      "community": 89,
       "norm_label": "render the shared authenticated sidebar.",
       "id": "app_rationale_40"
     },
@@ -4193,7 +4265,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\app.py",
       "source_location": "L57",
-      "community": 82,
+      "community": 90,
       "norm_label": "render the unauthenticated landing and auth flows.",
       "id": "app_rationale_57"
     },
@@ -4202,7 +4274,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\app.py",
       "source_location": "L194",
-      "community": 83,
+      "community": 91,
       "norm_label": "render the risk questionnaire.",
       "id": "app_rationale_194"
     },
@@ -4211,7 +4283,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L54",
-      "community": 84,
+      "community": 92,
       "norm_label": "call at the top of every protected page.     redirects to app.py if session is m",
       "id": "auth_rationale_54"
     },
@@ -4220,7 +4292,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\auth.py",
       "source_location": "L84",
-      "community": 85,
+      "community": 93,
       "norm_label": "re-fetch profile from db and update session state.",
       "id": "auth_rationale_84"
     },
@@ -4229,7 +4301,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L20",
-      "community": 86,
+      "community": 94,
       "norm_label": "inject the shared css skin once per page.",
       "id": "design_rationale_20"
     },
@@ -4238,7 +4310,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L536",
-      "community": 87,
+      "community": 95,
       "norm_label": "render the shared sidebar shell.",
       "id": "design_rationale_536"
     },
@@ -4247,7 +4319,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L570",
-      "community": 88,
+      "community": 96,
       "norm_label": "render a large editorial hero block.",
       "id": "design_rationale_570"
     },
@@ -4256,7 +4328,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L624",
-      "community": 89,
+      "community": 97,
       "norm_label": "render a row of branded metric cards.",
       "id": "design_rationale_624"
     },
@@ -4265,7 +4337,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L646",
-      "community": 90,
+      "community": 98,
       "norm_label": "render a short information band.",
       "id": "design_rationale_646"
     },
@@ -4274,7 +4346,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L659",
-      "community": 91,
+      "community": 99,
       "norm_label": "render a compact explanatory card.",
       "id": "design_rationale_659"
     },
@@ -4283,7 +4355,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L695",
-      "community": 92,
+      "community": 100,
       "norm_label": "apply the shared visual theme to plotly figures.",
       "id": "design_rationale_695"
     },
@@ -4292,7 +4364,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L45",
-      "community": 93,
+      "community": 101,
       "norm_label": "fetch stocks from the live fastapi market endpoint.",
       "id": "2_stocks_rationale_45"
     },
@@ -4301,7 +4373,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L67",
-      "community": 94,
+      "community": 102,
       "norm_label": "validate and add a symbol through the fastapi backend.",
       "id": "2_stocks_rationale_67"
     },
@@ -4310,7 +4382,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L46",
-      "community": 95,
+      "community": 103,
       "norm_label": "fetch stocks with latest close price and signal.",
       "id": "2_stocks_rationale_46"
     },
@@ -4319,7 +4391,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L112",
-      "community": 96,
+      "community": 104,
       "norm_label": "validate and add a symbol through the fastapi backend.",
       "id": "2_stocks_rationale_112"
     },
@@ -4328,7 +4400,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\supabase_client.py",
       "source_location": "L27",
-      "community": 97,
+      "community": 105,
       "norm_label": "return a supabase client that sends the user jwt on every postgrest call.",
       "id": "supabase_client_rationale_27"
     },
@@ -4337,7 +4409,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\utils.py",
       "source_location": "L9",
-      "community": 98,
+      "community": 106,
       "norm_label": "format a number as inr currency string.",
       "id": "utils_rationale_9"
     },
@@ -4346,7 +4418,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\utils.py",
       "source_location": "L105",
-      "community": 99,
+      "community": 107,
       "norm_label": "given a list of answer scores, return (total_score, risk_profile).",
       "id": "utils_rationale_105"
     },
@@ -4355,7 +4427,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L1",
-      "community": 100,
+      "community": 108,
       "norm_label": "dashboard \u2014 portfolio overview, nifty 50, sentiment, signals, watchlist, alerts.",
       "id": "1_dashboard_rationale_1"
     },
@@ -4364,7 +4436,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L1",
-      "community": 101,
+      "community": 109,
       "norm_label": "stocks \u2014 browse/filter nifty 50 + all stocks, add custom stocks.",
       "id": "2_stocks_rationale_1"
     },
@@ -4373,7 +4445,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L21",
-      "community": 102,
+      "community": 110,
       "norm_label": "fetch stocks with latest close price and signal.",
       "id": "2_stocks_rationale_21"
     },
@@ -4382,7 +4454,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L81",
-      "community": 103,
+      "community": 111,
       "norm_label": "validate a symbol and upsert it into the stocks table.",
       "id": "2_stocks_rationale_81"
     },
@@ -4391,7 +4463,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L1",
-      "community": 104,
+      "community": 112,
       "norm_label": "stock detail \u2014 candlestick chart, technical indicators, sentiment, news.",
       "id": "3_stock_detail_rationale_1"
     },
@@ -4400,7 +4472,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\4_Signals.py",
       "source_location": "L1",
-      "community": 105,
+      "community": 113,
       "norm_label": "signals \u2014 ai trading signals with risk-profile personalization.",
       "id": "4_signals_rationale_1"
     },
@@ -4409,7 +4481,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L1",
-      "community": 106,
+      "community": 114,
       "norm_label": "portfolio \u2014 holdings table, p&l metrics, allocation pie, mvo optimization.",
       "id": "5_portfolio_rationale_1"
     },
@@ -4418,7 +4490,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\pages\\6_Settings.py",
       "source_location": "L1",
-      "community": 107,
+      "community": 115,
       "norm_label": "settings \u2014 profile update, risk re-assessment, notification preferences.",
       "id": "6_settings_rationale_1"
     }
@@ -12456,7 +12528,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L601",
+      "source_location": "L607",
       "weight": 1.0,
       "_src": "streamlit_app_design_py",
       "_tgt": "design_render_sidebar_shell",
@@ -12468,7 +12540,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L641",
+      "source_location": "L647",
       "weight": 1.0,
       "_src": "streamlit_app_design_py",
       "_tgt": "design_render_page_hero",
@@ -12480,7 +12552,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L667",
+      "source_location": "L673",
       "weight": 1.0,
       "_src": "streamlit_app_design_py",
       "_tgt": "design_render_section_heading",
@@ -12492,7 +12564,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L685",
+      "source_location": "L691",
       "weight": 1.0,
       "_src": "streamlit_app_design_py",
       "_tgt": "design_render_metric_grid",
@@ -12504,7 +12576,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L708",
+      "source_location": "L714",
       "weight": 1.0,
       "_src": "streamlit_app_design_py",
       "_tgt": "design_render_info_band",
@@ -12516,7 +12588,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L723",
+      "source_location": "L729",
       "weight": 1.0,
       "_src": "streamlit_app_design_py",
       "_tgt": "design_render_note_card",
@@ -12528,7 +12600,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L747",
+      "source_location": "L753",
       "weight": 1.0,
       "_src": "streamlit_app_design_py",
       "_tgt": "design_render_empty_state",
@@ -12540,7 +12612,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L760",
+      "source_location": "L766",
       "weight": 1.0,
       "_src": "streamlit_app_design_py",
       "_tgt": "design_style_plotly_figure",
@@ -12576,12 +12648,12 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L609",
+      "source_location": "L615",
       "weight": 1.0,
-      "_src": "design_rationale_609",
+      "_src": "design_rationale_615",
       "_tgt": "design_render_sidebar_shell",
       "source": "design_render_sidebar_shell",
-      "target": "design_rationale_609",
+      "target": "design_rationale_615",
       "confidence_score": 1.0
     },
     {
@@ -12660,24 +12732,24 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L650",
+      "source_location": "L656",
       "weight": 1.0,
-      "_src": "design_rationale_650",
+      "_src": "design_rationale_656",
       "_tgt": "design_render_page_hero",
       "source": "design_render_page_hero",
-      "target": "design_rationale_650",
+      "target": "design_rationale_656",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L668",
+      "source_location": "L674",
       "weight": 1.0,
-      "_src": "design_rationale_668",
+      "_src": "design_rationale_674",
       "_tgt": "design_render_section_heading",
       "source": "design_render_section_heading",
-      "target": "design_rationale_668",
+      "target": "design_rationale_674",
       "confidence_score": 1.0
     },
     {
@@ -12696,60 +12768,60 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L686",
+      "source_location": "L692",
       "weight": 1.0,
-      "_src": "design_rationale_686",
+      "_src": "design_rationale_692",
       "_tgt": "design_render_metric_grid",
       "source": "design_render_metric_grid",
-      "target": "design_rationale_686",
+      "target": "design_rationale_692",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L709",
+      "source_location": "L715",
       "weight": 1.0,
-      "_src": "design_rationale_709",
+      "_src": "design_rationale_715",
       "_tgt": "design_render_info_band",
       "source": "design_render_info_band",
-      "target": "design_rationale_709",
+      "target": "design_rationale_715",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L724",
+      "source_location": "L730",
       "weight": 1.0,
-      "_src": "design_rationale_724",
+      "_src": "design_rationale_730",
       "_tgt": "design_render_note_card",
       "source": "design_render_note_card",
-      "target": "design_rationale_724",
+      "target": "design_rationale_730",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L748",
+      "source_location": "L754",
       "weight": 1.0,
-      "_src": "design_rationale_748",
+      "_src": "design_rationale_754",
       "_tgt": "design_render_empty_state",
       "source": "design_render_empty_state",
-      "target": "design_rationale_748",
+      "target": "design_rationale_754",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "streamlit_app\\design.py",
-      "source_location": "L761",
+      "source_location": "L767",
       "weight": 1.0,
-      "_src": "design_rationale_761",
+      "_src": "design_rationale_767",
       "_tgt": "design_style_plotly_figure",
       "source": "design_style_plotly_figure",
-      "target": "design_rationale_761",
+      "target": "design_rationale_767",
       "confidence_score": 1.0
     },
     {

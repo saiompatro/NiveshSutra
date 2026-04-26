@@ -335,7 +335,7 @@ with lead_col:
             row_left, row_mid, row_right = st.columns([1.3, 1.1, 0.9], gap="medium")
             row_left.markdown(
                 f"**{signal['symbol']}**  \n"
-                f"<span style='color:#6c757d;font-size:0.82rem'>Confidence {signal.get('confidence', 0) * 100:.0f}%</span>",
+                f"<span style='color:#8B949E;font-size:0.82rem'>Confidence {signal.get('confidence', 0) * 100:.0f}%</span>",
                 unsafe_allow_html=True,
             )
             row_mid.markdown(signal_badge_html(signal["signal"]), unsafe_allow_html=True)
@@ -351,15 +351,15 @@ with lead_col:
     if watchlist:
         for item in watchlist:
             change_pct = item["change_pct"]
-            change_color = "#343a40" if change_pct >= 0 else "#6c757d"
+            change_color = "#23C55E" if change_pct >= 0 else "#EF4444"
             row_left, row_mid, row_right = st.columns([1.4, 1, 0.9], gap="medium")
             row_left.markdown(
                 f"**{item['symbol']}**  \n"
-                f"<span style='color:#6c757d;font-size:0.8rem'>{item['company_name']}</span>",
+                f"<span style='color:#8B949E;font-size:0.8rem'>{item['company_name']}</span>",
                 unsafe_allow_html=True,
             )
             row_mid.markdown(
-                f"<span style='font-size:1rem;color:#212529'>{item['price']:,.2f}</span>",
+                f"<span style='font-size:1rem;color:#F0F6FC'>{item['price']:,.2f}</span>",
                 unsafe_allow_html=True,
             )
             row_right.markdown(

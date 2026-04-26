@@ -68,29 +68,29 @@ def format_signal(signal: str) -> str:
 
 
 SIGNAL_COLORS = {
-    "strong_buy": "#212529",
-    "buy": "#343a40",
-    "hold": "#6c757d",
-    "sell": "#495057",
-    "strong_sell": "#212529",
+    "strong_buy": "#23C55E",
+    "buy": "#2F80ED",
+    "hold": "#8B949E",
+    "sell": "#EF4444",
+    "strong_sell": "#EF4444",
 }
 
 SIGNAL_BG = {
-    "strong_buy": "#e9ecef",
-    "buy":        "#e9ecef",
-    "hold":       "#dee2e6",
-    "sell":       "#e9ecef",
-    "strong_sell":"#dee2e6",
+    "strong_buy": "rgba(35, 197, 94, 0.14)",
+    "buy":        "rgba(47, 128, 237, 0.14)",
+    "hold":       "rgba(139, 148, 158, 0.14)",
+    "sell":       "rgba(239, 68, 68, 0.14)",
+    "strong_sell":"rgba(239, 68, 68, 0.14)",
 }
 
 
 def signal_color(signal: str) -> str:
-    return SIGNAL_COLORS.get(signal, "#6c757d")
+    return SIGNAL_COLORS.get(signal, "#8B949E")
 
 
 def signal_badge_html(signal: str) -> str:
-    color = SIGNAL_COLORS.get(signal, "#6c757d")
-    background = SIGNAL_BG.get(signal, "#e9ecef")
+    color = SIGNAL_COLORS.get(signal, "#8B949E")
+    background = SIGNAL_BG.get(signal, "rgba(139, 148, 158, 0.14)")
     label = format_signal(signal)
     return (
         f'<span class="ns-signal-pill" style="background:{background};'

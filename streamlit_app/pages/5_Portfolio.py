@@ -30,14 +30,14 @@ apply_theme()
 require_auth()
 
 CHART_COLORS = [
-    "#212529",
-    "#343a40",
-    "#495057",
-    "#6c757d",
-    "#adb5bd",
-    "#ced4da",
-    "#dee2e6",
-    "#e9ecef",
+    "#2F80ED",
+    "#23C55E",
+    "#8B949E",
+    "#EF4444",
+    "#2F80ED",
+    "#23C55E",
+    "#8B949E",
+    "#EF4444",
 ]
 
 
@@ -271,7 +271,7 @@ if holdings:
     st.markdown('<div class="ns-row-divider"></div>', unsafe_allow_html=True)
 
     for holding in holdings:
-        pnl_color = "#343a40" if holding["pnl"] >= 0 else "#6c757d"
+        pnl_color = "#23C55E" if holding["pnl"] >= 0 else "#EF4444"
         row = st.columns([1.2, 0.8, 1.1, 1.1, 1.1, 0.9, 1.2, 1.05], gap="small")
         row[0].markdown(f"**{holding['symbol']}**")
         row[1].markdown(f"{holding['quantity']:.0f}")
@@ -326,7 +326,7 @@ if holdings:
                 x=[holding["symbol"] for holding in sorted_holdings],
                 y=[holding["pnl"] for holding in sorted_holdings],
                 marker_color=[
-                    "#343a40" if holding["pnl"] >= 0 else "#6c757d" for holding in sorted_holdings
+                    "#23C55E" if holding["pnl"] >= 0 else "#EF4444" for holding in sorted_holdings
                 ],
                 text=[format_currency(holding["pnl"]) for holding in sorted_holdings],
                 textposition="outside",
@@ -397,7 +397,7 @@ if optimization and optimization.get("allocations"):
         if actions:
             for action in actions:
                 direction = action.get("action", "")
-                color = "#343a40" if direction in {"increase", "buy"} else "#6c757d"
+                color = "#23C55E" if direction in {"increase", "buy"} else "#EF4444"
                 render_note_card(
                     action["symbol"],
                     f"{direction.upper()} from {action.get('current_weight', 0) * 100:.1f}% to {action.get('recommended_weight', 0) * 100:.1f}% target weight.",
