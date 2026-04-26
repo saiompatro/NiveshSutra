@@ -6,6 +6,28 @@ import { redirect } from "next/navigation";
 import { SignalBadge } from "@/components/dashboard/SignalBadge";
 import type { SignalLabel } from "@/types";
 
+type HoldingRow = {
+  id: string;
+  symbol: string;
+  quantity: number;
+  avg_buy_price: number;
+};
+
+type LiveStockRow = {
+  symbol: string;
+  current_price: number;
+  change_pct: number;
+  provider?: string;
+};
+
+type RiskSummary = {
+  portfolio_value: number;
+  scenarios: number;
+  horizon_days: number;
+  lookback_days: number;
+  var: Record<string, { var: number; var_pct: number; cvar: number; cvar_pct: number }>;
+};
+
 function formatINR(n: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -18,19 +40,66 @@ function pnlColor(n: number) {
   return n >= 0 ? "text-emerald-400" : "text-red-400";
 }
 
+async function fetchLiveQuoteMap() {
+  const base = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  if (!base) return new Map<string, LiveStockRow>();
+
+  try {
+    const res = await fetch(`${base.replace(/\/$/, "")}/api/v1/stocks/live`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return new Map<string, LiveStockRow>();
+    const data = (await res.json()) as LiveStockRow[];
+    return new Map(data.map((row) => [row.symbol, row]));
+  } catch {
+    return new Map<string, LiveStockRow>();
+  }
+}
+
+async function fetchRiskSummary(token?: string) {
+  const base = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  if (!base || !token) return null;
+
+  try {
+    const res = await fetch(`${base.replace(/\/$/, "")}/api/v1/portfolio/risk`, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        scenarios: 10_000,
+        horizon_days: 1,
+        lookback_days: 756,
+        confidence_levels: [0.95, 0.99],
+      }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as RiskSummary;
+  } catch {
+    return null;
+  }
+}
+
 export default async function PortfolioPage() {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
 
   if (!user) redirect("/login");
 
-  const { data: holdings } = await supabase
+  const [{ data: holdings }, liveQuoteMap, riskSummary] = await Promise.all([
+    supabase
     .from("holdings")
-    .select(
-      "id, symbol, quantity, avg_price, current_price, pnl, pnl_pct, value, provider"
-    )
+    .select("id, symbol, quantity, avg_buy_price")
     .eq("user_id", user.id)
-    .order("value", { ascending: false });
+      .order("created_at", { ascending: false }),
+    fetchLiveQuoteMap(),
+    fetchRiskSummary(session?.access_token),
+  ]);
 
   const { data: signals } = await supabase
     .from("signals")
@@ -45,7 +114,30 @@ export default async function PortfolioPage() {
       latestSignalBySymbol.set(s.symbol, { signal: s.signal, composite_score: s.composite_score });
   }
 
-  const rows = holdings ?? [];
+  const rows = ((holdings ?? []) as HoldingRow[])
+    .map((holding) => {
+      const live = liveQuoteMap.get(holding.symbol);
+      const avgPrice = Number(holding.avg_buy_price);
+      const quantity = Number(holding.quantity);
+      const currentPrice = Number(live?.current_price ?? avgPrice);
+      const value = quantity * currentPrice;
+      const invested = quantity * avgPrice;
+      const pnl = value - invested;
+      const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+
+      return {
+        id: holding.id,
+        symbol: holding.symbol,
+        quantity,
+        avg_price: avgPrice,
+        current_price: currentPrice,
+        pnl,
+        pnl_pct: pnlPct,
+        value,
+        provider: live?.provider ?? "fallback",
+      };
+    })
+    .sort((a, b) => b.value - a.value);
   const totalInvested = rows.reduce(
     (sum, h) => sum + Number(h.avg_price) * Number(h.quantity),
     0
@@ -95,6 +187,27 @@ export default async function PortfolioPage() {
                   }`}
                 >
                   {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {riskSummary && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { label: "VaR 95", value: formatINR(riskSummary.var["95"].var), sub: `${riskSummary.var["95"].var_pct.toFixed(2)}%` },
+              { label: "CVaR 95", value: formatINR(riskSummary.var["95"].cvar), sub: `${riskSummary.var["95"].cvar_pct.toFixed(2)}%` },
+              { label: "VaR 99", value: formatINR(riskSummary.var["99"].var), sub: `${riskSummary.var["99"].var_pct.toFixed(2)}%` },
+              { label: "CVaR 99", value: formatINR(riskSummary.var["99"].cvar), sub: `${riskSummary.var["99"].cvar_pct.toFixed(2)}%` },
+            ].map((item) => (
+              <div key={item.label} className="rounded-2xl bg-card border border-border px-5 py-4">
+                <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-1">
+                  {item.label}
+                </p>
+                <p className="text-xl font-semibold text-foreground">{item.value}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {item.sub} - {riskSummary.scenarios.toLocaleString("en-IN")} scenarios
                 </p>
               </div>
             ))}

@@ -65,9 +65,12 @@ async def list_stocks_live(
                 "company_name": stock.get("company_name") or "",
                 "sector": stock.get("sector") or "",
                 "current_price": quote.price,
+                "previous_close": quote.previous_close,
+                "change": quote.change,
                 "change_pct": quote.change_pct,
                 "signal": signal_map.get(stock["symbol"]),
                 "provider": quote.provider,
+                "latest_trading_day": quote.latest_trading_day,
             }
         )
     return enriched

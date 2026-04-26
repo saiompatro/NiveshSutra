@@ -9,12 +9,41 @@ import { LiveNiftyStat } from "@/components/dashboard/LiveNiftyStat";
 import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase-server";
 import type { Signal, Alert } from "@/types";
 
+type HoldingRow = {
+  id: string;
+  symbol: string;
+  quantity: number;
+  avg_buy_price: number;
+};
+
+type LiveStockRow = {
+  symbol: string;
+  current_price: number;
+};
+
 function formatINR(n: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
-  }).format(n);
+    }).format(n);
+}
+
+async function fetchLiveQuoteMap() {
+  const base = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  if (!base) return new Map<string, LiveStockRow>();
+
+  try {
+    const res = await fetch(`${base.replace(/\/$/, "")}/api/v1/stocks/live`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return new Map<string, LiveStockRow>();
+    const data = (await res.json()) as LiveStockRow[];
+    return new Map(data.map((row) => [row.symbol, row]));
+  } catch {
+    return new Map<string, LiveStockRow>();
+  }
 }
 
 export default async function DashboardPage() {
@@ -26,7 +55,7 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   // Parallel Supabase reads — no Render API cold-start
-  const [signalsRes, ohlcvRes, alertsRes, holdingsRes] = await Promise.allSettled([
+  const [signalsRes, ohlcvRes, alertsRes, holdingsRes, liveQuotesRes] = await Promise.allSettled([
     admin
       .from("signals")
       .select("symbol, date, signal, composite_score, technical_score, sentiment_score, momentum_score, confidence, explanation")
@@ -53,9 +82,11 @@ export default async function DashboardPage() {
     user
       ? supabase
           .from("holdings")
-          .select("id, symbol, quantity, avg_price, current_price, pnl, pnl_pct, value")
+          .select("id, symbol, quantity, avg_buy_price")
           .eq("user_id", user.id)
       : Promise.resolve({ data: [], error: null }),
+
+    fetchLiveQuoteMap(),
   ]);
 
   const signals: Signal[] =
@@ -71,8 +102,24 @@ export default async function DashboardPage() {
   const alerts: Alert[] =
     alertsRes.status === "fulfilled" ? (alertsRes.value.data ?? []) : [];
 
-  const holdings =
-    holdingsRes.status === "fulfilled" ? (holdingsRes.value.data ?? []) : [];
+  const holdingRows =
+    holdingsRes.status === "fulfilled" ? ((holdingsRes.value.data ?? []) as HoldingRow[]) : [];
+  const liveQuoteMap =
+    liveQuotesRes.status === "fulfilled" ? liveQuotesRes.value : new Map<string, LiveStockRow>();
+
+  const holdings = holdingRows.map((holding) => {
+    const avgPrice = Number(holding.avg_buy_price);
+    const quantity = Number(holding.quantity);
+    const currentPrice = Number(liveQuoteMap.get(holding.symbol)?.current_price ?? avgPrice);
+    const value = quantity * currentPrice;
+
+    return {
+      ...holding,
+      avg_price: avgPrice,
+      current_price: currentPrice,
+      value,
+    };
+  });
 
   const totalInvested = holdings.reduce(
     (sum: number, h: { avg_price: number; quantity: number }) => sum + h.avg_price * h.quantity,

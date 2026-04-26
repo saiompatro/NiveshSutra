@@ -58,7 +58,7 @@ export default async function StocksPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Stocks</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Nifty 50 — live prices via Yahoo Finance, signals from last pipeline run
+            Nifty 50 - live NSE prices, signals from last pipeline run
           </p>
         </div>
 

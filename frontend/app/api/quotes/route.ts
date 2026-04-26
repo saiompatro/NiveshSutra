@@ -1,65 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Nifty 50 tickers on Yahoo Finance (with .NS suffix)
-// Matches the symbols stored in Supabase without suffix
-const NIFTY50_TICKERS: Record<string, string> = {
-  ADANIENT: "ADANIENT.NS",
-  ADANIPORTS: "ADANIPORTS.NS",
-  APOLLOHOSP: "APOLLOHOSP.NS",
-  ASIANPAINT: "ASIANPAINT.NS",
-  AXISBANK: "AXISBANK.NS",
-  BAJAJ_AUTO: "BAJAJ-AUTO.NS",
-  BAJAJFINSV: "BAJAJFINSV.NS",
-  BAJFINANCE: "BAJFINANCE.NS",
-  BHARTIARTL: "BHARTIARTL.NS",
-  BPCL: "BPCL.NS",
-  BRITANNIA: "BRITANNIA.NS",
-  CIPLA: "CIPLA.NS",
-  COALINDIA: "COALINDIA.NS",
-  DIVISLAB: "DIVISLAB.NS",
-  DRREDDY: "DRREDDY.NS",
-  EICHERMOT: "EICHERMOT.NS",
-  GRASIM: "GRASIM.NS",
-  HCLTECH: "HCLTECH.NS",
-  HDFCBANK: "HDFCBANK.NS",
-  HDFCLIFE: "HDFCLIFE.NS",
-  HEROMOTOCO: "HEROMOTOCO.NS",
-  HINDALCO: "HINDALCO.NS",
-  HINDUNILVR: "HINDUNILVR.NS",
-  ICICIBANK: "ICICIBANK.NS",
-  INDUSINDBK: "INDUSINDBK.NS",
-  INFY: "INFY.NS",
-  ITC: "ITC.NS",
-  JSWSTEEL: "JSWSTEEL.NS",
-  KOTAKBANK: "KOTAKBANK.NS",
-  LT: "LT.NS",
-  M_M: "M&M.NS",
-  MARUTI: "MARUTI.NS",
-  NESTLEIND: "NESTLEIND.NS",
-  NTPC: "NTPC.NS",
-  ONGC: "ONGC.NS",
-  POWERGRID: "POWERGRID.NS",
-  RELIANCE: "RELIANCE.NS",
-  SBILIFE: "SBILIFE.NS",
-  SBIN: "SBIN.NS",
-  SUNPHARMA: "SUNPHARMA.NS",
-  TATACONSUM: "TATACONSUM.NS",
-  TATAMOTORS: "TATAMOTORS.NS",
-  TATASTEEL: "TATASTEEL.NS",
-  TCS: "TCS.NS",
-  TECHM: "TECHM.NS",
-  TITAN: "TITAN.NS",
-  TRENT: "TRENT.NS",
-  ULTRACEMCO: "ULTRACEMCO.NS",
-  WIPRO: "WIPRO.NS",
-  "^NSEI": "^NSEI",
-};
-
-const YF_FIELDS =
-  "regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketPreviousClose,regularMarketOpen,regularMarketDayHigh,regularMarketDayLow,regularMarketVolume,regularMarketTime";
-
 export interface LiveQuote {
-  symbol: string;       // DB symbol (no .NS)
+  symbol: string;
   price: number;
   change: number;
   change_pct: number;
@@ -68,89 +10,144 @@ export interface LiveQuote {
   high: number;
   low: number;
   volume: number;
-  time: number;         // unix timestamp
-  provider: "yahoo";
+  time: number;
+  provider: string;
 }
 
-function mapResult(symbol: string, r: Record<string, unknown>): LiveQuote {
-  return {
-    symbol,
-    price: Number(r.regularMarketPrice ?? 0),
-    change: Number(r.regularMarketChange ?? 0),
-    change_pct: Number(r.regularMarketChangePercent ?? 0),
-    prev_close: Number(r.regularMarketPreviousClose ?? 0),
-    open: Number(r.regularMarketOpen ?? 0),
-    high: Number(r.regularMarketDayHigh ?? 0),
-    low: Number(r.regularMarketDayLow ?? 0),
-    volume: Number(r.regularMarketVolume ?? 0),
-    time: Number(r.regularMarketTime ?? 0),
-    provider: "yahoo",
-  };
-}
+type BackendStockQuote = {
+  symbol: string;
+  current_price: number;
+  change?: number;
+  change_pct: number;
+  previous_close?: number;
+  day_high?: number;
+  day_low?: number;
+  volume?: number;
+  provider?: string;
+};
 
-// Cache in memory: { data, ts }
+type BackendIndexQuote = {
+  nifty50_value: number;
+  nifty50_change: number;
+  nifty50_change_pct: number;
+  provider?: string;
+};
+
+const API_BASE =
+  process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+
+const CACHE_TTL_MS = 10_000;
 let _cache: { data: LiveQuote[]; ts: number } | null = null;
-const CACHE_TTL_MS = 60_000; // 60 seconds
 
-async function fetchFromYahoo(tickers: string[]): Promise<LiveQuote[]> {
-  const tickerStr = tickers.join(",");
-  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(tickerStr)}&fields=${YF_FIELDS}&lang=en-US&region=IN`;
-
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-      Accept: "application/json",
-    },
-    signal: AbortSignal.timeout(12_000),
-  });
-
-  if (!res.ok) throw new Error(`Yahoo Finance returned ${res.status}`);
-
-  const json = await res.json() as {
-    quoteResponse?: { result?: Record<string, unknown>[] };
-  };
-  const results = json?.quoteResponse?.result ?? [];
-
-  // Build reverse map: yf_ticker → db_symbol
-  const reverseMap = Object.fromEntries(
-    Object.entries(NIFTY50_TICKERS).map(([sym, yf]) => [yf, sym])
-  );
-
-  return results.map((r) => {
-    const yfSym = String(r.symbol ?? "");
-    const dbSym = reverseMap[yfSym] ?? yfSym.replace(/\.NS$/, "");
-    return mapResult(dbSym, r);
-  });
+function apiUrl(path: string) {
+  return `${API_BASE.replace(/\/$/, "")}${path}`;
 }
 
-// GET /api/quotes?symbols=RELIANCE,INFY,TCS  (optional — omit for all Nifty50)
+function splitSymbols(value: string | null) {
+  return value
+    ? value
+        .split(",")
+        .map((symbol) => symbol.trim().toUpperCase())
+        .filter(Boolean)
+    : [];
+}
+
+function mapStockQuote(row: BackendStockQuote): LiveQuote {
+  const price = Number(row.current_price ?? 0);
+  const change = Number(row.change ?? 0);
+  const previousClose = Number(row.previous_close ?? price - change);
+  return {
+    symbol: row.symbol,
+    price,
+    change,
+    change_pct: Number(row.change_pct ?? 0),
+    prev_close: previousClose,
+    open: price,
+    high: Number(row.day_high ?? price),
+    low: Number(row.day_low ?? price),
+    volume: Number(row.volume ?? 0),
+    time: Math.floor(Date.now() / 1000),
+    provider: row.provider ?? "backend",
+  };
+}
+
+async function fetchJson<T>(path: string): Promise<T> {
+  const res = await fetch(apiUrl(path), {
+    headers: { Accept: "application/json" },
+    cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!res.ok) throw new Error(`${path} returned ${res.status}`);
+  return (await res.json()) as T;
+}
+
+async function fetchIndexQuote(): Promise<LiveQuote | null> {
+  const data = await fetchJson<BackendIndexQuote | null>("/api/v1/market/index-overview");
+  if (!data) return null;
+  const price = Number(data.nifty50_value ?? 0);
+  const change = Number(data.nifty50_change ?? 0);
+  return {
+    symbol: "^NSEI",
+    price,
+    change,
+    change_pct: Number(data.nifty50_change_pct ?? 0),
+    prev_close: price - change,
+    open: price,
+    high: price,
+    low: price,
+    volume: 0,
+    time: Math.floor(Date.now() / 1000),
+    provider: data.provider ?? "backend",
+  };
+}
+
+async function fetchStockQuote(symbol: string): Promise<LiveQuote | null> {
+  const data = await fetchJson<BackendStockQuote | null>(
+    `/api/v1/stocks/${encodeURIComponent(symbol)}/quote`
+  );
+  return data ? mapStockQuote(data) : null;
+}
+
+async function fetchAllNiftyQuotes(): Promise<LiveQuote[]> {
+  const data = await fetchJson<BackendStockQuote[]>(
+    "/api/v1/stocks/live?nifty50_only=true"
+  );
+  return data.map(mapStockQuote);
+}
+
 export async function GET(req: NextRequest) {
-  // Return from in-process cache if fresh
-  if (_cache && Date.now() - _cache.ts < CACHE_TTL_MS) {
-    const requested = req.nextUrl.searchParams.get("symbols");
-    const data = requested
-      ? _cache.data.filter((q) => requested.split(",").includes(q.symbol))
-      : _cache.data;
-    return NextResponse.json(data, {
-      headers: { "X-Cache": "HIT", "Cache-Control": "public,max-age=60" },
+  if (!API_BASE) {
+    return NextResponse.json(
+      { error: "API_BASE_URL or NEXT_PUBLIC_API_BASE_URL is required for live quotes" },
+      { status: 503 }
+    );
+  }
+
+  const symbols = splitSymbols(req.nextUrl.searchParams.get("symbols"));
+  if (!symbols.length && _cache && Date.now() - _cache.ts < CACHE_TTL_MS) {
+    return NextResponse.json(_cache.data, {
+      headers: { "X-Cache": "HIT", "Cache-Control": "no-store" },
     });
   }
 
-  const requested = req.nextUrl.searchParams.get("symbols");
-  const symbolList = requested ? requested.split(",") : Object.keys(NIFTY50_TICKERS);
-  const tickers = symbolList
-    .map((s) => NIFTY50_TICKERS[s] ?? `${s}.NS`)
-    .filter(Boolean);
-
   try {
-    const quotes = await fetchFromYahoo(tickers);
-    // Update cache with all results
-    if (!requested) {
+    let quotes: LiveQuote[];
+    if (symbols.length) {
+      const results = await Promise.all(
+        symbols.map((symbol) =>
+          symbol === "^NSEI" ? fetchIndexQuote() : fetchStockQuote(symbol)
+        )
+      );
+      quotes = results.filter((quote): quote is LiveQuote => quote !== null);
+    } else {
+      quotes = await fetchAllNiftyQuotes();
+      const indexQuote = await fetchIndexQuote();
+      if (indexQuote) quotes.push(indexQuote);
       _cache = { data: quotes, ts: Date.now() };
     }
+
     return NextResponse.json(quotes, {
-      headers: { "X-Cache": "MISS", "Cache-Control": "public,max-age=60" },
+      headers: { "X-Cache": "MISS", "Cache-Control": "no-store" },
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

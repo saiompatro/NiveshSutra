@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from supabase import Client
-from ..dependencies import get_current_user, get_supabase_client
-from ..models.portfolio import OptimizeRequest
+from ..dependencies import get_current_user, get_supabase_admin
+from ..models.portfolio import MonteCarloRiskRequest, OptimizeRequest
+from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
+from math_engine.risk import MonteCarloRiskError, get_india_risk_free_rate, run_monte_carlo_var
 
 router = APIRouter()
 
@@ -10,7 +12,7 @@ router = APIRouter()
 async def optimize_portfolio(
     body: OptimizeRequest,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_admin),
 ):
     # Get user profile for risk_profile
     profile = supabase.table("profiles").select("risk_profile").eq("id", user["id"]).single().execute()
@@ -59,8 +61,37 @@ async def optimize_portfolio(
     }
 
 
+@router.post("/portfolio/risk")
+async def portfolio_monte_carlo_risk(
+    body: MonteCarloRiskRequest,
+    user: dict = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase_admin),
+):
+    holdings = (
+        supabase.table("holdings")
+        .select("symbol, quantity, avg_buy_price")
+        .eq("user_id", user["id"])
+        .execute()
+        .data
+        or []
+    )
+    try:
+        return run_monte_carlo_var(
+            supabase,
+            holdings,
+            scenarios=body.scenarios,
+            horizon_days=body.horizon_days,
+            lookback_days=body.lookback_days,
+            confidence_levels=body.confidence_levels,
+            risk_free_rate=body.risk_free_rate if body.risk_free_rate is not None else get_india_risk_free_rate(),
+            seed=body.seed,
+        )
+    except MonteCarloRiskError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
 @router.get("/portfolio/optimizations")
-async def list_optimizations(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_client)):
+async def list_optimizations(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_admin)):
     result = (
         supabase.table("portfolio_optimizations")
         .select("*, optimization_allocations(*)")
@@ -76,7 +107,7 @@ async def list_optimizations(user: dict = Depends(get_current_user), supabase: C
 async def get_optimization(
     opt_id: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_admin),
 ):
     result = (
         supabase.table("portfolio_optimizations")
@@ -92,7 +123,7 @@ async def get_optimization(
 @router.get("/portfolio/performance")
 async def portfolio_performance(
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_admin),
 ):
     holdings = (
         supabase.table("holdings")
@@ -106,16 +137,13 @@ async def portfolio_performance(
     enriched = []
     total_invested = 0
     current_value = 0
+    quote_map = fetch_live_quotes_batch({h["symbol"]: None for h in holdings.data})
     for h in holdings.data:
-        ohlcv = (
-            supabase.table("ohlcv")
-            .select("close")
-            .eq("symbol", h["symbol"])
-            .order("date", desc=True)
-            .limit(1)
-            .execute()
-        )
-        price = float(ohlcv.data[0]["close"]) if ohlcv.data else float(h["avg_buy_price"])
+        try:
+            quote = quote_map.get(h["symbol"]) or get_quote_with_fallback(supabase, h["symbol"])
+            price = quote.price
+        except Exception:
+            price = float(h["avg_buy_price"])
         invested = float(h["quantity"]) * float(h["avg_buy_price"])
         value = float(h["quantity"]) * price
         total_invested += invested

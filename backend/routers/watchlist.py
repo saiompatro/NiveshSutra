@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from supabase import Client
-from ..dependencies import get_current_user, get_supabase_client
+from ..dependencies import get_current_user, get_supabase_admin
 from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
 
 router = APIRouter()
 
 
 @router.get("/watchlist")
-async def get_watchlist(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_client)):
+async def get_watchlist(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_admin)):
     result = (
         supabase.table("watchlist")
         .select("*, stocks(*)")
@@ -21,7 +21,7 @@ async def get_watchlist(user: dict = Depends(get_current_user), supabase: Client
 @router.get("/watchlist/live")
 async def get_watchlist_live(
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_admin),
 ):
     rows = (
         supabase.table("watchlist")
@@ -51,6 +51,8 @@ async def get_watchlist_live(
                 "symbol": row["symbol"],
                 "company_name": stock_info.get("company_name") or "",
                 "current_price": quote.price,
+                "previous_close": quote.previous_close,
+                "change": quote.change,
                 "change_pct": quote.change_pct,
                 "provider": quote.provider,
             }
@@ -62,7 +64,7 @@ async def get_watchlist_live(
 async def add_to_watchlist(
     symbol: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_admin),
 ):
     result = (
         supabase.table("watchlist")
@@ -76,7 +78,7 @@ async def add_to_watchlist(
 async def remove_from_watchlist(
     symbol: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_admin),
 ):
     supabase.table("watchlist").delete().eq("user_id", user["id"]).eq("symbol", symbol).execute()
     return {"status": "removed"}

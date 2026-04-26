@@ -6,7 +6,7 @@ import type { SignalLabel } from "@/types";
 
 interface BaseRow {
   symbol: string;
-  close: number;      // last Supabase close
+  close: number;
   volume: number;
   date: string;
   signal: string | null;
@@ -29,6 +29,7 @@ function pctColor(n: number) {
 export function LivePricesOverlay({ rows }: { rows: BaseRow[] }) {
   const [liveMap, setLiveMap] = useState<Record<string, LiveQuote>>({});
   const [status, setStatus] = useState<"loading" | "live" | "offline">("loading");
+  const provider = Object.values(liveMap).find((quote) => quote.provider)?.provider;
 
   useEffect(() => {
     async function load() {
@@ -51,11 +52,8 @@ export function LivePricesOverlay({ rows }: { rows: BaseRow[] }) {
 
   return (
     <div className="rounded-2xl bg-card border border-border overflow-hidden">
-      {/* Status bar */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-secondary/20">
-        <p className="text-xs text-muted-foreground">
-          {rows.length} stocks
-        </p>
+        <p className="text-xs text-muted-foreground">{rows.length} stocks</p>
         <span
           className={`text-xs font-medium flex items-center gap-1.5 ${
             status === "live"
@@ -75,10 +73,10 @@ export function LivePricesOverlay({ rows }: { rows: BaseRow[] }) {
             }`}
           />
           {status === "live"
-            ? "Live · Yahoo Finance"
+            ? `Live - ${provider ?? "NSE"}`
             : status === "loading"
-            ? "Fetching live prices…"
-            : "Last close · live unavailable"}
+            ? "Fetching live prices..."
+            : "Last close - live unavailable"}
         </span>
       </div>
 
@@ -120,31 +118,31 @@ export function LivePricesOverlay({ rows }: { rows: BaseRow[] }) {
                   {r.symbol}
                 </td>
                 <td className="px-4 py-3 text-right font-mono text-foreground">
-                  ₹{price.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                  Rs {price.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
                 </td>
                 <td className="px-4 py-3 text-right hidden sm:table-cell">
                   {changePct != null ? (
                     <span className={`font-mono text-sm font-medium ${pctColor(changePct)}`}>
-                      {changePct >= 0 ? "▲" : "▼"} {Math.abs(changePct).toFixed(2)}%
+                      {changePct >= 0 ? "up" : "down"} {Math.abs(changePct).toFixed(2)}%
                     </span>
                   ) : (
-                    <span className="text-muted-foreground text-xs">—</span>
+                    <span className="text-muted-foreground text-xs">-</span>
                   )}
                 </td>
                 <td className="px-4 py-3 text-right text-muted-foreground hidden md:table-cell">
-                  {volume > 0 ? `${(volume / 1_000_000).toFixed(2)}M` : "—"}
+                  {volume > 0 ? `${(volume / 1_000_000).toFixed(2)}M` : "-"}
                 </td>
                 <td className="px-4 py-3 hidden sm:table-cell">
                   {r.signal ? (
                     <SignalBadge signal={r.signal as SignalLabel} />
                   ) : (
-                    <span className="text-muted-foreground text-xs">—</span>
+                    <span className="text-muted-foreground text-xs">-</span>
                   )}
                 </td>
                 <td className="px-4 py-3 text-right font-mono text-muted-foreground hidden lg:table-cell">
                   {r.composite_score != null
                     ? (r.composite_score >= 0 ? "+" : "") + r.composite_score.toFixed(3)
-                    : "—"}
+                    : "-"}
                 </td>
                 <td className="px-4 py-3 text-right text-muted-foreground text-xs">{r.date}</td>
               </tr>
@@ -153,7 +151,7 @@ export function LivePricesOverlay({ rows }: { rows: BaseRow[] }) {
           {rows.length === 0 && (
             <tr>
               <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                No data yet — run the pipeline to ingest OHLCV data.
+                No data yet - run the pipeline to ingest OHLCV data.
               </td>
             </tr>
           )}

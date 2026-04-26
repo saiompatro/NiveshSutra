@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import re
 import threading
 import time
@@ -59,6 +59,7 @@ class InstrumentMeta:
 _cache_lock = threading.Lock()
 _quote_cache: dict[str, tuple[float, QuoteSnapshot]] = {}
 _instrument_cache: dict[str, tuple[float, InstrumentMeta]] = {}
+_thread_local = threading.local()
 
 
 def _cache_ttl_seconds() -> int:
@@ -156,6 +157,40 @@ def _coerce_int(value: Any, default: int = 0) -> int:
         return default
 
 
+def _jugaad_available() -> bool:
+    try:
+        import jugaad_data.nse  # noqa: F401
+
+        return True
+    except Exception:
+        return False
+
+
+def _get_nse_live() -> Any:
+    client = getattr(_thread_local, "nse_live", None)
+    if client is not None:
+        return client
+
+    from jugaad_data.nse import NSELive
+
+    client = NSELive()
+    _thread_local.nse_live = client
+    return client
+
+
+def _nse_symbol(symbol: str, preferred_ticker: str | None = None) -> str:
+    base = (preferred_ticker or symbol).strip().upper()
+    for suffix in (".NS", ".NSE", ".BO", ".BSE"):
+        if base.endswith(suffix):
+            base = base[: -len(suffix)]
+            break
+    alias_map = {
+        "BAJAJ_AUTO": "BAJAJ-AUTO",
+        "M_M": "M&M",
+    }
+    return alias_map.get(base, base)
+
+
 def _candidate_tickers(symbol: str, preferred_ticker: str | None = None) -> list[str]:
     normalized = symbol.strip().upper()
     preferred = (preferred_ticker or "").strip().upper()
@@ -170,7 +205,57 @@ def _candidate_tickers(symbol: str, preferred_ticker: str | None = None) -> list
     return [f"{normalized}.NS", f"{normalized}.BO"]
 
 
+def _safe_history_jugaad(provider_symbol: str, days: int) -> pd.DataFrame:
+    if not _jugaad_available():
+        return pd.DataFrame()
+
+    symbol = _nse_symbol(provider_symbol)
+    if symbol in {"^NSEI", "^BSESN"} or provider_symbol.strip().upper().endswith((".BO", ".BSE")):
+        return pd.DataFrame()
+
+    start = date.today() - timedelta(days=max(days + 20, 45))
+    end = date.today()
+
+    try:
+        from jugaad_data.nse import stock_df
+
+        history = stock_df(symbol=symbol, from_date=start, to_date=end, series="EQ")
+    except Exception:
+        return pd.DataFrame()
+
+    if history is None or history.empty:
+        return pd.DataFrame()
+
+    history = history.rename(columns=lambda column: str(column).strip().lower()).copy()
+    rename_map = {
+        "date": "date",
+        "open": "open",
+        "high": "high",
+        "low": "low",
+        "close": "close",
+        "last": "close",
+        "volume": "volume",
+        "totaltradedquantity": "volume",
+    }
+    history = history.rename(columns={column: rename_map.get(column, column) for column in history.columns})
+    if "date" not in history.columns or "close" not in history.columns:
+        return pd.DataFrame()
+
+    history["date"] = pd.to_datetime(history["date"]).dt.strftime("%Y-%m-%d")
+    keep_columns = ["date", "open", "high", "low", "close", "volume"]
+    for column in keep_columns:
+        if column not in history.columns:
+            history[column] = 0
+    for column in ["open", "high", "low", "close", "volume"]:
+        history[column] = pd.to_numeric(history[column], errors="coerce")
+    return history[keep_columns].dropna(subset=["close"]).sort_values("date")
+
+
 def _safe_history(provider_symbol: str, days: int = 30) -> pd.DataFrame:
+    jugaad_history = _safe_history_jugaad(provider_symbol, days)
+    if not jugaad_history.empty:
+        return jugaad_history.tail(days)
+
     start = date.today() - timedelta(days=max(days + 10, 20))
     end = date.today() + timedelta(days=1)
 
@@ -265,6 +350,94 @@ def _quote_from_yfinance(meta: InstrumentMeta) -> QuoteSnapshot:
         latest_trading_day=latest_trading_day,
         provider="yfinance",
     )
+
+
+def _quote_from_jugaad(meta: InstrumentMeta) -> QuoteSnapshot:
+    nse = _get_nse_live()
+    nse_symbol = _nse_symbol(meta.symbol, meta.preferred_ticker or meta.instrument_key)
+    quote = nse.stock_quote(nse_symbol)
+    price_info = quote.get("priceInfo") or {}
+    metadata = quote.get("metadata") or {}
+    high_low = price_info.get("intraDayHighLow") or {}
+    preopen = quote.get("preOpenMarket") or {}
+
+    price = _coerce_float(
+        price_info.get("lastPrice"),
+        _coerce_float(high_low.get("value"), _coerce_float(price_info.get("close"))),
+    )
+    previous_close = _coerce_float(
+        price_info.get("previousClose"),
+        _coerce_float(price_info.get("basePrice"), price),
+    )
+    change = _coerce_float(price_info.get("change"), price - previous_close)
+    change_pct = _coerce_float(
+        price_info.get("pChange"),
+        (change / previous_close * 100) if previous_close else 0.0,
+    )
+
+    last_update = str(metadata.get("lastUpdateTime") or metadata.get("lastUpdateTime") or "")
+    latest_trading_day = date.today().isoformat()
+    if last_update:
+        for fmt in ("%d-%b-%Y %H:%M:%S", "%d-%b-%Y", "%Y-%m-%d %H:%M:%S"):
+            try:
+                latest_trading_day = datetime.strptime(last_update, fmt).date().isoformat()
+                break
+            except ValueError:
+                continue
+
+    volume = _coerce_int(
+        price_info.get("totalTradedVolume"),
+        _coerce_int(preopen.get("totalTradedVolume")),
+    )
+
+    return QuoteSnapshot(
+        provider_symbol=nse_symbol,
+        price=price,
+        previous_close=previous_close,
+        change=change,
+        change_pct=change_pct,
+        open=_coerce_float(price_info.get("open"), price),
+        high=_coerce_float(high_low.get("max"), _coerce_float(price_info.get("intraDayHighLow.max"), price)),
+        low=_coerce_float(high_low.get("min"), _coerce_float(price_info.get("intraDayHighLow.min"), price)),
+        volume=volume,
+        latest_trading_day=latest_trading_day,
+        provider="jugaad-nse",
+    )
+
+
+def _fetch_jugaad_index_snapshot(symbol: str) -> QuoteSnapshot | None:
+    normalized = symbol.strip().upper()
+    label_map = {"^NSEI": "NIFTY 50", "^BSESN": "SENSEX"}
+    label = label_map.get(normalized)
+    if not label or not _jugaad_available():
+        return None
+
+    try:
+        status = _get_nse_live().market_status()
+    except Exception:
+        return None
+
+    for row in status.get("marketState") or []:
+        if str(row.get("index", "")).upper() != label:
+            continue
+        price = _coerce_float(row.get("last"))
+        change = _coerce_float(row.get("variation"))
+        change_pct = _coerce_float(row.get("percentChange"))
+        previous_close = price - change
+        return QuoteSnapshot(
+            provider_symbol=label,
+            price=price,
+            previous_close=previous_close,
+            change=change,
+            change_pct=change_pct,
+            open=price,
+            high=price,
+            low=price,
+            volume=0,
+            latest_trading_day=date.today().isoformat(),
+            provider="jugaad-nse",
+        )
+    return None
 
 
 def _parse_moneycontrol_snapshot(label: str, html: str) -> QuoteSnapshot | None:
@@ -383,11 +556,19 @@ def search_instrument(symbol: str, preferred_ticker: str | None = None) -> Instr
 def _fetch_quote(symbol: str, preferred_ticker: str | None = None) -> QuoteSnapshot:
     normalized = _normalize_symbol_query(symbol)
     if normalized in {"^NSEI", "^BSESN"}:
+        jugaad_index = _fetch_jugaad_index_snapshot(normalized)
+        if jugaad_index:
+            return jugaad_index
         moneycontrol_snapshot = _fetch_moneycontrol_index_snapshot(normalized)
         if moneycontrol_snapshot:
             return moneycontrol_snapshot
 
     meta = search_instrument(symbol, preferred_ticker)
+    if meta.exchange == "NSE":
+        try:
+            return _quote_from_jugaad(meta)
+        except Exception:
+            pass
     return _quote_from_yfinance(meta)
 
 
