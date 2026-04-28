@@ -1,12 +1,12 @@
-# Graph Report - .  (2026-04-26)
+# Graph Report - .  (2026-04-28)
 
 ## Corpus Check
-- 95 files · ~37,785 words
+- 95 files · ~39,758 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 499 nodes · 812 edges · 116 communities detected
-- Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 304 edges (avg confidence: 0.8)
+- 508 nodes · 833 edges · 116 communities detected
+- Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 305 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -136,78 +136,78 @@
 6. `request_json()` - 14 edges
 7. `get_supabase()` - 13 edges
 8. `run_sentiment_pipeline()` - 13 edges
-9. `fetch_live_quotes_batch()` - 13 edges
-10. `get_quote_with_fallback()` - 12 edges
+9. `run_monte_carlo_var()` - 13 edges
+10. `fetch_live_quotes_batch()` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `Settings` --uses--> `Return a Supabase client that can satisfy RLS for user-scoped routes.`  [INFERRED]
+  backend\config.py → backend\dependencies.py
+- `Settings` --uses--> `Return a Supabase client that can satisfy RLS for user-scoped routes.`  [INFERRED]
+  backend\config.py → backend\dependencies.py
 - `get_settings()` --calls--> `_cache_ttl_seconds()`  [INFERRED]
   backend\config.py → backend\services\market_data.py
 - `list_alerts()` --calls--> `Table()`  [INFERRED]
   backend\routers\alerts.py → frontend\components\ui\table.tsx
 - `mark_read()` --calls--> `Table()`  [INFERRED]
   backend\routers\alerts.py → frontend\components\ui\table.tsx
-- `mark_all_read()` --calls--> `Table()`  [INFERRED]
-  backend\routers\alerts.py → frontend\components\ui\table.tsx
-- `list_holdings()` --calls--> `Table()`  [INFERRED]
-  backend\routers\holdings.py → frontend\components\ui\table.tsx
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.07
-Nodes (47): fetch_alerts(), fetch_latest_signals(), fetch_market_sentiment(), fetch_nifty50(), fetch_portfolio_performance(), fetch_watchlist_live(), fetch_stocks(), Fetch stocks from the live FastAPI market endpoint. (+39 more)
-
-### Community 1 - "Community 1"
 Cohesion: 0.06
 Nodes (37): list_alerts(), mark_all_read(), mark_read(), create_holding(), delete_holding(), list_holdings(), list_holdings_live(), update_holding() (+29 more)
 
+### Community 1 - "Community 1"
+Cohesion: 0.08
+Nodes (36): fetch_alerts(), fetch_latest_signals(), fetch_market_sentiment(), fetch_nifty50(), fetch_portfolio_performance(), fetch_watchlist_live(), add_stock(), fetch_stocks() (+28 more)
+
 ### Community 2 - "Community 2"
 Cohesion: 0.07
-Nodes (37): main(), NiveshSutra — Streamlit Entry Point.  Flow:   1. Not logged in   → show Login /, render_auth(), render_onboarding(), get_access_token(), get_github_oauth_url(), get_user_id(), handle_oauth_tokens() (+29 more)
+Nodes (39): main(), NiveshSutra — Streamlit Entry Point.  Flow:   1. Not logged in   → show Login /, render_auth(), render_onboarding(), get_access_token(), get_github_oauth_url(), get_user_id(), handle_oauth_tokens() (+31 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.09
-Nodes (34): _render_sidebar(), add_stock(), Validate and add a symbol through the FastAPI backend., _render_sidebar(), _render_sidebar(), _render_sidebar(), render_signal_row(), _render_sidebar() (+26 more)
-
-### Community 4 - "Community 4"
 Cohesion: 0.13
 Nodes (36): _cache_key(), _cache_ttl_seconds(), _candidate_tickers(), _coerce_float(), _coerce_int(), fetch_historical_daily(), _fetch_jugaad_index_snapshot(), fetch_live_quote() (+28 more)
 
-### Community 5 - "Community 5"
+### Community 4 - "Community 4"
 Cohesion: 0.08
 Nodes (31): get_supabase(), aggregate_daily(), fetch_news(), _get_finbert(), _iter_moneycontrol_results(), map_articles_to_symbols(), _normalize_news_item(), _parse_moneycontrol_datetime() (+23 more)
 
+### Community 5 - "Community 5"
+Cohesion: 0.11
+Nodes (30): _render_sidebar(), _render_sidebar(), _render_sidebar(), _render_sidebar(), render_signal_row(), _render_sidebar(), _render_sidebar(), render_sidebar() (+22 more)
+
 ### Community 6 - "Community 6"
+Cohesion: 0.19
+Nodes (19): Exception, HoldingInput, _importance_direction(), _likelihood_weights(), MonteCarloRiskError, _nearest_psd(), _normal_from_antithetic(), _normal_from_low_discrepancy() (+11 more)
+
+### Community 7 - "Community 7"
+Cohesion: 0.16
+Nodes (18): fetch_ohlcv(), get_stock_list(), Fetch OHLCV data for all active stocks using yfinance-backed market data helpers, Read all stocks from Supabase stocks table., Fetch OHLCV data for all active stocks using free market data providers.      Ar, _candidate_tickers(), _coerce_float(), _coerce_int() (+10 more)
+
+### Community 8 - "Community 8"
 Cohesion: 0.14
 Nodes (17): _format_signal(), Email notification service using Resend API.  Sends signal change alerts to user, Send an email notifying the user that a tracked signal has changed.      Returns, send_signal_change_email(), _signal_color(), _check_signal_change_notifications(), compute_momentum_score(), compute_technical_score() (+9 more)
 
-### Community 7 - "Community 7"
+### Community 9 - "Community 9"
 Cohesion: 0.12
 Nodes (15): _check_rebalance_drift(), _check_sentiment_shifts(), _check_signal_changes(), _equal_weight_fallback(), generate_alerts(), Notification services for NiveshSutra., Flag symbols whose daily sentiment shifted significantly., For each user with a completed optimization, check if current portfolio     has (+7 more)
 
-### Community 8 - "Community 8"
+### Community 10 - "Community 10"
 Cohesion: 0.15
 Nodes (12): BaseModel, HoldingCreate, HoldingUpdate, get_tracked_signals(), NotificationPreference, Get all actively tracked signal notifications for the current user., Stop tracking a signal notification., stop_tracking_signal() (+4 more)
 
-### Community 9 - "Community 9"
-Cohesion: 0.25
-Nodes (11): Exception, HoldingInput, MonteCarloRiskError, _nearest_psd(), _normalize_holdings(), _price_matrix_from_supabase(), run_monte_carlo_var(), _var_cvar() (+3 more)
-
-### Community 10 - "Community 10"
+### Community 11 - "Community 11"
 Cohesion: 0.24
 Nodes (8): fetchLiveQuoteMap(), fetchRiskSummary(), formatINR(), pnlColor(), PortfolioPage(), StocksPage(), createSupabaseAdminClient(), createSupabaseServerClient()
 
-### Community 11 - "Community 11"
-Cohesion: 0.4
-Nodes (5): BaseSettings, get_settings(), Settings, get_supabase_for_user(), Return a Supabase client that can satisfy RLS for user-scoped routes.
-
 ### Community 12 - "Community 12"
-Cohesion: 0.4
-Nodes (5): compute_indicators(), Compute technical indicators for each stock symbol using pandas-ta. Indicators:, Compute technical indicators for each symbol in the OHLCV DataFrame.      Args:, Safely extract and round a value from a pandas Series., _safe_round()
+Cohesion: 0.33
+Nodes (6): BaseSettings, get_settings(), Settings, get_supabase_for_user(), Return a Supabase client that can satisfy RLS for user-scoped routes., Return a Supabase client that can satisfy RLS for user-scoped routes.
 
 ### Community 13 - "Community 13"
 Cohesion: 0.4
-Nodes (5): fetch_ohlcv(), get_stock_list(), Fetch OHLCV data for all active stocks using yfinance-backed market data helpers, Read all stocks from Supabase stocks table., Fetch OHLCV data for all active stocks using free market data providers.      Ar
+Nodes (5): compute_indicators(), Compute technical indicators for each stock symbol using pandas-ta. Indicators:, Compute technical indicators for each symbol in the OHLCV DataFrame.      Args:, Safely extract and round a value from a pandas Series., _safe_round()
 
 ### Community 14 - "Community 14"
 Cohesion: 0.53
@@ -215,11 +215,11 @@ Nodes (5): get_api_base_url(), get_required_setting(), get_setting(), Runtime co
 
 ### Community 15 - "Community 15"
 Cohesion: 0.5
-Nodes (2): Badge(), cn()
+Nodes (2): handleSubmit(), createClient()
 
 ### Community 16 - "Community 16"
 Cohesion: 0.5
-Nodes (2): handleSubmit(), createClient()
+Nodes (2): Badge(), cn()
 
 ### Community 17 - "Community 17"
 Cohesion: 0.67
@@ -618,7 +618,7 @@ Cohesion: 1.0
 Nodes (1): Settings — profile update, risk re-assessment, notification preferences.
 
 ## Knowledge Gaps
-- **127 isolated node(s):** `Get all actively tracked signal notifications for the current user.`, `Stop tracking a signal notification.`, `Search for a stock by symbol. If it exists in the DB, return it.     If not, val`, `Fetch last 90 days of OHLCV data for a newly added stock.`, `CLI entry point: orchestrates OHLCV fetch -> compute indicators -> store in Supa` (+122 more)
+- **128 isolated node(s):** `Get all actively tracked signal notifications for the current user.`, `Stop tracking a signal notification.`, `Search for a stock by symbol. If it exists in the DB, return it.     If not, val`, `Fetch last 90 days of OHLCV data for a newly added stock.`, `CLI entry point: orchestrates OHLCV fetch -> compute indicators -> store in Supa` (+123 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 19`** (2 nodes): `main.py`, `root()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -818,12 +818,12 @@ Nodes (1): Settings — profile update, risk re-assessment, notification prefere
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GET()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 9`, `Community 13`, `Community 14`?**
-  _High betweenness centrality (0.228) - this node is a cross-community bridge._
-- **Why does `Table()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 13`?**
-  _High betweenness centrality (0.213) - this node is a cross-community bridge._
-- **Why does `run_sentiment_pipeline()` connect `Community 5` to `Community 1`, `Community 3`, `Community 7`?**
-  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **Why does `GET()` connect `Community 5` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 14`?**
+  _High betweenness centrality (0.231) - this node is a cross-community bridge._
+- **Why does `Table()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`?**
+  _High betweenness centrality (0.216) - this node is a cross-community bridge._
+- **Why does `run_sentiment_pipeline()` connect `Community 4` to `Community 0`, `Community 9`, `Community 5`?**
+  _High betweenness centrality (0.036) - this node is a cross-community bridge._
 - **Are the 81 inferred relationships involving `Table()` (e.g. with `list_alerts()` and `mark_read()`) actually correct?**
   _`Table()` has 81 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 66 inferred relationships involving `GET()` (e.g. with `list_holdings_live()` and `market_overview()`) actually correct?**

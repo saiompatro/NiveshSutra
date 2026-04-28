@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from supabase import Client
-from ..dependencies import get_supabase_admin, get_current_user
+from ..dependencies import get_supabase_for_user, get_current_user
 
 router = APIRouter()
 
@@ -13,7 +13,7 @@ class NotificationPreference(BaseModel):
 @router.get("/notifications/tracked")
 async def get_tracked_signals(
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     """Get all actively tracked signal notifications for the current user."""
     result = (
@@ -31,7 +31,7 @@ async def get_tracked_signals(
 async def stop_tracking_signal(
     notification_id: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     """Stop tracking a signal notification."""
     result = (

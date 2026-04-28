@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 from supabase import Client
-from ..dependencies import get_current_user, get_supabase_client
+from ..dependencies import get_current_user, get_supabase_for_user
 
 router = APIRouter()
 
 
 @router.get("/alerts")
-async def list_alerts(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_client)):
+async def list_alerts(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
     result = (
         supabase.table("alerts")
         .select("*")
@@ -22,7 +22,7 @@ async def list_alerts(user: dict = Depends(get_current_user), supabase: Client =
 async def mark_read(
     alert_id: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     result = (
         supabase.table("alerts")
@@ -35,6 +35,6 @@ async def mark_read(
 
 
 @router.put("/alerts/read-all")
-async def mark_all_read(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_client)):
+async def mark_all_read(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
     supabase.table("alerts").update({"is_read": True}).eq("user_id", user["id"]).eq("is_read", False).execute()
     return {"status": "ok"}

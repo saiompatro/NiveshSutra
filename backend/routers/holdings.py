@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from supabase import Client
-from ..dependencies import get_current_user, get_supabase_admin
+from ..dependencies import get_current_user, get_supabase_for_user
 from ..models.holding import HoldingCreate, HoldingUpdate
 from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
 
@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get("/holdings")
-async def list_holdings(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_admin)):
+async def list_holdings(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
     result = (
         supabase.table("holdings")
         .select("*, stocks(*)")
@@ -22,7 +22,7 @@ async def list_holdings(user: dict = Depends(get_current_user), supabase: Client
 @router.get("/holdings/live")
 async def list_holdings_live(
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     holdings = (
         supabase.table("holdings")
@@ -72,7 +72,7 @@ async def list_holdings_live(
 async def create_holding(
     body: HoldingCreate,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     data = body.model_dump()
     data["user_id"] = user["id"]
@@ -85,7 +85,7 @@ async def update_holding(
     holding_id: str,
     body: HoldingUpdate,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     data = body.model_dump(exclude_none=True)
     result = (
@@ -102,7 +102,7 @@ async def update_holding(
 async def delete_holding(
     holding_id: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     supabase.table("holdings").delete().eq("id", holding_id).eq("user_id", user["id"]).execute()
     return {"status": "deleted"}

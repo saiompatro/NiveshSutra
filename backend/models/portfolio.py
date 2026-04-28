@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Literal, Optional
 
 
 class OptimizeRequest(BaseModel):
@@ -16,3 +16,6 @@ class MonteCarloRiskRequest(BaseModel):
     confidence_levels: list[float] = Field(default_factory=lambda: [0.95, 0.99])
     risk_free_rate: Optional[float] = None
     seed: Optional[int] = None
+    sampling_method: Literal["auto", "sobol", "halton", "pseudo_random", "antithetic"] = "auto"
+    importance_sampling: bool = True
+    importance_shift: float = 1.25

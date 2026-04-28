@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from postgrest.exceptions import APIError
 from supabase import Client
-from ..dependencies import get_current_user, get_supabase_admin, get_supabase_for_user
+from ..dependencies import get_current_user, get_supabase_for_user
 from ..models.portfolio import MonteCarloRiskRequest, OptimizeRequest
 from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
 from math_engine.risk import MonteCarloRiskError, get_india_risk_free_rate, run_monte_carlo_var
@@ -102,7 +102,7 @@ async def optimize_portfolio(
 async def portfolio_monte_carlo_risk(
     body: MonteCarloRiskRequest,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     holdings = (
         supabase.table("holdings")
@@ -122,13 +122,16 @@ async def portfolio_monte_carlo_risk(
             confidence_levels=body.confidence_levels,
             risk_free_rate=body.risk_free_rate if body.risk_free_rate is not None else get_india_risk_free_rate(),
             seed=body.seed,
+            sampling_method=body.sampling_method,
+            importance_sampling=body.importance_sampling,
+            importance_shift=body.importance_shift,
         )
     except MonteCarloRiskError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.get("/portfolio/optimizations")
-async def list_optimizations(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_admin)):
+async def list_optimizations(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
     result = (
         supabase.table("portfolio_optimizations")
         .select("*, optimization_allocations(*)")
@@ -144,7 +147,7 @@ async def list_optimizations(user: dict = Depends(get_current_user), supabase: C
 async def get_optimization(
     opt_id: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     result = (
         supabase.table("portfolio_optimizations")
@@ -160,7 +163,7 @@ async def get_optimization(
 @router.get("/portfolio/performance")
 async def portfolio_performance(
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     holdings = (
         supabase.table("holdings")

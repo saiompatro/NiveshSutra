@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from supabase import Client
-from ..dependencies import get_current_user, get_supabase_admin
+from ..dependencies import get_current_user, get_supabase_for_user
 from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
 
 router = APIRouter()
 
 
 @router.get("/watchlist")
-async def get_watchlist(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_admin)):
+async def get_watchlist(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
     result = (
         supabase.table("watchlist")
         .select("*, stocks(*)")
@@ -21,7 +21,7 @@ async def get_watchlist(user: dict = Depends(get_current_user), supabase: Client
 @router.get("/watchlist/live")
 async def get_watchlist_live(
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     rows = (
         supabase.table("watchlist")
@@ -64,7 +64,7 @@ async def get_watchlist_live(
 async def add_to_watchlist(
     symbol: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     result = (
         supabase.table("watchlist")
@@ -78,7 +78,7 @@ async def add_to_watchlist(
 async def remove_from_watchlist(
     symbol: str,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     supabase.table("watchlist").delete().eq("user_id", user["id"]).eq("symbol", symbol).execute()
     return {"status": "removed"}

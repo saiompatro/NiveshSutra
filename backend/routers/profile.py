@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from supabase import Client
-from ..dependencies import get_current_user, get_supabase_client
+from ..dependencies import get_current_user, get_supabase_for_user
 from ..models.profile import RiskAssessmentRequest, ProfileUpdate
 
 router = APIRouter()
 
 
 @router.get("/profile")
-async def get_profile(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_client)):
+async def get_profile(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
     result = supabase.table("profiles").select("*").eq("id", user["id"]).single().execute()
     return result.data
 
@@ -16,7 +16,7 @@ async def get_profile(user: dict = Depends(get_current_user), supabase: Client =
 async def update_profile(
     body: ProfileUpdate,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     data = body.model_dump(exclude_none=True)
     result = supabase.table("profiles").update(data).eq("id", user["id"]).execute()
@@ -27,7 +27,7 @@ async def update_profile(
 async def submit_risk_assessment(
     body: RiskAssessmentRequest,
     user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_client),
+    supabase: Client = Depends(get_supabase_for_user),
 ):
     total = sum(body.answers)
     if total <= 8:

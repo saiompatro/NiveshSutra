@@ -18,7 +18,7 @@
       "source_file": "backend\\config.py",
       "source_location": "L1",
       "id": "backend_config_py",
-      "community": 11,
+      "community": 12,
       "norm_label": "config.py"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "backend\\config.py",
       "source_location": "L5",
       "id": "config_settings",
-      "community": 11,
+      "community": 12,
       "norm_label": "settings"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "",
       "source_location": "",
       "id": "basesettings",
-      "community": 11,
+      "community": 12,
       "norm_label": "basesettings"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "backend\\config.py",
       "source_location": "L17",
       "id": "config_get_settings",
-      "community": 11,
+      "community": 12,
       "norm_label": "get_settings()"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "backend\\dependencies.py",
       "source_location": "L1",
       "id": "backend_dependencies_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "dependencies.py"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "backend\\dependencies.py",
       "source_location": "L10",
       "id": "dependencies_get_supabase_client",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_supabase_client()"
     },
     {
@@ -72,35 +72,35 @@
       "source_file": "backend\\dependencies.py",
       "source_location": "L14",
       "id": "dependencies_get_supabase_admin",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_supabase_admin()"
     },
     {
       "label": "get_current_user()",
       "file_type": "code",
       "source_file": "backend\\dependencies.py",
-      "source_location": "L19",
+      "source_location": "L23",
       "id": "dependencies_get_current_user",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_current_user()"
     },
     {
       "label": "get_supabase_for_user()",
       "file_type": "code",
       "source_file": "backend\\dependencies.py",
-      "source_location": "L33",
+      "source_location": "L37",
       "id": "dependencies_get_supabase_for_user",
-      "community": 11,
+      "community": 12,
       "norm_label": "get_supabase_for_user()"
     },
     {
       "label": "Return a Supabase client that can satisfy RLS for user-scoped routes.",
       "file_type": "rationale",
       "source_file": "backend\\dependencies.py",
-      "source_location": "L37",
-      "community": 11,
+      "source_location": "L41",
+      "community": 12,
       "norm_label": "return a supabase client that can satisfy rls for user-scoped routes.",
-      "id": "dependencies_rationale_37"
+      "id": "dependencies_rationale_41"
     },
     {
       "label": "main.py",
@@ -135,7 +135,7 @@
       "source_file": "backend\\models\\holding.py",
       "source_location": "L1",
       "id": "backend_models_holding_py",
-      "community": 8,
+      "community": 10,
       "norm_label": "holding.py"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "backend\\models\\holding.py",
       "source_location": "L5",
       "id": "holding_holdingcreate",
-      "community": 8,
+      "community": 10,
       "norm_label": "holdingcreate"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "",
       "source_location": "",
       "id": "basemodel",
-      "community": 8,
+      "community": 10,
       "norm_label": "basemodel"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "backend\\models\\holding.py",
       "source_location": "L13",
       "id": "holding_holdingupdate",
-      "community": 8,
+      "community": 10,
       "norm_label": "holdingupdate"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "backend\\models\\portfolio.py",
       "source_location": "L1",
       "id": "backend_models_portfolio_py",
-      "community": 8,
+      "community": 10,
       "norm_label": "portfolio.py"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "backend\\models\\portfolio.py",
       "source_location": "L5",
       "id": "portfolio_optimizerequest",
-      "community": 8,
+      "community": 10,
       "norm_label": "optimizerequest"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "backend\\models\\portfolio.py",
       "source_location": "L12",
       "id": "portfolio_montecarloriskrequest",
-      "community": 8,
+      "community": 10,
       "norm_label": "montecarloriskrequest"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "backend\\models\\profile.py",
       "source_location": "L1",
       "id": "backend_models_profile_py",
-      "community": 8,
+      "community": 10,
       "norm_label": "profile.py"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "backend\\models\\profile.py",
       "source_location": "L5",
       "id": "profile_profileupdate",
-      "community": 8,
+      "community": 10,
       "norm_label": "profileupdate"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "backend\\models\\profile.py",
       "source_location": "L11",
       "id": "profile_riskassessmentrequest",
-      "community": 8,
+      "community": 10,
       "norm_label": "riskassessmentrequest"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "backend\\routers\\alerts.py",
       "source_location": "L1",
       "id": "backend_routers_alerts_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "alerts.py"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "backend\\routers\\alerts.py",
       "source_location": "L9",
       "id": "alerts_list_alerts",
-      "community": 1,
+      "community": 0,
       "norm_label": "list_alerts()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "backend\\routers\\alerts.py",
       "source_location": "L22",
       "id": "alerts_mark_read",
-      "community": 1,
+      "community": 0,
       "norm_label": "mark_read()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "backend\\routers\\alerts.py",
       "source_location": "L38",
       "id": "alerts_mark_all_read",
-      "community": 1,
+      "community": 0,
       "norm_label": "mark_all_read()"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "backend\\routers\\holdings.py",
       "source_location": "L1",
       "id": "backend_routers_holdings_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "holdings.py"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "backend\\routers\\holdings.py",
       "source_location": "L11",
       "id": "holdings_list_holdings",
-      "community": 1,
+      "community": 0,
       "norm_label": "list_holdings()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "backend\\routers\\holdings.py",
       "source_location": "L23",
       "id": "holdings_list_holdings_live",
-      "community": 1,
+      "community": 0,
       "norm_label": "list_holdings_live()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "backend\\routers\\holdings.py",
       "source_location": "L72",
       "id": "holdings_create_holding",
-      "community": 1,
+      "community": 0,
       "norm_label": "create_holding()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "backend\\routers\\holdings.py",
       "source_location": "L84",
       "id": "holdings_update_holding",
-      "community": 1,
+      "community": 0,
       "norm_label": "update_holding()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "backend\\routers\\holdings.py",
       "source_location": "L102",
       "id": "holdings_delete_holding",
-      "community": 1,
+      "community": 0,
       "norm_label": "delete_holding()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "backend\\routers\\market.py",
       "source_location": "L1",
       "id": "backend_routers_market_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "market.py"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "backend\\routers\\market.py",
       "source_location": "L10",
       "id": "market_market_overview",
-      "community": 1,
+      "community": 0,
       "norm_label": "market_overview()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "backend\\routers\\market.py",
       "source_location": "L43",
       "id": "market_market_index_overview",
-      "community": 1,
+      "community": 0,
       "norm_label": "market_index_overview()"
     },
     {
@@ -369,7 +369,7 @@
       "source_file": "backend\\routers\\notifications.py",
       "source_location": "L1",
       "id": "backend_routers_notifications_py",
-      "community": 8,
+      "community": 10,
       "norm_label": "notifications.py"
     },
     {
@@ -378,7 +378,7 @@
       "source_file": "backend\\routers\\notifications.py",
       "source_location": "L9",
       "id": "notifications_notificationpreference",
-      "community": 8,
+      "community": 10,
       "norm_label": "notificationpreference"
     },
     {
@@ -387,7 +387,7 @@
       "source_file": "backend\\routers\\notifications.py",
       "source_location": "L14",
       "id": "notifications_get_tracked_signals",
-      "community": 8,
+      "community": 10,
       "norm_label": "get_tracked_signals()"
     },
     {
@@ -396,7 +396,7 @@
       "source_file": "backend\\routers\\notifications.py",
       "source_location": "L31",
       "id": "notifications_stop_tracking_signal",
-      "community": 8,
+      "community": 10,
       "norm_label": "stop_tracking_signal()"
     },
     {
@@ -404,7 +404,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\api\\routers\\notifications.py",
       "source_location": "L18",
-      "community": 8,
+      "community": 10,
       "norm_label": "get all actively tracked signal notifications for the current user.",
       "id": "notifications_rationale_18"
     },
@@ -413,7 +413,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\api\\routers\\notifications.py",
       "source_location": "L36",
-      "community": 8,
+      "community": 10,
       "norm_label": "stop tracking a signal notification.",
       "id": "notifications_rationale_36"
     },
@@ -423,7 +423,7 @@
       "source_file": "backend\\routers\\portfolio.py",
       "source_location": "L1",
       "id": "backend_routers_portfolio_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "portfolio.py"
     },
     {
@@ -432,7 +432,7 @@
       "source_file": "backend\\routers\\portfolio.py",
       "source_location": "L13",
       "id": "portfolio_optimize_portfolio",
-      "community": 0,
+      "community": 1,
       "norm_label": "optimize_portfolio()"
     },
     {
@@ -441,34 +441,34 @@
       "source_file": "backend\\routers\\portfolio.py",
       "source_location": "L102",
       "id": "portfolio_portfolio_monte_carlo_risk",
-      "community": 9,
+      "community": 6,
       "norm_label": "portfolio_monte_carlo_risk()"
     },
     {
       "label": "list_optimizations()",
       "file_type": "code",
       "source_file": "backend\\routers\\portfolio.py",
-      "source_location": "L131",
+      "source_location": "L134",
       "id": "portfolio_list_optimizations",
-      "community": 1,
+      "community": 0,
       "norm_label": "list_optimizations()"
     },
     {
       "label": "get_optimization()",
       "file_type": "code",
       "source_file": "backend\\routers\\portfolio.py",
-      "source_location": "L144",
+      "source_location": "L147",
       "id": "portfolio_get_optimization",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_optimization()"
     },
     {
       "label": "portfolio_performance()",
       "file_type": "code",
       "source_file": "backend\\routers\\portfolio.py",
-      "source_location": "L161",
+      "source_location": "L164",
       "id": "portfolio_portfolio_performance",
-      "community": 1,
+      "community": 0,
       "norm_label": "portfolio_performance()"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "backend\\routers\\profile.py",
       "source_location": "L1",
       "id": "backend_routers_profile_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "profile.py"
     },
     {
@@ -486,7 +486,7 @@
       "source_file": "backend\\routers\\profile.py",
       "source_location": "L10",
       "id": "profile_get_profile",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_profile()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "backend\\routers\\profile.py",
       "source_location": "L16",
       "id": "profile_update_profile",
-      "community": 1,
+      "community": 0,
       "norm_label": "update_profile()"
     },
     {
@@ -504,7 +504,7 @@
       "source_file": "backend\\routers\\profile.py",
       "source_location": "L27",
       "id": "profile_submit_risk_assessment",
-      "community": 1,
+      "community": 0,
       "norm_label": "submit_risk_assessment()"
     },
     {
@@ -513,7 +513,7 @@
       "source_file": "backend\\routers\\sentiment.py",
       "source_location": "L1",
       "id": "backend_routers_sentiment_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "sentiment.py"
     },
     {
@@ -522,7 +522,7 @@
       "source_file": "backend\\routers\\sentiment.py",
       "source_location": "L9",
       "id": "sentiment_get_sentiment",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_sentiment()"
     },
     {
@@ -531,7 +531,7 @@
       "source_file": "backend\\routers\\sentiment.py",
       "source_location": "L26",
       "id": "sentiment_get_news",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_news()"
     },
     {
@@ -540,7 +540,7 @@
       "source_file": "backend\\routers\\sentiment.py",
       "source_location": "L43",
       "id": "sentiment_market_sentiment",
-      "community": 1,
+      "community": 0,
       "norm_label": "market_sentiment()"
     },
     {
@@ -549,7 +549,7 @@
       "source_file": "backend\\routers\\signals.py",
       "source_location": "L1",
       "id": "backend_routers_signals_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "signals.py"
     },
     {
@@ -558,7 +558,7 @@
       "source_file": "backend\\routers\\signals.py",
       "source_location": "L9",
       "id": "signals_list_signals",
-      "community": 1,
+      "community": 0,
       "norm_label": "list_signals()"
     },
     {
@@ -567,7 +567,7 @@
       "source_file": "backend\\routers\\signals.py",
       "source_location": "L29",
       "id": "signals_signals_summary",
-      "community": 1,
+      "community": 0,
       "norm_label": "signals_summary()"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "backend\\routers\\signals.py",
       "source_location": "L42",
       "id": "signals_get_signal_history",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_signal_history()"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "backend\\routers\\signals.py",
       "source_location": "L59",
       "id": "signals_get_latest_signal",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_latest_signal()"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "backend\\routers\\stocks.py",
       "source_location": "L1",
       "id": "backend_routers_stocks_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "stocks.py"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "backend\\routers\\stocks.py",
       "source_location": "L16",
       "id": "stocks_list_stocks",
-      "community": 1,
+      "community": 0,
       "norm_label": "list_stocks()"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "backend\\routers\\stocks.py",
       "source_location": "L28",
       "id": "stocks_list_stocks_live",
-      "community": 1,
+      "community": 0,
       "norm_label": "list_stocks_live()"
     },
     {
@@ -621,7 +621,7 @@
       "source_file": "backend\\routers\\stocks.py",
       "source_location": "L80",
       "id": "stocks_get_stock",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_stock()"
     },
     {
@@ -630,7 +630,7 @@
       "source_file": "backend\\routers\\stocks.py",
       "source_location": "L86",
       "id": "stocks_get_stock_quote",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_stock_quote()"
     },
     {
@@ -639,7 +639,7 @@
       "source_file": "backend\\routers\\stocks.py",
       "source_location": "L109",
       "id": "stocks_get_ohlcv",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_ohlcv()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "backend\\routers\\stocks.py",
       "source_location": "L137",
       "id": "stocks_get_indicators",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_indicators()"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "backend\\routers\\stock_search.py",
       "source_location": "L1",
       "id": "backend_routers_stock_search_py",
-      "community": 4,
+      "community": 3,
       "norm_label": "stock_search.py"
     },
     {
@@ -666,7 +666,7 @@
       "source_file": "backend\\routers\\stock_search.py",
       "source_location": "L10",
       "id": "stock_search_search_stock",
-      "community": 4,
+      "community": 3,
       "norm_label": "search_stock()"
     },
     {
@@ -675,7 +675,7 @@
       "source_file": "backend\\routers\\stock_search.py",
       "source_location": "L69",
       "id": "stock_search_fetch_initial_ohlcv",
-      "community": 4,
+      "community": 3,
       "norm_label": "_fetch_initial_ohlcv()"
     },
     {
@@ -683,7 +683,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
       "source_location": "L15",
-      "community": 4,
+      "community": 3,
       "norm_label": "search for a stock by symbol. if it exists in the db, return it.     if not, val",
       "id": "stock_search_rationale_15"
     },
@@ -692,7 +692,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\api\\routers\\stock_search.py",
       "source_location": "L70",
-      "community": 4,
+      "community": 3,
       "norm_label": "fetch last 90 days of ohlcv data for a newly added stock.",
       "id": "stock_search_rationale_70"
     },
@@ -702,7 +702,7 @@
       "source_file": "backend\\routers\\watchlist.py",
       "source_location": "L1",
       "id": "backend_routers_watchlist_py",
-      "community": 1,
+      "community": 0,
       "norm_label": "watchlist.py"
     },
     {
@@ -711,7 +711,7 @@
       "source_file": "backend\\routers\\watchlist.py",
       "source_location": "L10",
       "id": "watchlist_get_watchlist",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_watchlist()"
     },
     {
@@ -720,7 +720,7 @@
       "source_file": "backend\\routers\\watchlist.py",
       "source_location": "L22",
       "id": "watchlist_get_watchlist_live",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_watchlist_live()"
     },
     {
@@ -729,7 +729,7 @@
       "source_file": "backend\\routers\\watchlist.py",
       "source_location": "L64",
       "id": "watchlist_add_to_watchlist",
-      "community": 1,
+      "community": 0,
       "norm_label": "add_to_watchlist()"
     },
     {
@@ -738,7 +738,7 @@
       "source_file": "backend\\routers\\watchlist.py",
       "source_location": "L78",
       "id": "watchlist_remove_from_watchlist",
-      "community": 1,
+      "community": 0,
       "norm_label": "remove_from_watchlist()"
     },
     {
@@ -756,7 +756,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L1",
       "id": "backend_services_market_data_py",
-      "community": 4,
+      "community": 3,
       "norm_label": "market_data.py"
     },
     {
@@ -765,7 +765,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L30",
       "id": "market_data_marketdataerror",
-      "community": 4,
+      "community": 3,
       "norm_label": "marketdataerror"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "",
       "source_location": "",
       "id": "exception",
-      "community": 9,
+      "community": 6,
       "norm_label": "exception"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L35",
       "id": "market_data_quotesnapshot",
-      "community": 4,
+      "community": 3,
       "norm_label": "quotesnapshot"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L50",
       "id": "market_data_instrumentmeta",
-      "community": 4,
+      "community": 3,
       "norm_label": "instrumentmeta"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L65",
       "id": "market_data_cache_ttl_seconds",
-      "community": 4,
+      "community": 3,
       "norm_label": "_cache_ttl_seconds()"
     },
     {
@@ -810,7 +810,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L71",
       "id": "market_data_instrument_cache_ttl_seconds",
-      "community": 4,
+      "community": 3,
       "norm_label": "_instrument_cache_ttl_seconds()"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L75",
       "id": "market_data_cache_key",
-      "community": 4,
+      "community": 3,
       "norm_label": "_cache_key()"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L81",
       "id": "market_data_request_headers",
-      "community": 4,
+      "community": 3,
       "norm_label": "_request_headers()"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L88",
       "id": "market_data_from_quote_cache",
-      "community": 4,
+      "community": 3,
       "norm_label": "_from_quote_cache()"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L101",
       "id": "market_data_store_quote_cache",
-      "community": 4,
+      "community": 3,
       "norm_label": "_store_quote_cache()"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L111",
       "id": "market_data_from_instrument_cache",
-      "community": 4,
+      "community": 3,
       "norm_label": "_from_instrument_cache()"
     },
     {
@@ -864,7 +864,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L124",
       "id": "market_data_store_instrument_cache",
-      "community": 4,
+      "community": 3,
       "norm_label": "_store_instrument_cache()"
     },
     {
@@ -873,7 +873,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L134",
       "id": "market_data_normalize_symbol_query",
-      "community": 4,
+      "community": 3,
       "norm_label": "_normalize_symbol_query()"
     },
     {
@@ -882,7 +882,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L142",
       "id": "market_data_coerce_float",
-      "community": 4,
+      "community": 3,
       "norm_label": "_coerce_float()"
     },
     {
@@ -891,7 +891,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L151",
       "id": "market_data_coerce_int",
-      "community": 4,
+      "community": 3,
       "norm_label": "_coerce_int()"
     },
     {
@@ -900,7 +900,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L160",
       "id": "market_data_jugaad_available",
-      "community": 4,
+      "community": 3,
       "norm_label": "_jugaad_available()"
     },
     {
@@ -909,7 +909,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L169",
       "id": "market_data_get_nse_live",
-      "community": 4,
+      "community": 3,
       "norm_label": "_get_nse_live()"
     },
     {
@@ -918,7 +918,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L181",
       "id": "market_data_nse_symbol",
-      "community": 4,
+      "community": 3,
       "norm_label": "_nse_symbol()"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L194",
       "id": "market_data_candidate_tickers",
-      "community": 4,
+      "community": 3,
       "norm_label": "_candidate_tickers()"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L208",
       "id": "market_data_safe_history_jugaad",
-      "community": 4,
+      "community": 3,
       "norm_label": "_safe_history_jugaad()"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L254",
       "id": "market_data_safe_history",
-      "community": 4,
+      "community": 3,
       "norm_label": "_safe_history()"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L292",
       "id": "market_data_safe_fast_info",
-      "community": 4,
+      "community": 3,
       "norm_label": "_safe_fast_info()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L299",
       "id": "market_data_safe_info",
-      "community": 4,
+      "community": 3,
       "norm_label": "_safe_info()"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L306",
       "id": "market_data_quote_from_yfinance",
-      "community": 4,
+      "community": 3,
       "norm_label": "_quote_from_yfinance()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L355",
       "id": "market_data_quote_from_jugaad",
-      "community": 4,
+      "community": 3,
       "norm_label": "_quote_from_jugaad()"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L408",
       "id": "market_data_fetch_jugaad_index_snapshot",
-      "community": 4,
+      "community": 3,
       "norm_label": "_fetch_jugaad_index_snapshot()"
     },
     {
@@ -999,7 +999,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L443",
       "id": "market_data_parse_moneycontrol_snapshot",
-      "community": 4,
+      "community": 3,
       "norm_label": "_parse_moneycontrol_snapshot()"
     },
     {
@@ -1008,7 +1008,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L478",
       "id": "market_data_fetch_moneycontrol_index_snapshot",
-      "community": 4,
+      "community": 3,
       "norm_label": "_fetch_moneycontrol_index_snapshot()"
     },
     {
@@ -1017,7 +1017,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L508",
       "id": "market_data_search_instrument",
-      "community": 4,
+      "community": 3,
       "norm_label": "search_instrument()"
     },
     {
@@ -1026,7 +1026,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L556",
       "id": "market_data_fetch_quote",
-      "community": 4,
+      "community": 3,
       "norm_label": "_fetch_quote()"
     },
     {
@@ -1035,7 +1035,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L575",
       "id": "market_data_fetch_live_quotes_batch",
-      "community": 4,
+      "community": 3,
       "norm_label": "fetch_live_quotes_batch()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L606",
       "id": "market_data_fetch_live_quote",
-      "community": 4,
+      "community": 3,
       "norm_label": "fetch_live_quote()"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L615",
       "id": "market_data_fetch_historical_daily",
-      "community": 4,
+      "community": 3,
       "norm_label": "fetch_historical_daily()"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L636",
       "id": "market_data_get_latest_db_bars",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_latest_db_bars()"
     },
     {
@@ -1071,7 +1071,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L655",
       "id": "market_data_get_quote_with_fallback",
-      "community": 1,
+      "community": 0,
       "norm_label": "get_quote_with_fallback()"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "backend\\services\\market_data.py",
       "source_location": "L684",
       "id": "market_data_merge_live_quote_into_history",
-      "community": 1,
+      "community": 0,
       "norm_label": "merge_live_quote_into_history()"
     },
     {
@@ -1098,7 +1098,7 @@
       "source_file": "data\\config.py",
       "source_location": "L1",
       "id": "data_config_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "config.py"
     },
     {
@@ -1107,7 +1107,7 @@
       "source_file": "data\\config.py",
       "source_location": "L12",
       "id": "config_get_supabase",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_supabase()"
     },
     {
@@ -1116,7 +1116,7 @@
       "source_file": "data\\run_ingest.py",
       "source_location": "L1",
       "id": "data_run_ingest_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "run_ingest.py"
     },
     {
@@ -1125,7 +1125,7 @@
       "source_file": "data\\run_ingest.py",
       "source_location": "L10",
       "id": "run_ingest_main",
-      "community": 5,
+      "community": 4,
       "norm_label": "main()"
     },
     {
@@ -1133,7 +1133,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\run_ingest.py",
       "source_location": "L1",
-      "community": 5,
+      "community": 4,
       "norm_label": "cli entry point: orchestrates ohlcv fetch -> compute indicators -> store in supa",
       "id": "run_ingest_rationale_1"
     },
@@ -1143,7 +1143,7 @@
       "source_file": "data\\run_sentiment.py",
       "source_location": "L1",
       "id": "data_run_sentiment_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "run_sentiment.py"
     },
     {
@@ -1152,7 +1152,7 @@
       "source_file": "data\\run_sentiment.py",
       "source_location": "L9",
       "id": "run_sentiment_main",
-      "community": 5,
+      "community": 4,
       "norm_label": "main()"
     },
     {
@@ -1160,7 +1160,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\run_sentiment.py",
       "source_location": "L1",
-      "community": 5,
+      "community": 4,
       "norm_label": "cli entry point: run the full sentiment analysis pipeline.  usage:     python -m",
       "id": "run_sentiment_rationale_1"
     },
@@ -1170,7 +1170,7 @@
       "source_file": "data\\run_signals.py",
       "source_location": "L1",
       "id": "data_run_signals_py",
-      "community": 6,
+      "community": 8,
       "norm_label": "run_signals.py"
     },
     {
@@ -1179,7 +1179,7 @@
       "source_file": "data\\run_signals.py",
       "source_location": "L9",
       "id": "run_signals_main",
-      "community": 6,
+      "community": 8,
       "norm_label": "main()"
     },
     {
@@ -1187,7 +1187,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\run_signals.py",
       "source_location": "L1",
-      "community": 6,
+      "community": 8,
       "norm_label": "cli entry point: run the hybrid signal computation pipeline.  usage:     python",
       "id": "run_signals_rationale_1"
     },
@@ -1206,7 +1206,7 @@
       "source_file": "data\\alerts\\__init__.py",
       "source_location": "L1",
       "id": "data_alerts_init_py",
-      "community": 7,
+      "community": 9,
       "norm_label": "__init__.py"
     },
     {
@@ -1215,7 +1215,7 @@
       "source_file": "data\\alerts\\__init__.py",
       "source_location": "L30",
       "id": "init_generate_alerts",
-      "community": 7,
+      "community": 9,
       "norm_label": "generate_alerts()"
     },
     {
@@ -1224,7 +1224,7 @@
       "source_file": "data\\alerts\\__init__.py",
       "source_location": "L87",
       "id": "init_check_signal_changes",
-      "community": 7,
+      "community": 9,
       "norm_label": "_check_signal_changes()"
     },
     {
@@ -1233,7 +1233,7 @@
       "source_file": "data\\alerts\\__init__.py",
       "source_location": "L117",
       "id": "init_check_sentiment_shifts",
-      "community": 7,
+      "community": 9,
       "norm_label": "_check_sentiment_shifts()"
     },
     {
@@ -1242,7 +1242,7 @@
       "source_file": "data\\alerts\\__init__.py",
       "source_location": "L155",
       "id": "init_check_rebalance_drift",
-      "community": 7,
+      "community": 9,
       "norm_label": "_check_rebalance_drift()"
     },
     {
@@ -1250,7 +1250,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\notifications\\__init__.py",
       "source_location": "L1",
-      "community": 7,
+      "community": 9,
       "norm_label": "notification services for niveshsutra.",
       "id": "init_rationale_1"
     },
@@ -1259,7 +1259,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\alerts\\__init__.py",
       "source_location": "L31",
-      "community": 7,
+      "community": 9,
       "norm_label": "check for alert conditions and insert new alerts into supabase.      returns:",
       "id": "init_rationale_31"
     },
@@ -1268,7 +1268,7 @@
       "file_type": "rationale",
       "source_file": "data\\alerts\\__init__.py",
       "source_location": "L118",
-      "community": 7,
+      "community": 9,
       "norm_label": "flag symbols whose daily sentiment shifted significantly.",
       "id": "init_rationale_118"
     },
@@ -1277,7 +1277,7 @@
       "file_type": "rationale",
       "source_file": "data\\alerts\\__init__.py",
       "source_location": "L156",
-      "community": 7,
+      "community": 9,
       "norm_label": "for each user with a completed optimization, check if current portfolio     has",
       "id": "init_rationale_156"
     },
@@ -1287,7 +1287,7 @@
       "source_file": "data\\ingest\\compute_indicators.py",
       "source_location": "L1",
       "id": "data_ingest_compute_indicators_py",
-      "community": 12,
+      "community": 13,
       "norm_label": "compute_indicators.py"
     },
     {
@@ -1296,7 +1296,7 @@
       "source_file": "data\\ingest\\compute_indicators.py",
       "source_location": "L11",
       "id": "compute_indicators_compute_indicators",
-      "community": 12,
+      "community": 13,
       "norm_label": "compute_indicators()"
     },
     {
@@ -1305,7 +1305,7 @@
       "source_file": "data\\ingest\\compute_indicators.py",
       "source_location": "L81",
       "id": "compute_indicators_safe_round",
-      "community": 12,
+      "community": 13,
       "norm_label": "_safe_round()"
     },
     {
@@ -1313,7 +1313,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L1",
-      "community": 12,
+      "community": 13,
       "norm_label": "compute technical indicators for each stock symbol using pandas-ta. indicators:",
       "id": "compute_indicators_rationale_1"
     },
@@ -1322,7 +1322,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\compute_indicators.py",
       "source_location": "L12",
-      "community": 12,
+      "community": 13,
       "norm_label": "compute technical indicators for each symbol in the ohlcv dataframe.      args:",
       "id": "compute_indicators_rationale_12"
     },
@@ -1331,7 +1331,7 @@
       "file_type": "rationale",
       "source_file": "data\\ingest\\compute_indicators.py",
       "source_location": "L82",
-      "community": 12,
+      "community": 13,
       "norm_label": "safely extract and round a value from a pandas series.",
       "id": "compute_indicators_rationale_82"
     },
@@ -1341,7 +1341,7 @@
       "source_file": "data\\ingest\\fetch_ohlcv.py",
       "source_location": "L1",
       "id": "data_ingest_fetch_ohlcv_py",
-      "community": 13,
+      "community": 7,
       "norm_label": "fetch_ohlcv.py"
     },
     {
@@ -1350,7 +1350,7 @@
       "source_file": "data\\ingest\\fetch_ohlcv.py",
       "source_location": "L14",
       "id": "fetch_ohlcv_get_stock_list",
-      "community": 13,
+      "community": 7,
       "norm_label": "get_stock_list()"
     },
     {
@@ -1359,7 +1359,7 @@
       "source_file": "data\\ingest\\fetch_ohlcv.py",
       "source_location": "L21",
       "id": "fetch_ohlcv_fetch_ohlcv",
-      "community": 13,
+      "community": 7,
       "norm_label": "fetch_ohlcv()"
     },
     {
@@ -1367,7 +1367,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L1",
-      "community": 13,
+      "community": 7,
       "norm_label": "fetch ohlcv data for all active stocks using yfinance-backed market data helpers",
       "id": "fetch_ohlcv_rationale_1"
     },
@@ -1376,7 +1376,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L15",
-      "community": 13,
+      "community": 7,
       "norm_label": "read all stocks from supabase stocks table.",
       "id": "fetch_ohlcv_rationale_15"
     },
@@ -1385,7 +1385,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\fetch_ohlcv.py",
       "source_location": "L22",
-      "community": 13,
+      "community": 7,
       "norm_label": "fetch ohlcv data for all active stocks using free market data providers.      ar",
       "id": "fetch_ohlcv_rationale_22"
     },
@@ -1395,7 +1395,7 @@
       "source_file": "data\\ingest\\store.py",
       "source_location": "L1",
       "id": "data_ingest_store_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "store.py"
     },
     {
@@ -1404,7 +1404,7 @@
       "source_file": "data\\ingest\\store.py",
       "source_location": "L14",
       "id": "store_upsert_ohlcv",
-      "community": 5,
+      "community": 4,
       "norm_label": "upsert_ohlcv()"
     },
     {
@@ -1413,7 +1413,7 @@
       "source_file": "data\\ingest\\store.py",
       "source_location": "L38",
       "id": "store_upsert_indicators",
-      "community": 5,
+      "community": 4,
       "norm_label": "upsert_indicators()"
     },
     {
@@ -1422,7 +1422,7 @@
       "source_file": "data\\ingest\\store.py",
       "source_location": "L62",
       "id": "store_upsert_news_articles",
-      "community": 5,
+      "community": 4,
       "norm_label": "upsert_news_articles()"
     },
     {
@@ -1431,7 +1431,7 @@
       "source_file": "data\\ingest\\store.py",
       "source_location": "L78",
       "id": "store_upsert_article_sentiments",
-      "community": 5,
+      "community": 4,
       "norm_label": "upsert_article_sentiments()"
     },
     {
@@ -1440,7 +1440,7 @@
       "source_file": "data\\ingest\\store.py",
       "source_location": "L96",
       "id": "store_upsert_daily_sentiment",
-      "community": 5,
+      "community": 4,
       "norm_label": "upsert_daily_sentiment()"
     },
     {
@@ -1449,7 +1449,7 @@
       "source_file": "data\\ingest\\store.py",
       "source_location": "L114",
       "id": "store_upsert_signals",
-      "community": 5,
+      "community": 4,
       "norm_label": "upsert_signals()"
     },
     {
@@ -1458,7 +1458,7 @@
       "source_file": "data\\ingest\\store.py",
       "source_location": "L130",
       "id": "store_df_to_records",
-      "community": 5,
+      "community": 4,
       "norm_label": "_df_to_records()"
     },
     {
@@ -1466,7 +1466,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\ingest\\store.py",
       "source_location": "L1",
-      "community": 5,
+      "community": 4,
       "norm_label": "upsert ohlcv and indicator data to supabase. batches in chunks of 500 rows with",
       "id": "store_rationale_1"
     },
@@ -1475,7 +1475,7 @@
       "file_type": "rationale",
       "source_file": "data\\ingest\\store.py",
       "source_location": "L131",
-      "community": 5,
+      "community": 4,
       "norm_label": "convert dataframe to list of dicts, replacing nan with none.",
       "id": "store_rationale_131"
     },
@@ -1494,7 +1494,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L1",
       "id": "data_sentiment_init_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "__init__.py"
     },
     {
@@ -1503,7 +1503,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L181",
       "id": "init_get_finbert",
-      "community": 5,
+      "community": 4,
       "norm_label": "_get_finbert()"
     },
     {
@@ -1512,7 +1512,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L205",
       "id": "init_parse_moneycontrol_datetime",
-      "community": 5,
+      "community": 4,
       "norm_label": "_parse_moneycontrol_datetime()"
     },
     {
@@ -1521,7 +1521,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L224",
       "id": "init_normalize_news_item",
-      "community": 5,
+      "community": 4,
       "norm_label": "_normalize_news_item()"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L252",
       "id": "init_iter_moneycontrol_results",
-      "community": 5,
+      "community": 4,
       "norm_label": "_iter_moneycontrol_results()"
     },
     {
@@ -1539,7 +1539,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L265",
       "id": "init_fetch_news",
-      "community": 5,
+      "community": 4,
       "norm_label": "fetch_news()"
     },
     {
@@ -1548,7 +1548,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L316",
       "id": "init_map_articles_to_symbols",
-      "community": 5,
+      "community": 4,
       "norm_label": "map_articles_to_symbols()"
     },
     {
@@ -1557,7 +1557,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L354",
       "id": "init_score_sentiments",
-      "community": 5,
+      "community": 4,
       "norm_label": "score_sentiments()"
     },
     {
@@ -1566,7 +1566,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L414",
       "id": "init_aggregate_daily",
-      "community": 5,
+      "community": 4,
       "norm_label": "aggregate_daily()"
     },
     {
@@ -1575,7 +1575,7 @@
       "source_file": "data\\sentiment\\__init__.py",
       "source_location": "L460",
       "id": "init_run_sentiment_pipeline",
-      "community": 5,
+      "community": 4,
       "norm_label": "run_sentiment_pipeline()"
     },
     {
@@ -1583,7 +1583,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L182",
-      "community": 5,
+      "community": 4,
       "norm_label": "lazy-load prosusai/finbert as a singleton.",
       "id": "init_rationale_182"
     },
@@ -1592,7 +1592,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L266",
-      "community": 5,
+      "community": 4,
       "norm_label": "fetch articles from moneycontrol via moneycontrol-api.      returns:         lis",
       "id": "init_rationale_266"
     },
@@ -1601,7 +1601,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L317",
-      "community": 5,
+      "community": 4,
       "norm_label": "map articles to stock symbols by scanning titles for company names/aliases.",
       "id": "init_rationale_317"
     },
@@ -1610,7 +1610,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L355",
-      "community": 5,
+      "community": 4,
       "norm_label": "run finbert on article titles and return per-article per-symbol sentiment scores",
       "id": "init_rationale_355"
     },
@@ -1619,7 +1619,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L415",
-      "community": 5,
+      "community": 4,
       "norm_label": "aggregate per-article sentiments into daily sentiment per symbol.      returns:",
       "id": "init_rationale_415"
     },
@@ -1628,7 +1628,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\ml\\sentiment\\__init__.py",
       "source_location": "L461",
-      "community": 5,
+      "community": 4,
       "norm_label": "run the full sentiment pipeline end-to-end.",
       "id": "init_rationale_461"
     },
@@ -1638,7 +1638,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L1",
       "id": "data_signals_init_py",
-      "community": 6,
+      "community": 8,
       "norm_label": "__init__.py"
     },
     {
@@ -1647,7 +1647,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L28",
       "id": "init_normalize_rsi",
-      "community": 6,
+      "community": 8,
       "norm_label": "normalize_rsi()"
     },
     {
@@ -1656,7 +1656,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L36",
       "id": "init_normalize_macd",
-      "community": 6,
+      "community": 8,
       "norm_label": "normalize_macd()"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L42",
       "id": "init_normalize_bb",
-      "community": 6,
+      "community": 8,
       "norm_label": "normalize_bb()"
     },
     {
@@ -1674,7 +1674,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L53",
       "id": "init_normalize_obv",
-      "community": 6,
+      "community": 8,
       "norm_label": "normalize_obv()"
     },
     {
@@ -1683,7 +1683,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L67",
       "id": "init_compute_technical_score",
-      "community": 6,
+      "community": 8,
       "norm_label": "compute_technical_score()"
     },
     {
@@ -1692,7 +1692,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L79",
       "id": "init_compute_momentum_score",
-      "community": 6,
+      "community": 8,
       "norm_label": "compute_momentum_score()"
     },
     {
@@ -1701,7 +1701,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L112",
       "id": "init_compute_composite",
-      "community": 6,
+      "community": 8,
       "norm_label": "compute_composite()"
     },
     {
@@ -1710,7 +1710,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L130",
       "id": "init_generate_explanation",
-      "community": 6,
+      "community": 8,
       "norm_label": "generate_explanation()"
     },
     {
@@ -1719,7 +1719,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L160",
       "id": "init_run_signals_pipeline",
-      "community": 6,
+      "community": 8,
       "norm_label": "run_signals_pipeline()"
     },
     {
@@ -1728,7 +1728,7 @@
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L320",
       "id": "init_check_signal_change_notifications",
-      "community": 6,
+      "community": 8,
       "norm_label": "_check_signal_change_notifications()"
     },
     {
@@ -1736,7 +1736,7 @@
       "file_type": "rationale",
       "source_file": "data\\signals\\__init__.py",
       "source_location": "L161",
-      "community": 6,
+      "community": 8,
       "norm_label": "read indicators + sentiment from supabase, compute signals for all stocks,     a",
       "id": "init_rationale_161"
     },
@@ -1800,7 +1800,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L1",
       "id": "frontend_app_api_quotes_route_ts",
-      "community": 3,
+      "community": 5,
       "norm_label": "route.ts"
     },
     {
@@ -1809,7 +1809,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L42",
       "id": "route_apiurl",
-      "community": 3,
+      "community": 5,
       "norm_label": "apiurl()"
     },
     {
@@ -1818,7 +1818,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L46",
       "id": "route_splitsymbols",
-      "community": 3,
+      "community": 5,
       "norm_label": "splitsymbols()"
     },
     {
@@ -1827,7 +1827,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L55",
       "id": "route_mapstockquote",
-      "community": 3,
+      "community": 5,
       "norm_label": "mapstockquote()"
     },
     {
@@ -1836,7 +1836,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L74",
       "id": "route_fetchjson",
-      "community": 3,
+      "community": 5,
       "norm_label": "fetchjson()"
     },
     {
@@ -1845,7 +1845,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L84",
       "id": "route_fetchindexquote",
-      "community": 3,
+      "community": 5,
       "norm_label": "fetchindexquote()"
     },
     {
@@ -1854,7 +1854,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L104",
       "id": "route_fetchstockquote",
-      "community": 3,
+      "community": 5,
       "norm_label": "fetchstockquote()"
     },
     {
@@ -1863,7 +1863,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L111",
       "id": "route_fetchallniftyquotes",
-      "community": 3,
+      "community": 5,
       "norm_label": "fetchallniftyquotes()"
     },
     {
@@ -1872,7 +1872,7 @@
       "source_file": "frontend\\app\\api\\quotes\\route.ts",
       "source_location": "L118",
       "id": "route_get",
-      "community": 3,
+      "community": 5,
       "norm_label": "get()"
     },
     {
@@ -1890,7 +1890,7 @@
       "source_file": "frontend\\app\\dashboard\\page.tsx",
       "source_location": "L1",
       "id": "frontend_app_dashboard_page_tsx",
-      "community": 10,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1899,7 +1899,7 @@
       "source_file": "frontend\\app\\portfolio\\page.tsx",
       "source_location": "L31",
       "id": "page_formatinr",
-      "community": 10,
+      "community": 11,
       "norm_label": "formatinr()"
     },
     {
@@ -1908,7 +1908,7 @@
       "source_file": "frontend\\app\\portfolio\\page.tsx",
       "source_location": "L43",
       "id": "page_fetchlivequotemap",
-      "community": 10,
+      "community": 11,
       "norm_label": "fetchlivequotemap()"
     },
     {
@@ -1917,7 +1917,7 @@
       "source_file": "frontend\\app\\login\\page.tsx",
       "source_location": "L1",
       "id": "frontend_app_login_page_tsx",
-      "community": 16,
+      "community": 15,
       "norm_label": "page.tsx"
     },
     {
@@ -1926,7 +1926,7 @@
       "source_file": "frontend\\app\\login\\page.tsx",
       "source_location": "L14",
       "id": "page_handlesubmit",
-      "community": 16,
+      "community": 15,
       "norm_label": "handlesubmit()"
     },
     {
@@ -1935,7 +1935,7 @@
       "source_file": "frontend\\app\\portfolio\\page.tsx",
       "source_location": "L1",
       "id": "frontend_app_portfolio_page_tsx",
-      "community": 10,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1944,7 +1944,7 @@
       "source_file": "frontend\\app\\portfolio\\page.tsx",
       "source_location": "L39",
       "id": "page_pnlcolor",
-      "community": 10,
+      "community": 11,
       "norm_label": "pnlcolor()"
     },
     {
@@ -1953,7 +1953,7 @@
       "source_file": "frontend\\app\\portfolio\\page.tsx",
       "source_location": "L60",
       "id": "page_fetchrisksummary",
-      "community": 10,
+      "community": 11,
       "norm_label": "fetchrisksummary()"
     },
     {
@@ -1962,7 +1962,7 @@
       "source_file": "frontend\\app\\portfolio\\page.tsx",
       "source_location": "L87",
       "id": "page_portfoliopage",
-      "community": 10,
+      "community": 11,
       "norm_label": "portfoliopage()"
     },
     {
@@ -2007,7 +2007,7 @@
       "source_file": "frontend\\app\\stocks\\page.tsx",
       "source_location": "L1",
       "id": "frontend_app_stocks_page_tsx",
-      "community": 10,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -2016,7 +2016,7 @@
       "source_file": "frontend\\app\\stocks\\page.tsx",
       "source_location": "L7",
       "id": "page_stockspage",
-      "community": 10,
+      "community": 11,
       "norm_label": "stockspage()"
     },
     {
@@ -2160,7 +2160,7 @@
       "source_file": "frontend\\components\\ui\\badge.tsx",
       "source_location": "L1",
       "id": "frontend_components_ui_badge_tsx",
-      "community": 15,
+      "community": 16,
       "norm_label": "badge.tsx"
     },
     {
@@ -2169,7 +2169,7 @@
       "source_file": "frontend\\components\\ui\\badge.tsx",
       "source_location": "L30",
       "id": "badge_badge",
-      "community": 15,
+      "community": 16,
       "norm_label": "badge()"
     },
     {
@@ -2259,7 +2259,7 @@
       "source_file": "frontend\\components\\ui\\table.tsx",
       "source_location": "L1",
       "id": "frontend_components_ui_table_tsx",
-      "community": 1,
+      "community": 0,
       "norm_label": "table.tsx"
     },
     {
@@ -2268,7 +2268,7 @@
       "source_file": "frontend\\components\\ui\\table.tsx",
       "source_location": "L7",
       "id": "table_table",
-      "community": 1,
+      "community": 0,
       "norm_label": "table()"
     },
     {
@@ -2277,7 +2277,7 @@
       "source_file": "frontend\\components\\ui\\table.tsx",
       "source_location": "L22",
       "id": "table_tableheader",
-      "community": 1,
+      "community": 0,
       "norm_label": "tableheader()"
     },
     {
@@ -2286,7 +2286,7 @@
       "source_file": "frontend\\components\\ui\\table.tsx",
       "source_location": "L32",
       "id": "table_tablebody",
-      "community": 1,
+      "community": 0,
       "norm_label": "tablebody()"
     },
     {
@@ -2295,7 +2295,7 @@
       "source_file": "frontend\\components\\ui\\table.tsx",
       "source_location": "L46",
       "id": "table_cn",
-      "community": 1,
+      "community": 0,
       "norm_label": "cn()"
     },
     {
@@ -2304,7 +2304,7 @@
       "source_file": "frontend\\lib\\api.ts",
       "source_location": "L1",
       "id": "frontend_lib_api_ts",
-      "community": 0,
+      "community": 1,
       "norm_label": "api.ts"
     },
     {
@@ -2313,7 +2313,7 @@
       "source_file": "frontend\\lib\\api.ts",
       "source_location": "L3",
       "id": "api_request",
-      "community": 0,
+      "community": 1,
       "norm_label": "request()"
     },
     {
@@ -2322,25 +2322,25 @@
       "source_file": "frontend\\lib\\supabase-server.ts",
       "source_location": "L1",
       "id": "frontend_lib_supabase_server_ts",
-      "community": 10,
+      "community": 11,
       "norm_label": "supabase-server.ts"
     },
     {
       "label": "createSupabaseServerClient()",
       "file_type": "code",
       "source_file": "frontend\\lib\\supabase-server.ts",
-      "source_location": "L4",
+      "source_location": "L5",
       "id": "supabase_server_createsupabaseserverclient",
-      "community": 10,
+      "community": 11,
       "norm_label": "createsupabaseserverclient()"
     },
     {
       "label": "createSupabaseAdminClient()",
       "file_type": "code",
       "source_file": "frontend\\lib\\supabase-server.ts",
-      "source_location": "L29",
+      "source_location": "L30",
       "id": "supabase_server_createsupabaseadminclient",
-      "community": 10,
+      "community": 11,
       "norm_label": "createsupabaseadminclient()"
     },
     {
@@ -2349,7 +2349,7 @@
       "source_file": "frontend\\lib\\supabase.ts",
       "source_location": "L1",
       "id": "frontend_lib_supabase_ts",
-      "community": 16,
+      "community": 15,
       "norm_label": "supabase.ts"
     },
     {
@@ -2358,7 +2358,7 @@
       "source_file": "frontend\\lib\\supabase.ts",
       "source_location": "L3",
       "id": "supabase_createclient",
-      "community": 16,
+      "community": 15,
       "norm_label": "createclient()"
     },
     {
@@ -2367,7 +2367,7 @@
       "source_file": "frontend\\lib\\utils.ts",
       "source_location": "L1",
       "id": "frontend_lib_utils_ts",
-      "community": 15,
+      "community": 16,
       "norm_label": "utils.ts"
     },
     {
@@ -2376,7 +2376,7 @@
       "source_file": "frontend\\lib\\utils.ts",
       "source_location": "L4",
       "id": "utils_cn",
-      "community": 15,
+      "community": 16,
       "norm_label": "cn()"
     },
     {
@@ -2403,7 +2403,7 @@
       "source_file": "math_engine\\optimizer\\__init__.py",
       "source_location": "L1",
       "id": "math_engine_optimizer_init_py",
-      "community": 7,
+      "community": 9,
       "norm_label": "__init__.py"
     },
     {
@@ -2412,7 +2412,7 @@
       "source_file": "math_engine\\optimizer\\__init__.py",
       "source_location": "L30",
       "id": "init_run_optimization",
-      "community": 7,
+      "community": 9,
       "norm_label": "run_optimization()"
     },
     {
@@ -2421,7 +2421,7 @@
       "source_file": "math_engine\\optimizer\\__init__.py",
       "source_location": "L202",
       "id": "init_equal_weight_fallback",
-      "community": 7,
+      "community": 9,
       "norm_label": "_equal_weight_fallback()"
     },
     {
@@ -2430,7 +2430,7 @@
       "source_file": "math_engine\\optimizer\\__init__.py",
       "source_location": "L250",
       "id": "init_vectorized_mean_variance",
-      "community": 7,
+      "community": 9,
       "norm_label": "_vectorized_mean_variance()"
     },
     {
@@ -2439,7 +2439,7 @@
       "source_file": "math_engine\\optimizer\\__init__.py",
       "source_location": "L304",
       "id": "init_rebalance_action",
-      "community": 7,
+      "community": 9,
       "norm_label": "_rebalance_action()"
     },
     {
@@ -2447,7 +2447,7 @@
       "file_type": "rationale",
       "source_file": "math_engine\\optimizer\\__init__.py",
       "source_location": "L36",
-      "community": 7,
+      "community": 9,
       "norm_label": "run portfolio optimization for a user.      args:         user_id: uuid of the u",
       "id": "init_rationale_36"
     },
@@ -2457,70 +2457,142 @@
       "source_file": "math_engine\\risk\\monte_carlo.py",
       "source_location": "L1",
       "id": "math_engine_risk_monte_carlo_py",
-      "community": 9,
+      "community": 6,
       "norm_label": "monte_carlo.py"
     },
     {
       "label": "MonteCarloRiskError",
       "file_type": "code",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L16",
+      "source_location": "L27",
       "id": "monte_carlo_montecarloriskerror",
-      "community": 9,
+      "community": 6,
       "norm_label": "montecarloriskerror"
     },
     {
       "label": "HoldingInput",
       "file_type": "code",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L21",
+      "source_location": "L32",
       "id": "monte_carlo_holdinginput",
-      "community": 9,
+      "community": 6,
       "norm_label": "holdinginput"
     },
     {
       "label": "_normalize_holdings()",
       "file_type": "code",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L27",
+      "source_location": "L38",
       "id": "monte_carlo_normalize_holdings",
-      "community": 9,
+      "community": 6,
       "norm_label": "_normalize_holdings()"
     },
     {
       "label": "_price_matrix_from_supabase()",
       "file_type": "code",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L38",
+      "source_location": "L49",
       "id": "monte_carlo_price_matrix_from_supabase",
-      "community": 9,
+      "community": 6,
       "norm_label": "_price_matrix_from_supabase()"
     },
     {
       "label": "_nearest_psd()",
       "file_type": "code",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L71",
+      "source_location": "L82",
       "id": "monte_carlo_nearest_psd",
-      "community": 9,
+      "community": 6,
       "norm_label": "_nearest_psd()"
     },
     {
-      "label": "_var_cvar()",
+      "label": "_stable_cholesky()",
       "file_type": "code",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L78",
-      "id": "monte_carlo_var_cvar",
-      "community": 9,
-      "norm_label": "_var_cvar()"
+      "source_location": "L90",
+      "id": "monte_carlo_stable_cholesky",
+      "community": 6,
+      "norm_label": "_stable_cholesky()"
+    },
+    {
+      "label": "_weighted_mean()",
+      "file_type": "code",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L101",
+      "id": "monte_carlo_weighted_mean",
+      "community": 6,
+      "norm_label": "_weighted_mean()"
+    },
+    {
+      "label": "_weighted_std()",
+      "file_type": "code",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L105",
+      "id": "monte_carlo_weighted_std",
+      "community": 6,
+      "norm_label": "_weighted_std()"
+    },
+    {
+      "label": "_weighted_var_cvar()",
+      "file_type": "code",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L110",
+      "id": "monte_carlo_weighted_var_cvar",
+      "community": 6,
+      "norm_label": "_weighted_var_cvar()"
+    },
+    {
+      "label": "_normal_from_low_discrepancy()",
+      "file_type": "code",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L129",
+      "id": "monte_carlo_normal_from_low_discrepancy",
+      "community": 6,
+      "norm_label": "_normal_from_low_discrepancy()"
+    },
+    {
+      "label": "_normal_from_antithetic()",
+      "file_type": "code",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L156",
+      "id": "monte_carlo_normal_from_antithetic",
+      "community": 6,
+      "norm_label": "_normal_from_antithetic()"
+    },
+    {
+      "label": "_standard_normal_scenarios()",
+      "file_type": "code",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L169",
+      "id": "monte_carlo_standard_normal_scenarios",
+      "community": 6,
+      "norm_label": "_standard_normal_scenarios()"
+    },
+    {
+      "label": "_importance_direction()",
+      "file_type": "code",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L194",
+      "id": "monte_carlo_importance_direction",
+      "community": 6,
+      "norm_label": "_importance_direction()"
+    },
+    {
+      "label": "_likelihood_weights()",
+      "file_type": "code",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L202",
+      "id": "monte_carlo_likelihood_weights",
+      "community": 6,
+      "norm_label": "_likelihood_weights()"
     },
     {
       "label": "run_monte_carlo_var()",
       "file_type": "code",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L85",
+      "source_location": "L213",
       "id": "monte_carlo_run_monte_carlo_var",
-      "community": 9,
+      "community": 6,
       "norm_label": "run_monte_carlo_var()"
     },
     {
@@ -2529,7 +2601,7 @@
       "source_file": "math_engine\\risk\\rates.py",
       "source_location": "L1",
       "id": "math_engine_risk_rates_py",
-      "community": 9,
+      "community": 6,
       "norm_label": "rates.py"
     },
     {
@@ -2538,7 +2610,7 @@
       "source_file": "math_engine\\risk\\rates.py",
       "source_location": "L8",
       "id": "rates_parse_percent",
-      "community": 9,
+      "community": 6,
       "norm_label": "_parse_percent()"
     },
     {
@@ -2547,7 +2619,7 @@
       "source_file": "math_engine\\risk\\rates.py",
       "source_location": "L17",
       "id": "rates_get_india_risk_free_rate",
-      "community": 9,
+      "community": 6,
       "norm_label": "get_india_risk_free_rate()"
     },
     {
@@ -2556,7 +2628,7 @@
       "source_file": "math_engine\\risk\\__init__.py",
       "source_location": "L1",
       "id": "math_engine_risk_init_py",
-      "community": 9,
+      "community": 6,
       "norm_label": "__init__.py"
     },
     {
@@ -2565,7 +2637,7 @@
       "source_file": "notifications\\email.py",
       "source_location": "L1",
       "id": "notifications_email_py",
-      "community": 6,
+      "community": 8,
       "norm_label": "email.py"
     },
     {
@@ -2574,7 +2646,7 @@
       "source_file": "notifications\\email.py",
       "source_location": "L18",
       "id": "email_send_signal_change_email",
-      "community": 6,
+      "community": 8,
       "norm_label": "send_signal_change_email()"
     },
     {
@@ -2583,7 +2655,7 @@
       "source_file": "notifications\\email.py",
       "source_location": "L92",
       "id": "email_format_signal",
-      "community": 6,
+      "community": 8,
       "norm_label": "_format_signal()"
     },
     {
@@ -2592,7 +2664,7 @@
       "source_file": "notifications\\email.py",
       "source_location": "L96",
       "id": "email_signal_color",
-      "community": 6,
+      "community": 8,
       "norm_label": "_signal_color()"
     },
     {
@@ -2600,7 +2672,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\notifications\\email.py",
       "source_location": "L1",
-      "community": 6,
+      "community": 8,
       "norm_label": "email notification service using resend api.  sends signal change alerts to user",
       "id": "email_rationale_1"
     },
@@ -2609,7 +2681,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\services\\notifications\\email.py",
       "source_location": "L25",
-      "community": 6,
+      "community": 8,
       "norm_label": "send an email notifying the user that a tracked signal has changed.      returns",
       "id": "email_rationale_25"
     },
@@ -2619,7 +2691,7 @@
       "source_file": "notifications\\__init__.py",
       "source_location": "L1",
       "id": "notifications_init_py",
-      "community": 7,
+      "community": 9,
       "norm_label": "__init__.py"
     },
     {
@@ -2628,7 +2700,7 @@
       "source_file": "scripts\\run_daily_pipeline.py",
       "source_location": "L1",
       "id": "scripts_run_daily_pipeline_py",
-      "community": 7,
+      "community": 9,
       "norm_label": "run_daily_pipeline.py"
     },
     {
@@ -2637,7 +2709,7 @@
       "source_file": "scripts\\run_daily_pipeline.py",
       "source_location": "L28",
       "id": "run_daily_pipeline_main",
-      "community": 7,
+      "community": 9,
       "norm_label": "main()"
     },
     {
@@ -2645,7 +2717,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\scripts\\run_daily_pipeline.py",
       "source_location": "L1",
-      "community": 7,
+      "community": 9,
       "norm_label": "daily pipeline orchestrator.  runs the full niveshsutra ml pipeline in order:",
       "id": "run_daily_pipeline_rationale_1"
     },
@@ -2655,7 +2727,7 @@
       "source_file": "scripts\\seed_nifty50.py",
       "source_location": "L1",
       "id": "scripts_seed_nifty50_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "seed_nifty50.py"
     },
     {
@@ -2664,7 +2736,7 @@
       "source_file": "scripts\\seed_nifty50.py",
       "source_location": "L375",
       "id": "seed_nifty50_main",
-      "community": 5,
+      "community": 4,
       "norm_label": "main()"
     },
     {
@@ -2672,7 +2744,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\scripts\\seed_nifty50.py",
       "source_location": "L1",
-      "community": 5,
+      "community": 4,
       "norm_label": "seed script: insert all 50 nifty 50 stocks into the stocks table.  usage:     py",
       "id": "seed_nifty50_rationale_1"
     },
@@ -2682,7 +2754,7 @@
       "source_file": "scripts\\test_pipeline.py",
       "source_location": "L1",
       "id": "scripts_test_pipeline_py",
-      "community": 0,
+      "community": 7,
       "norm_label": "test_pipeline.py"
     },
     {
@@ -2691,7 +2763,7 @@
       "source_file": "scripts\\test_pipeline.py",
       "source_location": "L24",
       "id": "test_pipeline_main",
-      "community": 0,
+      "community": 7,
       "norm_label": "main()"
     },
     {
@@ -2699,7 +2771,7 @@
       "file_type": "rationale",
       "source_file": "scripts\\test_pipeline.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 7,
       "norm_label": "smoke test: fetch ohlcv for 3 symbols and print results. run from the project ro",
       "id": "test_pipeline_rationale_1"
     },
@@ -2709,7 +2781,7 @@
       "source_file": "services\\__init__.py",
       "source_location": "L1",
       "id": "services_init_py",
-      "community": 7,
+      "community": 9,
       "norm_label": "__init__.py"
     },
     {
@@ -2736,7 +2808,7 @@
       "source_file": "services\\api\\__init__.py",
       "source_location": "L1",
       "id": "services_api_init_py",
-      "community": 7,
+      "community": 9,
       "norm_label": "__init__.py"
     },
     {
@@ -2745,7 +2817,7 @@
       "source_file": "streamlit_app\\api_client.py",
       "source_location": "L1",
       "id": "streamlit_app_api_client_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "api_client.py"
     },
     {
@@ -2754,7 +2826,7 @@
       "source_file": "streamlit_app\\api_client.py",
       "source_location": "L12",
       "id": "api_client_build_url",
-      "community": 0,
+      "community": 1,
       "norm_label": "_build_url()"
     },
     {
@@ -2763,7 +2835,7 @@
       "source_file": "streamlit_app\\api_client.py",
       "source_location": "L19",
       "id": "api_client_request_json",
-      "community": 0,
+      "community": 1,
       "norm_label": "request_json()"
     },
     {
@@ -2771,7 +2843,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\api_client.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 1,
       "norm_label": "thin http client for calling the separately hosted fastapi service.",
       "id": "api_client_rationale_1"
     },
@@ -2790,7 +2862,7 @@
       "source_file": "streamlit_app\\app.py",
       "source_location": "L75",
       "id": "app_render_sidebar",
-      "community": 3,
+      "community": 5,
       "norm_label": "render_sidebar()"
     },
     {
@@ -2880,7 +2952,7 @@
       "source_file": "streamlit_app\\auth.py",
       "source_location": "L83",
       "id": "auth_logout",
-      "community": 3,
+      "community": 5,
       "norm_label": "logout()"
     },
     {
@@ -2916,7 +2988,7 @@
       "source_file": "streamlit_app\\auth.py",
       "source_location": "L103",
       "id": "auth_get_profile",
-      "community": 3,
+      "community": 5,
       "norm_label": "get_profile()"
     },
     {
@@ -3078,7 +3150,7 @@
       "source_file": "streamlit_app\\design.py",
       "source_location": "L607",
       "id": "design_render_sidebar_shell",
-      "community": 3,
+      "community": 5,
       "norm_label": "render_sidebar_shell()"
     },
     {
@@ -3167,72 +3239,72 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L615",
-      "id": "design_rationale_615",
-      "community": 3,
-      "norm_label": "render the shared sidebar."
+      "community": 5,
+      "norm_label": "render the shared sidebar.",
+      "id": "design_rationale_615"
     },
     {
       "label": "Render a clean page header (replaces the editorial hero block).",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L656",
-      "id": "design_rationale_656",
       "community": 2,
-      "norm_label": "render a clean page header (replaces the editorial hero block)."
+      "norm_label": "render a clean page header (replaces the editorial hero block).",
+      "id": "design_rationale_656"
     },
     {
       "label": "Render a compact section heading.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L674",
-      "id": "design_rationale_674",
       "community": 2,
-      "norm_label": "render a compact section heading."
+      "norm_label": "render a compact section heading.",
+      "id": "design_rationale_674"
     },
     {
       "label": "Render a row of flat stat cards.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L692",
-      "id": "design_rationale_692",
       "community": 2,
-      "norm_label": "render a row of flat stat cards."
+      "norm_label": "render a row of flat stat cards.",
+      "id": "design_rationale_692"
     },
     {
       "label": "Render a compact info callout.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L715",
-      "id": "design_rationale_715",
       "community": 2,
-      "norm_label": "render a compact info callout."
+      "norm_label": "render a compact info callout.",
+      "id": "design_rationale_715"
     },
     {
       "label": "Render a compact info card.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L730",
-      "id": "design_rationale_730",
       "community": 2,
-      "norm_label": "render a compact info card."
+      "norm_label": "render a compact info card.",
+      "id": "design_rationale_730"
     },
     {
       "label": "Render a centered empty state.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L754",
-      "id": "design_rationale_754",
       "community": 2,
-      "norm_label": "render a centered empty state."
+      "norm_label": "render a centered empty state.",
+      "id": "design_rationale_754"
     },
     {
       "label": "Apply the shared neutral theme to a Plotly figure.",
       "file_type": "rationale",
       "source_file": "streamlit_app\\design.py",
       "source_location": "L767",
-      "id": "design_rationale_767",
       "community": 2,
-      "norm_label": "apply the shared neutral theme to a plotly figure."
+      "norm_label": "apply the shared neutral theme to a plotly figure.",
+      "id": "design_rationale_767"
     },
     {
       "label": "live_market.py",
@@ -3240,7 +3312,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L1",
       "id": "streamlit_app_live_market_py",
-      "community": 0,
+      "community": 7,
       "norm_label": "live_market.py"
     },
     {
@@ -3249,7 +3321,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L17",
       "id": "live_market_normalize_symbol",
-      "community": 0,
+      "community": 7,
       "norm_label": "_normalize_symbol()"
     },
     {
@@ -3258,7 +3330,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L25",
       "id": "live_market_candidate_tickers",
-      "community": 0,
+      "community": 7,
       "norm_label": "_candidate_tickers()"
     },
     {
@@ -3267,7 +3339,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L39",
       "id": "live_market_coerce_float",
-      "community": 0,
+      "community": 7,
       "norm_label": "_coerce_float()"
     },
     {
@@ -3276,7 +3348,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L48",
       "id": "live_market_coerce_int",
-      "community": 0,
+      "community": 7,
       "norm_label": "_coerce_int()"
     },
     {
@@ -3285,7 +3357,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L57",
       "id": "live_market_safe_history",
-      "community": 0,
+      "community": 7,
       "norm_label": "_safe_history()"
     },
     {
@@ -3294,7 +3366,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L81",
       "id": "live_market_safe_fast_info",
-      "community": 0,
+      "community": 7,
       "norm_label": "_safe_fast_info()"
     },
     {
@@ -3303,7 +3375,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L88",
       "id": "live_market_quote_from_ticker",
-      "community": 0,
+      "community": 7,
       "norm_label": "_quote_from_ticker()"
     },
     {
@@ -3312,7 +3384,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L136",
       "id": "live_market_fetch_live_quotes_batch",
-      "community": 0,
+      "community": 7,
       "norm_label": "fetch_live_quotes_batch()"
     },
     {
@@ -3321,7 +3393,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L172",
       "id": "live_market_fetch_live_quote",
-      "community": 0,
+      "community": 7,
       "norm_label": "fetch_live_quote()"
     },
     {
@@ -3330,7 +3402,7 @@
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L176",
       "id": "live_market_fetch_historical_daily",
-      "community": 0,
+      "community": 7,
       "norm_label": "fetch_historical_daily()"
     },
     {
@@ -3338,7 +3410,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\live_market.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 7,
       "norm_label": "direct market-data helpers for the streamlit frontend.  this module keeps live p",
       "id": "live_market_rationale_1"
     },
@@ -3348,7 +3420,7 @@
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L1",
       "id": "streamlit_app_supabase_client_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "supabase_client.py"
     },
     {
@@ -3357,7 +3429,7 @@
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L19",
       "id": "supabase_client_get_anon_client",
-      "community": 0,
+      "community": 1,
       "norm_label": "get_anon_client()"
     },
     {
@@ -3366,7 +3438,7 @@
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L25",
       "id": "supabase_client_get_authed_client",
-      "community": 0,
+      "community": 1,
       "norm_label": "get_authed_client()"
     },
     {
@@ -3375,7 +3447,7 @@
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L35",
       "id": "supabase_client_get_admin_client",
-      "community": 0,
+      "community": 1,
       "norm_label": "get_admin_client()"
     },
     {
@@ -3383,7 +3455,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\supabase_client.py",
       "source_location": "L1",
-      "community": 0,
+      "community": 1,
       "norm_label": "supabase client factory.  - get_anon_client()          \u2192 public read operations",
       "id": "supabase_client_rationale_1"
     },
@@ -3392,7 +3464,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\supabase_client.py",
       "source_location": "L26",
-      "community": 0,
+      "community": 1,
       "norm_label": "return a supabase client that sends the user jwt on every postgrest call.",
       "id": "supabase_client_rationale_26"
     },
@@ -3402,7 +3474,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L1",
       "id": "streamlit_app_utils_py",
-      "community": 3,
+      "community": 5,
       "norm_label": "utils.py"
     },
     {
@@ -3411,7 +3483,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L48",
       "id": "utils_format_currency",
-      "community": 3,
+      "community": 5,
       "norm_label": "format_currency()"
     },
     {
@@ -3420,7 +3492,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L61",
       "id": "utils_format_pct",
-      "community": 3,
+      "community": 5,
       "norm_label": "format_pct()"
     },
     {
@@ -3429,7 +3501,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L66",
       "id": "utils_format_signal",
-      "community": 3,
+      "community": 5,
       "norm_label": "format_signal()"
     },
     {
@@ -3438,7 +3510,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L87",
       "id": "utils_signal_color",
-      "community": 3,
+      "community": 5,
       "norm_label": "signal_color()"
     },
     {
@@ -3447,7 +3519,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L91",
       "id": "utils_signal_badge_html",
-      "community": 3,
+      "community": 5,
       "norm_label": "signal_badge_html()"
     },
     {
@@ -3456,7 +3528,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L101",
       "id": "utils_get_confidence_threshold",
-      "community": 3,
+      "community": 5,
       "norm_label": "get_confidence_threshold()"
     },
     {
@@ -3465,7 +3537,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L105",
       "id": "utils_conservative_score",
-      "community": 3,
+      "community": 5,
       "norm_label": "_conservative_score()"
     },
     {
@@ -3474,7 +3546,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L110",
       "id": "utils_aggressive_score",
-      "community": 3,
+      "community": 5,
       "norm_label": "_aggressive_score()"
     },
     {
@@ -3483,7 +3555,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L115",
       "id": "utils_personalize_signals",
-      "community": 3,
+      "community": 5,
       "norm_label": "personalize_signals()"
     },
     {
@@ -3492,7 +3564,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L123",
       "id": "utils_get_position_size_hint",
-      "community": 3,
+      "community": 5,
       "norm_label": "get_position_size_hint()"
     },
     {
@@ -3501,7 +3573,7 @@
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L132",
       "id": "utils_compute_risk_profile",
-      "community": 3,
+      "community": 2,
       "norm_label": "compute_risk_profile()"
     },
     {
@@ -3509,7 +3581,7 @@
       "file_type": "rationale",
       "source_file": "NiveshSutra\\streamlit_app\\utils.py",
       "source_location": "L1",
-      "community": 3,
+      "community": 5,
       "norm_label": "shared utilities: formatting, signal colors, personalization logic.",
       "id": "utils_rationale_1"
     },
@@ -3518,7 +3590,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L49",
-      "community": 3,
+      "community": 5,
       "norm_label": "format a number as an inr currency string using ascii-safe text.",
       "id": "utils_rationale_49"
     },
@@ -3527,7 +3599,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\utils.py",
       "source_location": "L133",
-      "community": 3,
+      "community": 2,
       "norm_label": "given a list of answer scores, return (total_score, risk_profile).",
       "id": "utils_rationale_133"
     },
@@ -3537,7 +3609,7 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_1_dashboard_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "1_dashboard.py"
     },
     {
@@ -3546,7 +3618,7 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L31",
       "id": "1_dashboard_render_sidebar",
-      "community": 3,
+      "community": 5,
       "norm_label": "_render_sidebar()"
     },
     {
@@ -3555,7 +3627,7 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L46",
       "id": "1_dashboard_fetch_portfolio_performance",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_portfolio_performance()"
     },
     {
@@ -3564,7 +3636,7 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L110",
       "id": "1_dashboard_fetch_nifty50",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_nifty50()"
     },
     {
@@ -3573,7 +3645,7 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L134",
       "id": "1_dashboard_fetch_market_sentiment",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_market_sentiment()"
     },
     {
@@ -3582,7 +3654,7 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L170",
       "id": "1_dashboard_fetch_latest_signals",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_latest_signals()"
     },
     {
@@ -3591,7 +3663,7 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L196",
       "id": "1_dashboard_fetch_watchlist_live",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_watchlist_live()"
     },
     {
@@ -3600,7 +3672,7 @@
       "source_file": "streamlit_app\\pages\\1_Dashboard.py",
       "source_location": "L247",
       "id": "1_dashboard_fetch_alerts",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_alerts()"
     },
     {
@@ -3609,7 +3681,7 @@
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_2_stocks_py",
-      "community": 3,
+      "community": 1,
       "norm_label": "2_stocks.py"
     },
     {
@@ -3618,7 +3690,7 @@
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L31",
       "id": "2_stocks_render_sidebar",
-      "community": 3,
+      "community": 5,
       "norm_label": "_render_sidebar()"
     },
     {
@@ -3627,7 +3699,7 @@
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L46",
       "id": "2_stocks_fetch_stocks",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_stocks()"
     },
     {
@@ -3636,7 +3708,7 @@
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L108",
       "id": "2_stocks_add_stock",
-      "community": 3,
+      "community": 1,
       "norm_label": "add_stock()"
     },
     {
@@ -3644,7 +3716,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L47",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch stocks from the live fastapi market endpoint.",
       "id": "2_stocks_rationale_47"
     },
@@ -3653,7 +3725,7 @@
       "file_type": "rationale",
       "source_file": "streamlit_app\\pages\\2_Stocks.py",
       "source_location": "L109",
-      "community": 3,
+      "community": 1,
       "norm_label": "validate and add a symbol through the fastapi backend.",
       "id": "2_stocks_rationale_109"
     },
@@ -3663,7 +3735,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_3_stock_detail_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "3_stock_detail.py"
     },
     {
@@ -3672,7 +3744,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L34",
       "id": "3_stock_detail_render_sidebar",
-      "community": 3,
+      "community": 5,
       "norm_label": "_render_sidebar()"
     },
     {
@@ -3681,7 +3753,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L50",
       "id": "3_stock_detail_fetch_stock_info",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_stock_info()"
     },
     {
@@ -3690,7 +3762,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L64",
       "id": "3_stock_detail_fetch_ohlcv",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_ohlcv()"
     },
     {
@@ -3699,7 +3771,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L73",
       "id": "3_stock_detail_fetch_stock_quote",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_stock_quote()"
     },
     {
@@ -3708,7 +3780,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L97",
       "id": "3_stock_detail_fetch_indicators",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_indicators()"
     },
     {
@@ -3717,7 +3789,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L116",
       "id": "3_stock_detail_fetch_sentiment",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_sentiment()"
     },
     {
@@ -3726,7 +3798,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L135",
       "id": "3_stock_detail_fetch_latest_signal",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_latest_signal()"
     },
     {
@@ -3735,7 +3807,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L153",
       "id": "3_stock_detail_is_in_watchlist",
-      "community": 0,
+      "community": 1,
       "norm_label": "is_in_watchlist()"
     },
     {
@@ -3744,7 +3816,7 @@
       "source_file": "streamlit_app\\pages\\3_Stock_Detail.py",
       "source_location": "L170",
       "id": "3_stock_detail_toggle_watchlist",
-      "community": 0,
+      "community": 1,
       "norm_label": "toggle_watchlist()"
     },
     {
@@ -3753,7 +3825,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_4_signals_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "4_signals.py"
     },
     {
@@ -3762,7 +3834,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L36",
       "id": "4_signals_render_sidebar",
-      "community": 3,
+      "community": 5,
       "norm_label": "_render_sidebar()"
     },
     {
@@ -3771,7 +3843,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L52",
       "id": "4_signals_fetch_signals",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_signals()"
     },
     {
@@ -3780,7 +3852,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L73",
       "id": "4_signals_fetch_accepted_signals",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_accepted_signals()"
     },
     {
@@ -3789,7 +3861,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L90",
       "id": "4_signals_accept_signal",
-      "community": 0,
+      "community": 1,
       "norm_label": "accept_signal()"
     },
     {
@@ -3798,7 +3870,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L111",
       "id": "4_signals_stop_tracking",
-      "community": 0,
+      "community": 1,
       "norm_label": "stop_tracking()"
     },
     {
@@ -3807,7 +3879,7 @@
       "source_file": "streamlit_app\\pages\\4_Signals.py",
       "source_location": "L117",
       "id": "4_signals_render_signal_row",
-      "community": 3,
+      "community": 5,
       "norm_label": "render_signal_row()"
     },
     {
@@ -3816,7 +3888,7 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_5_portfolio_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "5_portfolio.py"
     },
     {
@@ -3825,7 +3897,7 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L44",
       "id": "5_portfolio_render_sidebar",
-      "community": 3,
+      "community": 5,
       "norm_label": "_render_sidebar()"
     },
     {
@@ -3834,7 +3906,7 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L60",
       "id": "5_portfolio_fetch_holdings",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_holdings()"
     },
     {
@@ -3843,7 +3915,7 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L135",
       "id": "5_portfolio_fetch_all_symbols",
-      "community": 0,
+      "community": 1,
       "norm_label": "fetch_all_symbols()"
     },
     {
@@ -3852,7 +3924,7 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L148",
       "id": "5_portfolio_add_holding",
-      "community": 0,
+      "community": 1,
       "norm_label": "add_holding()"
     },
     {
@@ -3861,7 +3933,7 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L159",
       "id": "5_portfolio_delete_holding",
-      "community": 0,
+      "community": 1,
       "norm_label": "delete_holding()"
     },
     {
@@ -3870,7 +3942,7 @@
       "source_file": "streamlit_app\\pages\\5_Portfolio.py",
       "source_location": "L165",
       "id": "5_portfolio_run_optimization",
-      "community": 0,
+      "community": 1,
       "norm_label": "run_optimization()"
     },
     {
@@ -3879,7 +3951,7 @@
       "source_file": "streamlit_app\\pages\\6_Settings.py",
       "source_location": "L1",
       "id": "streamlit_app_pages_6_settings_py",
-      "community": 3,
+      "community": 5,
       "norm_label": "6_settings.py"
     },
     {
@@ -3888,8 +3960,17 @@
       "source_file": "streamlit_app\\pages\\6_Settings.py",
       "source_location": "L35",
       "id": "6_settings_render_sidebar",
-      "community": 3,
+      "community": 5,
       "norm_label": "_render_sidebar()"
+    },
+    {
+      "label": "Return a Supabase client that can satisfy RLS for user-scoped routes.",
+      "file_type": "rationale",
+      "source_file": "backend\\dependencies.py",
+      "source_location": "L37",
+      "community": 12,
+      "norm_label": "return a supabase client that can satisfy rls for user-scoped routes.",
+      "id": "dependencies_rationale_37"
     },
     {
       "label": "Render the shared sidebar.",
@@ -4575,6 +4656,18 @@
       "source_location": "L5",
       "weight": 0.8,
       "_src": "config_settings",
+      "_tgt": "dependencies_rationale_41",
+      "confidence_score": 0.5,
+      "source": "config_settings",
+      "target": "dependencies_rationale_41"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "backend\\dependencies.py",
+      "source_location": "L5",
+      "weight": 0.8,
+      "_src": "config_settings",
       "_tgt": "dependencies_rationale_37",
       "confidence_score": 0.5,
       "source": "config_settings",
@@ -4620,7 +4713,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\dependencies.py",
-      "source_location": "L19",
+      "source_location": "L23",
       "weight": 1.0,
       "_src": "backend_dependencies_py",
       "_tgt": "dependencies_get_current_user",
@@ -4632,7 +4725,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\dependencies.py",
-      "source_location": "L33",
+      "source_location": "L37",
       "weight": 1.0,
       "_src": "backend_dependencies_py",
       "_tgt": "dependencies_get_supabase_for_user",
@@ -4776,12 +4869,12 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "backend\\dependencies.py",
-      "source_location": "L37",
+      "source_location": "L41",
       "weight": 1.0,
-      "_src": "dependencies_rationale_37",
+      "_src": "dependencies_rationale_41",
       "_tgt": "dependencies_get_supabase_for_user",
       "source": "dependencies_get_supabase_for_user",
-      "target": "dependencies_rationale_37",
+      "target": "dependencies_rationale_41",
       "confidence_score": 1.0
     },
     {
@@ -5460,7 +5553,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\routers\\portfolio.py",
-      "source_location": "L131",
+      "source_location": "L134",
       "weight": 1.0,
       "_src": "backend_routers_portfolio_py",
       "_tgt": "portfolio_list_optimizations",
@@ -5472,7 +5565,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\routers\\portfolio.py",
-      "source_location": "L144",
+      "source_location": "L147",
       "weight": 1.0,
       "_src": "backend_routers_portfolio_py",
       "_tgt": "portfolio_get_optimization",
@@ -5484,7 +5577,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\routers\\portfolio.py",
-      "source_location": "L161",
+      "source_location": "L164",
       "weight": 1.0,
       "_src": "backend_routers_portfolio_py",
       "_tgt": "portfolio_portfolio_performance",
@@ -6972,7 +7065,7 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L16",
+      "source_location": "L27",
       "weight": 1.0,
       "_src": "monte_carlo_montecarloriskerror",
       "_tgt": "exception",
@@ -10836,7 +10929,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend\\lib\\supabase-server.ts",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "_src": "frontend_lib_supabase_server_ts",
       "_tgt": "supabase_server_createsupabaseserverclient",
@@ -10848,7 +10941,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend\\lib\\supabase-server.ts",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0,
       "_src": "frontend_lib_supabase_server_ts",
       "_tgt": "supabase_server_createsupabaseadminclient",
@@ -10980,7 +11073,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L16",
+      "source_location": "L27",
       "weight": 1.0,
       "_src": "math_engine_risk_monte_carlo_py",
       "_tgt": "monte_carlo_montecarloriskerror",
@@ -10992,7 +11085,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L21",
+      "source_location": "L32",
       "weight": 1.0,
       "_src": "math_engine_risk_monte_carlo_py",
       "_tgt": "monte_carlo_holdinginput",
@@ -11004,7 +11097,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L27",
+      "source_location": "L38",
       "weight": 1.0,
       "_src": "math_engine_risk_monte_carlo_py",
       "_tgt": "monte_carlo_normalize_holdings",
@@ -11016,7 +11109,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L38",
+      "source_location": "L49",
       "weight": 1.0,
       "_src": "math_engine_risk_monte_carlo_py",
       "_tgt": "monte_carlo_price_matrix_from_supabase",
@@ -11028,7 +11121,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L71",
+      "source_location": "L82",
       "weight": 1.0,
       "_src": "math_engine_risk_monte_carlo_py",
       "_tgt": "monte_carlo_nearest_psd",
@@ -11040,19 +11133,115 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L78",
+      "source_location": "L90",
       "weight": 1.0,
       "_src": "math_engine_risk_monte_carlo_py",
-      "_tgt": "monte_carlo_var_cvar",
+      "_tgt": "monte_carlo_stable_cholesky",
       "source": "math_engine_risk_monte_carlo_py",
-      "target": "monte_carlo_var_cvar",
+      "target": "monte_carlo_stable_cholesky",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L85",
+      "source_location": "L101",
+      "weight": 1.0,
+      "_src": "math_engine_risk_monte_carlo_py",
+      "_tgt": "monte_carlo_weighted_mean",
+      "source": "math_engine_risk_monte_carlo_py",
+      "target": "monte_carlo_weighted_mean",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L105",
+      "weight": 1.0,
+      "_src": "math_engine_risk_monte_carlo_py",
+      "_tgt": "monte_carlo_weighted_std",
+      "source": "math_engine_risk_monte_carlo_py",
+      "target": "monte_carlo_weighted_std",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L110",
+      "weight": 1.0,
+      "_src": "math_engine_risk_monte_carlo_py",
+      "_tgt": "monte_carlo_weighted_var_cvar",
+      "source": "math_engine_risk_monte_carlo_py",
+      "target": "monte_carlo_weighted_var_cvar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L129",
+      "weight": 1.0,
+      "_src": "math_engine_risk_monte_carlo_py",
+      "_tgt": "monte_carlo_normal_from_low_discrepancy",
+      "source": "math_engine_risk_monte_carlo_py",
+      "target": "monte_carlo_normal_from_low_discrepancy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L156",
+      "weight": 1.0,
+      "_src": "math_engine_risk_monte_carlo_py",
+      "_tgt": "monte_carlo_normal_from_antithetic",
+      "source": "math_engine_risk_monte_carlo_py",
+      "target": "monte_carlo_normal_from_antithetic",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L169",
+      "weight": 1.0,
+      "_src": "math_engine_risk_monte_carlo_py",
+      "_tgt": "monte_carlo_standard_normal_scenarios",
+      "source": "math_engine_risk_monte_carlo_py",
+      "target": "monte_carlo_standard_normal_scenarios",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L194",
+      "weight": 1.0,
+      "_src": "math_engine_risk_monte_carlo_py",
+      "_tgt": "monte_carlo_importance_direction",
+      "source": "math_engine_risk_monte_carlo_py",
+      "target": "monte_carlo_importance_direction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L202",
+      "weight": 1.0,
+      "_src": "math_engine_risk_monte_carlo_py",
+      "_tgt": "monte_carlo_likelihood_weights",
+      "source": "math_engine_risk_monte_carlo_py",
+      "target": "monte_carlo_likelihood_weights",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L213",
       "weight": 1.0,
       "_src": "math_engine_risk_monte_carlo_py",
       "_tgt": "monte_carlo_run_monte_carlo_var",
@@ -11088,7 +11277,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L54",
+      "source_location": "L65",
       "weight": 1.0,
       "_src": "monte_carlo_price_matrix_from_supabase",
       "_tgt": "monte_carlo_montecarloriskerror",
@@ -11100,7 +11289,43 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L98",
+      "source_location": "L137",
+      "weight": 1.0,
+      "_src": "monte_carlo_normal_from_low_discrepancy",
+      "_tgt": "monte_carlo_montecarloriskerror",
+      "source": "monte_carlo_montecarloriskerror",
+      "target": "monte_carlo_normal_from_low_discrepancy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L178",
+      "weight": 1.0,
+      "_src": "monte_carlo_standard_normal_scenarios",
+      "_tgt": "monte_carlo_montecarloriskerror",
+      "source": "monte_carlo_montecarloriskerror",
+      "target": "monte_carlo_standard_normal_scenarios",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L209",
+      "weight": 1.0,
+      "_src": "monte_carlo_likelihood_weights",
+      "_tgt": "monte_carlo_montecarloriskerror",
+      "source": "monte_carlo_montecarloriskerror",
+      "target": "monte_carlo_likelihood_weights",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L229",
       "weight": 1.0,
       "_src": "monte_carlo_run_monte_carlo_var",
       "_tgt": "monte_carlo_montecarloriskerror",
@@ -11112,7 +11337,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L34",
+      "source_location": "L45",
       "weight": 1.0,
       "_src": "monte_carlo_normalize_holdings",
       "_tgt": "monte_carlo_holdinginput",
@@ -11124,7 +11349,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L96",
+      "source_location": "L227",
       "weight": 1.0,
       "_src": "monte_carlo_run_monte_carlo_var",
       "_tgt": "monte_carlo_normalize_holdings",
@@ -11136,7 +11361,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L105",
+      "source_location": "L239",
       "weight": 1.0,
       "_src": "monte_carlo_run_monte_carlo_var",
       "_tgt": "monte_carlo_price_matrix_from_supabase",
@@ -11148,7 +11373,19 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L130",
+      "source_location": "L98",
+      "weight": 1.0,
+      "_src": "monte_carlo_stable_cholesky",
+      "_tgt": "monte_carlo_nearest_psd",
+      "source": "monte_carlo_nearest_psd",
+      "target": "monte_carlo_stable_cholesky",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L264",
       "weight": 1.0,
       "_src": "monte_carlo_run_monte_carlo_var",
       "_tgt": "monte_carlo_nearest_psd",
@@ -11160,11 +11397,107 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\monte_carlo.py",
-      "source_location": "L148",
+      "source_location": "L266",
       "weight": 1.0,
       "_src": "monte_carlo_run_monte_carlo_var",
-      "_tgt": "monte_carlo_var_cvar",
-      "source": "monte_carlo_var_cvar",
+      "_tgt": "monte_carlo_stable_cholesky",
+      "source": "monte_carlo_stable_cholesky",
+      "target": "monte_carlo_run_monte_carlo_var",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L301",
+      "weight": 1.0,
+      "_src": "monte_carlo_run_monte_carlo_var",
+      "_tgt": "monte_carlo_weighted_mean",
+      "source": "monte_carlo_weighted_mean",
+      "target": "monte_carlo_run_monte_carlo_var",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L302",
+      "weight": 1.0,
+      "_src": "monte_carlo_run_monte_carlo_var",
+      "_tgt": "monte_carlo_weighted_std",
+      "source": "monte_carlo_weighted_std",
+      "target": "monte_carlo_run_monte_carlo_var",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L293",
+      "weight": 1.0,
+      "_src": "monte_carlo_run_monte_carlo_var",
+      "_tgt": "monte_carlo_weighted_var_cvar",
+      "source": "monte_carlo_weighted_var_cvar",
+      "target": "monte_carlo_run_monte_carlo_var",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L183",
+      "weight": 1.0,
+      "_src": "monte_carlo_standard_normal_scenarios",
+      "_tgt": "monte_carlo_normal_from_low_discrepancy",
+      "source": "monte_carlo_normal_from_low_discrepancy",
+      "target": "monte_carlo_standard_normal_scenarios",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L191",
+      "weight": 1.0,
+      "_src": "monte_carlo_standard_normal_scenarios",
+      "_tgt": "monte_carlo_normal_from_antithetic",
+      "source": "monte_carlo_normal_from_antithetic",
+      "target": "monte_carlo_standard_normal_scenarios",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L268",
+      "weight": 1.0,
+      "_src": "monte_carlo_run_monte_carlo_var",
+      "_tgt": "monte_carlo_standard_normal_scenarios",
+      "source": "monte_carlo_standard_normal_scenarios",
+      "target": "monte_carlo_run_monte_carlo_var",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L277",
+      "weight": 1.0,
+      "_src": "monte_carlo_run_monte_carlo_var",
+      "_tgt": "monte_carlo_importance_direction",
+      "source": "monte_carlo_importance_direction",
+      "target": "monte_carlo_run_monte_carlo_var",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "math_engine\\risk\\monte_carlo.py",
+      "source_location": "L280",
+      "weight": 1.0,
+      "_src": "monte_carlo_run_monte_carlo_var",
+      "_tgt": "monte_carlo_likelihood_weights",
+      "source": "monte_carlo_likelihood_weights",
       "target": "monte_carlo_run_monte_carlo_var",
       "confidence_score": 1.0
     },
@@ -11196,7 +11529,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "math_engine\\risk\\__init__.py",
-      "source_location": "L8",
+      "source_location": "L11",
       "weight": 1.0,
       "_src": "math_engine_risk_init_py",
       "_tgt": "math_engine_risk_rates_py",
