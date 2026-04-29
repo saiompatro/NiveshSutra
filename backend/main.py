@@ -1,4 +1,5 @@
 import os
+from html import escape
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,8 +32,9 @@ app.add_middleware(
 @app.get("/", include_in_schema=False)
 async def root() -> HTMLResponse:
     frontend_url = os.getenv("PUBLIC_APP_URL", "").strip()
+    safe_frontend_url = escape(frontend_url, quote=True)
     frontend_link = (
-        f'<p><a href="{frontend_url}">Open the Streamlit app</a></p>'
+        f'<p><a href="{safe_frontend_url}">Open the Streamlit app</a></p>'
         if frontend_url
         else "<p>Set <code>PUBLIC_APP_URL</code> to show the public Streamlit frontend URL here.</p>"
     )

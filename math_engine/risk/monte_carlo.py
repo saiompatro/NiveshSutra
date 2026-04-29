@@ -228,9 +228,9 @@ def run_monte_carlo_var(
     if not normalized_holdings:
         raise MonteCarloRiskError("Portfolio has no positive-quantity holdings")
 
-    scenarios = max(10_000, int(scenarios))
-    horizon_days = max(1, int(horizon_days))
-    lookback_days = max(MIN_OBSERVATIONS, int(lookback_days))
+    scenarios = min(max(1_000, int(scenarios)), 50_000)
+    horizon_days = min(max(1, int(horizon_days)), 30)
+    lookback_days = min(max(MIN_OBSERVATIONS, int(lookback_days)), 1_260)
     requested_sampling_method = (sampling_method or DEFAULT_SAMPLING_METHOD).strip().lower()
     if requested_sampling_method in {"auto", "sobol"} and qmc is not None and norm is not None:
         scenarios = 1 << math.ceil(math.log2(scenarios))

@@ -8,6 +8,7 @@ from ..services.market_data import (
     get_quote_with_fallback,
     merge_live_quote_into_history,
 )
+from ..validation import require_stock_symbol
 
 router = APIRouter()
 
@@ -78,12 +79,14 @@ async def list_stocks_live(
 
 @router.get("/stocks/{symbol}")
 async def get_stock(symbol: str, supabase: Client = Depends(get_supabase_client)):
+    symbol = require_stock_symbol(symbol)
     result = supabase.table("stocks").select("*").eq("symbol", symbol).single().execute()
     return result.data
 
 
 @router.get("/stocks/{symbol}/quote")
 async def get_stock_quote(symbol: str, supabase: Client = Depends(get_supabase_client)):
+    symbol = require_stock_symbol(symbol)
     stock = supabase.table("stocks").select("symbol, company_name, sector, yf_ticker").eq("symbol", symbol).single().execute().data
     if not stock:
         return None
@@ -108,9 +111,10 @@ async def get_stock_quote(symbol: str, supabase: Client = Depends(get_supabase_c
 @router.get("/stocks/{symbol}/ohlcv")
 async def get_ohlcv(
     symbol: str,
-    days: int = Query(default=90, le=3650),
+    days: int = Query(default=90, ge=1, le=3650),
     supabase: Client = Depends(get_supabase_client),
 ):
+    symbol = require_stock_symbol(symbol)
     result = (
         supabase.table("ohlcv")
         .select("*")
@@ -136,9 +140,10 @@ async def get_ohlcv(
 @router.get("/stocks/{symbol}/indicators")
 async def get_indicators(
     symbol: str,
-    days: int = Query(default=30, le=365),
+    days: int = Query(default=30, ge=1, le=365),
     supabase: Client = Depends(get_supabase_client),
 ):
+    symbol = require_stock_symbol(symbol)
     result = (
         supabase.table("technical_indicators")
         .select("*")

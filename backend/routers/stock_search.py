@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase import Client
 from ..dependencies import get_supabase_admin, get_current_user
 from ..services.market_data import fetch_historical_daily, fetch_live_quote, search_instrument
+from ..validation import require_stock_symbol
 
 router = APIRouter()
 
@@ -16,7 +17,7 @@ async def search_stock(
     Search for a stock by symbol. If it exists in the DB, return it.
     If not, validate via the free market data provider and add it to the stocks table.
     """
-    symbol = q.strip().upper().replace(".NS", "").replace(".BSE", "").replace(".NSE", "")
+    symbol = require_stock_symbol(q)
 
     # Check if stock already exists
     result = supabase.table("stocks").select("*").eq("symbol", symbol).execute()

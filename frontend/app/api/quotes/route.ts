@@ -37,19 +37,37 @@ const API_BASE =
   process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 const CACHE_TTL_MS = 10_000;
+const MAX_SYMBOLS = 25;
+const SYMBOL_PATTERN = /^\^?[A-Z0-9&.\-]{1,20}$/;
 let _cache: { data: LiveQuote[]; ts: number } | null = null;
 
 function apiUrl(path: string) {
   return `${API_BASE.replace(/\/$/, "")}${path}`;
 }
 
-function splitSymbols(value: string | null) {
-  return value
-    ? value
-        .split(",")
-        .map((symbol) => symbol.trim().toUpperCase())
-        .filter(Boolean)
-    : [];
+function parseSymbols(value: string | null): { symbols: string[]; error?: string } {
+  if (!value) return { symbols: [] };
+
+  const symbols = value
+    .split(",")
+    .map((symbol) => symbol.trim().toUpperCase())
+    .filter(Boolean);
+
+  if (symbols.length > MAX_SYMBOLS) {
+    return { symbols: [], error: `At most ${MAX_SYMBOLS} symbols can be requested at once` };
+  }
+
+  const invalid = symbols.find((symbol) => !SYMBOL_PATTERN.test(symbol));
+  if (invalid) {
+    return { symbols: [], error: `Invalid stock symbol: ${invalid}` };
+  }
+
+  const unsupportedIndex = symbols.find((symbol) => symbol.startsWith("^") && symbol !== "^NSEI");
+  if (unsupportedIndex) {
+    return { symbols: [], error: `Unsupported index symbol: ${unsupportedIndex}` };
+  }
+
+  return { symbols };
 }
 
 function mapStockQuote(row: BackendStockQuote): LiveQuote {
@@ -123,7 +141,11 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const symbols = splitSymbols(req.nextUrl.searchParams.get("symbols"));
+  const parsedSymbols = parseSymbols(req.nextUrl.searchParams.get("symbols"));
+  if (parsedSymbols.error) {
+    return NextResponse.json({ error: parsedSymbols.error }, { status: 400 });
+  }
+  const symbols = parsedSymbols.symbols;
   if (!symbols.length && _cache && Date.now() - _cache.ts < CACHE_TTL_MS) {
     return NextResponse.json(_cache.data, {
       headers: { "X-Cache": "HIT", "Cache-Control": "no-store" },
