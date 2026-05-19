@@ -1,18 +1,27 @@
-# Environment
-.env
-.env.local
-.env.production
-.venv/
-venv/
+# Python
 __pycache__/
 *.pyc
 *.pyo
+.venv/
+venv/
+*.egg-info/
+.eggs/
 
 # Node
 node_modules/
 .next/
-out/
 .turbo/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.env.production
+.env*.local
 
 # IDE
 .vscode/
@@ -25,17 +34,16 @@ out/
 Thumbs.db
 desktop.ini
 
-# Python
-*.egg-info/
-dist/
-build/
-.eggs/
-
 # ML models (downloaded at runtime)
 /models/
 *.pt
 *.bin
 *.safetensors
+*.onnx
+
+# Build
+dist/
+build/
 
 # Logs
 *.log
@@ -46,9 +54,14 @@ logs/
 htmlcov/
 .nyc_output/
 
+# Graphify
+.graphify_*
+graphify-out/
+
+# Claude / Codex
+.claude/
+.codex/
+
 # Misc
 *.bak
 *.tmp
-
-.vercel
-.env*.local

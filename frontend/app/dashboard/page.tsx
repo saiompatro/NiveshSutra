@@ -6,8 +6,9 @@ import { SignalsTable } from "@/components/dashboard/SignalsTable";
 import { NiftySparkline } from "@/components/dashboard/NiftySparkline";
 import { LiveNiftyQuote } from "@/components/dashboard/LiveNiftyQuote";
 import { LiveNiftyStat } from "@/components/dashboard/LiveNiftyStat";
-import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase-server";
 import type { Signal, Alert } from "@/types";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 type HoldingRow = {
   id: string;
@@ -30,11 +31,8 @@ function formatINR(n: number) {
 }
 
 async function fetchLiveQuoteMap() {
-  const base = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
-  if (!base) return new Map<string, LiveStockRow>();
-
   try {
-    const res = await fetch(`${base.replace(/\/$/, "")}/api/v1/stocks/live`, {
+    const res = await fetch(`${API_BASE}/api/v1/stocks/live`, {
       cache: "no-store",
       signal: AbortSignal.timeout(15_000),
     });
@@ -46,66 +44,77 @@ async function fetchLiveQuoteMap() {
   }
 }
 
+async function fetchSignals(): Promise<Signal[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/signals`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    const data = (await res.json()) as Signal[];
+    return data
+      .sort((a, b) => b.composite_score - a.composite_score)
+      .slice(0, 20);
+  } catch {
+    return [];
+  }
+}
+
+async function fetchNiftyHistory(): Promise<{ date: string; close: number }[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/stocks/%5ENSEI/ohlcv?days=90`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    const data = (await res.json()) as { date: string; close: number }[];
+    // API may return newest-first; ensure ascending order for sparkline
+    return [...data].sort((a, b) => a.date.localeCompare(b.date));
+  } catch {
+    return [];
+  }
+}
+
+async function fetchAlerts(): Promise<Alert[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/alerts`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    const data = (await res.json()) as Alert[];
+    // Filter unread, newest first
+    return data
+      .filter((a) => !a.is_read)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .slice(0, 5);
+  } catch {
+    return [];
+  }
+}
+
+async function fetchHoldings(): Promise<HoldingRow[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/holdings`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as HoldingRow[];
+  } catch {
+    return [];
+  }
+}
+
 export default async function DashboardPage() {
-  const [supabase, admin] = await Promise.all([
-    createSupabaseServerClient(),
-    createSupabaseAdminClient(),
-  ]);
-
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // Parallel Supabase reads — no Render API cold-start
-  const [signalsRes, ohlcvRes, alertsRes, holdingsRes, liveQuotesRes] = await Promise.allSettled([
-    admin
-      .from("signals")
-      .select("symbol, date, signal, composite_score, technical_score, sentiment_score, momentum_score, confidence, explanation")
-      .order("composite_score", { ascending: false })
-      .limit(20),
-
-    admin
-      .from("ohlcv")
-      .select("date, close")
-      .eq("symbol", "^NSEI")
-      .order("date", { ascending: false })
-      .limit(90),
-
-    user
-      ? supabase
-          .from("alerts")
-          .select("id, alert_type, title, message, symbol, is_read, created_at")
-          .eq("user_id", user.id)
-          .eq("is_read", false)
-          .order("created_at", { ascending: false })
-          .limit(5)
-      : Promise.resolve({ data: [], error: null }),
-
-    user
-      ? supabase
-          .from("holdings")
-          .select("id, symbol, quantity, avg_buy_price")
-          .eq("user_id", user.id)
-      : Promise.resolve({ data: [], error: null }),
-
-    fetchLiveQuoteMap(),
-  ]);
-
-  const signals: Signal[] =
-    signalsRes.status === "fulfilled" ? (signalsRes.value.data ?? []) : [];
-
-  const niftyHistory: { date: string; close: number }[] =
-    ohlcvRes.status === "fulfilled"
-      ? [...(ohlcvRes.value.data ?? [])]
-          .reverse()
-          .map((r) => ({ date: r.date, close: Number(r.close) }))
-      : [];
-
-  const alerts: Alert[] =
-    alertsRes.status === "fulfilled" ? (alertsRes.value.data ?? []) : [];
-
-  const holdingRows =
-    holdingsRes.status === "fulfilled" ? ((holdingsRes.value.data ?? []) as HoldingRow[]) : [];
-  const liveQuoteMap =
-    liveQuotesRes.status === "fulfilled" ? liveQuotesRes.value : new Map<string, LiveStockRow>();
+  const [signals, niftyHistory, alerts, holdingRows, liveQuoteMap] =
+    await Promise.all([
+      fetchSignals(),
+      fetchNiftyHistory(),
+      fetchAlerts(),
+      fetchHoldings(),
+      fetchLiveQuoteMap(),
+    ]);
 
   const holdings = holdingRows.map((holding) => {
     const avgPrice = Number(holding.avg_buy_price);
@@ -145,7 +154,7 @@ export default async function DashboardPage() {
             label="Portfolio Value"
             value={hasPortfolio ? formatINR(currentValue) : "—"}
             trend={hasPortfolio ? pnlPct : undefined}
-            sub={hasPortfolio ? `${formatINR(pnl)} P&L` : user ? "Add holdings to track" : "Sign in to track"}
+            sub={hasPortfolio ? `${formatINR(pnl)} P&L` : "Add holdings to track"}
           />
           <LiveNiftyStat
             fallbackValue={

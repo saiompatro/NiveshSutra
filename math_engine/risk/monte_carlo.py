@@ -7,6 +7,11 @@ from typing import Any, Iterable
 import numpy as np
 import pandas as pd
 
+from sqlalchemy.orm import Session
+
+from backend.database import SessionLocal
+from backend.models.db_models import Ohlcv
+
 try:  # SciPy is preferred for low-discrepancy sequences, but the engine still works without it.
     from scipy.stats import norm, qmc
 except Exception:  # pragma: no cover - exercised only in minimal deployments
@@ -46,25 +51,24 @@ def _normalize_holdings(holdings: Iterable[dict[str, Any]]) -> list[HoldingInput
     return normalized
 
 
-def _price_matrix_from_supabase(
-    supabase: Any,
+def _price_matrix_from_db(
+    db: Session,
     symbols: list[str],
     lookback_days: int,
 ) -> pd.DataFrame:
+    limit = max(len(symbols) * (lookback_days + 10), len(symbols) * MIN_OBSERVATIONS)
     rows = (
-        supabase.table("ohlcv")
-        .select("symbol,date,close")
-        .in_("symbol", symbols)
-        .order("date", desc=True)
-        .limit(max(len(symbols) * (lookback_days + 10), len(symbols) * MIN_OBSERVATIONS))
-        .execute()
-        .data
-        or []
+        db.query(Ohlcv.symbol, Ohlcv.date, Ohlcv.close)
+        .filter(Ohlcv.symbol.in_(symbols))
+        .order_by(Ohlcv.date.desc())
+        .limit(limit)
+        .all()
     )
     if not rows:
         raise MonteCarloRiskError("No OHLCV rows available for portfolio symbols")
 
-    df = pd.DataFrame(rows)
+    data = [{"symbol": r.symbol, "date": r.date, "close": r.close} for r in rows]
+    df = pd.DataFrame(data)
     df["date"] = pd.to_datetime(df["date"])
     df["close"] = pd.to_numeric(df["close"], errors="coerce")
     prices = (
@@ -211,7 +215,7 @@ def _likelihood_weights(shifted_normals: np.ndarray, theta: np.ndarray) -> np.nd
 
 
 def run_monte_carlo_var(
-    supabase: Any,
+    db: Session,
     holdings: Iterable[dict[str, Any]],
     *,
     scenarios: int = 10_000,
@@ -236,7 +240,7 @@ def run_monte_carlo_var(
         scenarios = 1 << math.ceil(math.log2(scenarios))
     symbols = sorted({holding.symbol for holding in normalized_holdings})
 
-    prices = _price_matrix_from_supabase(supabase, symbols, lookback_days)
+    prices = _price_matrix_from_db(db, symbols, lookback_days)
     usable_symbols = list(prices.columns)
     returns = np.log(prices / prices.shift(1)).dropna()
     if returns.shape[0] < MIN_OBSERVATIONS:
@@ -320,7 +324,7 @@ def run_monte_carlo_var(
             for symbol, row in corr.iterrows()
         },
         "methodology": {
-            "return_model": "daily log returns from Supabase OHLCV close prices",
+            "return_model": "daily log returns from OHLCV close prices",
             "covariance": "sample covariance with eigenvalue clipping to positive semidefinite",
             "sampling": actual_sampling_method,
             "importance_sampling": bool(importance_sampling and np.any(theta)),

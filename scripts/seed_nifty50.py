@@ -13,7 +13,10 @@ PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from data.config import get_supabase
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+
+from backend.database import SessionLocal
+from backend.models.db_models import Stock
 
 # ---------------------------------------------------------------------------
 # Nifty 50 stock data
@@ -373,13 +376,29 @@ NIFTY_50_STOCKS = [
 
 
 def main():
-    sb = get_supabase()
-    print(f"Seeding {len(NIFTY_50_STOCKS)} Nifty 50 stocks into the stocks table...")
+    session = SessionLocal()
+    try:
+        print(f"Seeding {len(NIFTY_50_STOCKS)} Nifty 50 stocks into the stocks table...")
 
-    # Upsert so re-running is safe
-    sb.table("stocks").upsert(NIFTY_50_STOCKS, on_conflict="symbol").execute()
+        # Bulk upsert using SQLite ON CONFLICT
+        for i in range(0, len(NIFTY_50_STOCKS), 500):
+            batch = NIFTY_50_STOCKS[i : i + 500]
+            stmt = sqlite_insert(Stock.__table__).values(batch)
+            stmt = stmt.on_conflict_do_update(
+                index_elements=["symbol"],
+                set_={
+                    "yf_ticker": stmt.excluded.yf_ticker,
+                    "company_name": stmt.excluded.company_name,
+                    "sector": stmt.excluded.sector,
+                    "market_cap_category": stmt.excluded.market_cap_category,
+                },
+            )
+            session.execute(stmt)
 
-    print(f"Done. {len(NIFTY_50_STOCKS)} stocks upserted.")
+        session.commit()
+        print(f"Done. {len(NIFTY_50_STOCKS)} stocks upserted.")
+    finally:
+        session.close()
 
 
 if __name__ == "__main__":

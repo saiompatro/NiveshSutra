@@ -30,7 +30,7 @@ export function LiveNiftyStat({ fallbackValue, fallbackSub }: Props) {
         const nifty = data.find((q) => q.symbol === "^NSEI");
         if (nifty) setQuote(nifty);
       } catch {
-        // fall back to Supabase values passed as props
+        // fall back to server-rendered values passed as props
       } finally {
         setLoading(false);
       }

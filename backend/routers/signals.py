@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
-from supabase import Client
-from ..dependencies import get_supabase_client
+from sqlalchemy.orm import Session
+from backend.database import get_db, row_to_dict
+from backend.models.db_models import Signal
 
 router = APIRouter()
 
@@ -8,30 +9,36 @@ router = APIRouter()
 @router.get("/signals")
 async def list_signals(
     signal_type: str | None = None,
-    supabase: Client = Depends(get_supabase_client),
+    db: Session = Depends(get_db),
 ):
-    query = supabase.table("signals").select("*").order("date", desc=True).limit(50)
+    query = db.query(Signal).order_by(Signal.date.desc()).limit(50)
     if signal_type:
-        query = query.eq("signal", signal_type)
-    result = query.execute()
+        query = query.filter(Signal.signal == signal_type)
+    rows = query.all()
 
     # Deduplicate to latest per symbol
     seen = set()
     latest = []
-    for row in result.data:
-        if row["symbol"] not in seen:
-            seen.add(row["symbol"])
-            latest.append(row)
+    for row in rows:
+        d = row_to_dict(row)
+        if d["symbol"] not in seen:
+            seen.add(d["symbol"])
+            latest.append(d)
     return latest
 
 
 @router.get("/signals/summary")
-async def signals_summary(supabase: Client = Depends(get_supabase_client)):
-    result = supabase.table("signals").select("symbol, signal, date").order("date", desc=True).limit(200).execute()
+async def signals_summary(db: Session = Depends(get_db)):
+    rows = (
+        db.query(Signal.symbol, Signal.signal, Signal.date)
+        .order_by(Signal.date.desc())
+        .limit(200)
+        .all()
+    )
     seen = {}
-    for row in result.data:
-        if row["symbol"] not in seen:
-            seen[row["symbol"]] = row["signal"]
+    for row in rows:
+        if row.symbol not in seen:
+            seen[row.symbol] = row.signal
     counts = {}
     for signal in seen.values():
         counts[signal] = counts.get(signal, 0) + 1
@@ -42,27 +49,25 @@ async def signals_summary(supabase: Client = Depends(get_supabase_client)):
 async def get_signal_history(
     symbol: str,
     days: int = Query(default=30, le=90),
-    supabase: Client = Depends(get_supabase_client),
+    db: Session = Depends(get_db),
 ):
-    result = (
-        supabase.table("signals")
-        .select("*")
-        .eq("symbol", symbol)
-        .order("date", desc=True)
+    rows = (
+        db.query(Signal)
+        .filter(Signal.symbol == symbol)
+        .order_by(Signal.date.desc())
         .limit(days)
-        .execute()
+        .all()
     )
-    return sorted(result.data, key=lambda x: x["date"])
+    result = [row_to_dict(r) for r in rows]
+    return sorted(result, key=lambda x: x["date"])
 
 
 @router.get("/signals/{symbol}/latest")
-async def get_latest_signal(symbol: str, supabase: Client = Depends(get_supabase_client)):
-    result = (
-        supabase.table("signals")
-        .select("*")
-        .eq("symbol", symbol)
-        .order("date", desc=True)
-        .limit(1)
-        .execute()
+async def get_latest_signal(symbol: str, db: Session = Depends(get_db)):
+    row = (
+        db.query(Signal)
+        .filter(Signal.symbol == symbol)
+        .order_by(Signal.date.desc())
+        .first()
     )
-    return result.data[0] if result.data else None
+    return row_to_dict(row) if row else None

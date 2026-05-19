@@ -17,12 +17,16 @@ from __future__ import annotations
 
 import time
 from collections import Counter
-from datetime import date
+from datetime import date, datetime, timezone, timedelta
 from typing import Any
 
 import numpy as np
 
-from data.config import get_supabase
+from backend.database import SessionLocal
+from backend.models.db_models import (
+    Stock, Ohlcv, TechnicalIndicator, SentimentDaily,
+    SignalConfig, SignalNotification, Profile,
+)
 
 
 def normalize_rsi(rsi_value: float | None) -> float:
@@ -159,151 +163,159 @@ def generate_explanation(tech: float, sent: float, momentum: float, signal: str)
 
 def run_signals_pipeline() -> None:
     """
-    Read indicators + sentiment from Supabase, compute signals for all stocks,
+    Read indicators + sentiment from the database, compute signals for all stocks,
     and store via upsert_signals.
     """
     from data.ingest.store import upsert_signals
 
     start = time.time()
-    sb = get_supabase()
+    session = SessionLocal()
     today_str = date.today().isoformat()
 
-    print("=" * 60)
-    print("SIGNALS STEP 1: Loading configuration")
-    print("=" * 60)
-    tech_w, sent_w, mom_w = 0.4, 0.3, 0.3
     try:
-        cfg_resp = (
-            sb.table("signal_config")
-            .select("technical_weight,sentiment_weight,momentum_weight")
-            .eq("is_active", True)
-            .limit(1)
-            .execute()
-        )
-        if cfg_resp.data:
-            row = cfg_resp.data[0]
-            tech_w = row.get("technical_weight", tech_w)
-            sent_w = row.get("sentiment_weight", sent_w)
-            mom_w = row.get("momentum_weight", mom_w)
-            print(f"  Using config weights: tech={tech_w}, sent={sent_w}, mom={mom_w}")
-        else:
-            print(f"  No active config found; using defaults: tech={tech_w}, sent={sent_w}, mom={mom_w}")
-    except Exception:
-        print(f"  Config table not available; using defaults: tech={tech_w}, sent={sent_w}, mom={mom_w}")
+        print("=" * 60)
+        print("SIGNALS STEP 1: Loading configuration")
+        print("=" * 60)
+        tech_w, sent_w, mom_w = 0.4, 0.3, 0.3
+        try:
+            cfg = (
+                session.query(
+                    SignalConfig.technical_weight,
+                    SignalConfig.sentiment_weight,
+                    SignalConfig.momentum_weight,
+                )
+                .filter(SignalConfig.is_active == True)
+                .first()
+            )
+            if cfg:
+                tech_w = cfg.technical_weight or tech_w
+                sent_w = cfg.sentiment_weight or sent_w
+                mom_w = cfg.momentum_weight or mom_w
+                print(f"  Using config weights: tech={tech_w}, sent={sent_w}, mom={mom_w}")
+            else:
+                print(f"  No active config found; using defaults: tech={tech_w}, sent={sent_w}, mom={mom_w}")
+        except Exception:
+            print(f"  Config table not available; using defaults: tech={tech_w}, sent={sent_w}, mom={mom_w}")
 
-    print()
-    print("=" * 60)
-    print("SIGNALS STEP 2: Loading stock list")
-    print("=" * 60)
-    stocks_resp = sb.table("stocks").select("symbol").execute()
-    symbols = [row["symbol"] for row in stocks_resp.data]
-    print(f"  Found {len(symbols)} stocks.")
+        print()
+        print("=" * 60)
+        print("SIGNALS STEP 2: Loading stock list")
+        print("=" * 60)
+        symbol_rows = session.query(Stock.symbol).all()
+        symbols = [row.symbol for row in symbol_rows]
+        print(f"  Found {len(symbols)} stocks.")
 
-    if not symbols:
-        print("No stocks found in DB. Exiting.")
-        return
+        if not symbols:
+            print("No stocks found in DB. Exiting.")
+            return
 
-    print()
-    print("=" * 60)
-    print("SIGNALS STEP 3: Computing signals for each stock")
-    print("=" * 60)
+        print()
+        print("=" * 60)
+        print("SIGNALS STEP 3: Computing signals for each stock")
+        print("=" * 60)
 
-    signal_rows: list[dict] = []
+        signal_rows: list[dict] = []
 
-    for sym in symbols:
-        ind_resp = (
-            sb.table("technical_indicators")
-            .select("*")
-            .eq("symbol", sym)
-            .order("date", desc=True)
-            .limit(1)
-            .execute()
-        )
-        indicators = ind_resp.data[0] if ind_resp.data else {}
+        for sym in symbols:
+            # Latest technical indicators
+            ind_row = (
+                session.query(TechnicalIndicator)
+                .filter(TechnicalIndicator.symbol == sym)
+                .order_by(TechnicalIndicator.date.desc())
+                .first()
+            )
+            indicators: dict[str, Any] = {}
+            if ind_row:
+                for c in TechnicalIndicator.__table__.columns:
+                    indicators[c.name] = getattr(ind_row, c.name)
 
-        ohlcv_resp = (
-            sb.table("ohlcv")
-            .select("date,close")
-            .eq("symbol", sym)
-            .order("date", desc=True)
-            .limit(60)
-            .execute()
-        )
-        ohlcv_rows = sorted(ohlcv_resp.data, key=lambda r: r["date"]) if ohlcv_resp.data else []
+            # Last 60 OHLCV rows
+            ohlcv_result = (
+                session.query(Ohlcv.date, Ohlcv.close)
+                .filter(Ohlcv.symbol == sym)
+                .order_by(Ohlcv.date.desc())
+                .limit(60)
+                .all()
+            )
+            ohlcv_rows = sorted(
+                [{"date": r.date, "close": r.close} for r in ohlcv_result],
+                key=lambda r: r["date"],
+            ) if ohlcv_result else []
 
-        obv_resp = (
-            sb.table("technical_indicators")
-            .select("obv")
-            .eq("symbol", sym)
-            .order("date", desc=True)
-            .limit(20)
-            .execute()
-        )
-        obv_series = (
-            [r["obv"] for r in reversed(obv_resp.data) if r.get("obv") is not None]
-            if obv_resp.data
-            else []
-        )
-        indicators["obv_series"] = obv_series
+            # Last 20 OBV values
+            obv_result = (
+                session.query(TechnicalIndicator.obv)
+                .filter(TechnicalIndicator.symbol == sym)
+                .order_by(TechnicalIndicator.date.desc())
+                .limit(20)
+                .all()
+            )
+            obv_series = (
+                [r.obv for r in reversed(obv_result) if r.obv is not None]
+                if obv_result
+                else []
+            )
+            indicators["obv_series"] = obv_series
 
-        if ohlcv_rows:
-            indicators.setdefault("close", ohlcv_rows[-1].get("close"))
+            if ohlcv_rows:
+                indicators.setdefault("close", ohlcv_rows[-1].get("close"))
 
-        sent_resp = (
-            sb.table("sentiment_daily")
-            .select("avg_sentiment")
-            .eq("symbol", sym)
-            .eq("date", today_str)
-            .limit(1)
-            .execute()
-        )
-        sentiment_score = sent_resp.data[0]["avg_sentiment"] if sent_resp.data else 0.0
+            # Today's sentiment
+            sent_row = (
+                session.query(SentimentDaily.avg_sentiment)
+                .filter(SentimentDaily.symbol == sym, SentimentDaily.date == today_str)
+                .first()
+            )
+            sentiment_score = sent_row.avg_sentiment if sent_row else 0.0
 
-        tech_score = compute_technical_score(indicators)
-        mom_score = compute_momentum_score(ohlcv_rows)
+            tech_score = compute_technical_score(indicators)
+            mom_score = compute_momentum_score(ohlcv_rows)
 
-        raw_composite = tech_w * tech_score + sent_w * sentiment_score + mom_w * mom_score
-        composite = round(raw_composite, 6)
+            raw_composite = tech_w * tech_score + sent_w * sentiment_score + mom_w * mom_score
+            composite = round(raw_composite, 6)
 
-        if composite >= 0.5:
-            signal = "strong_buy"
-        elif composite >= 0.2:
-            signal = "buy"
-        elif composite >= -0.2:
-            signal = "hold"
-        elif composite >= -0.5:
-            signal = "sell"
-        else:
-            signal = "strong_sell"
+            if composite >= 0.5:
+                signal = "strong_buy"
+            elif composite >= 0.2:
+                signal = "buy"
+            elif composite >= -0.2:
+                signal = "hold"
+            elif composite >= -0.5:
+                signal = "sell"
+            else:
+                signal = "strong_sell"
 
-        confidence = round(min(abs(composite) * 2.0, 1.0), 4)
-        explanation = generate_explanation(tech_score, sentiment_score, mom_score, signal)
+            confidence = round(min(abs(composite) * 2.0, 1.0), 4)
+            explanation = generate_explanation(tech_score, sentiment_score, mom_score, signal)
 
-        signal_rows.append(
-            {
-                "symbol": sym,
-                "date": today_str,
-                "technical_score": tech_score,
-                "sentiment_score": round(sentiment_score, 6),
-                "momentum_score": mom_score,
-                "composite_score": composite,
-                "signal": signal,
-                "confidence": confidence,
-                "explanation": explanation,
-            }
-        )
+            signal_rows.append(
+                {
+                    "symbol": sym,
+                    "date": today_str,
+                    "technical_score": tech_score,
+                    "sentiment_score": round(sentiment_score, 6),
+                    "momentum_score": mom_score,
+                    "composite_score": composite,
+                    "signal": signal,
+                    "confidence": confidence,
+                    "explanation": explanation,
+                }
+            )
 
-    print()
-    print("=" * 60)
-    print("SIGNALS STEP 4: Storing signals")
-    print("=" * 60)
-    upsert_signals(signal_rows)
+        print()
+        print("=" * 60)
+        print("SIGNALS STEP 4: Storing signals")
+        print("=" * 60)
+        upsert_signals(signal_rows, session=session)
 
-    print()
-    print("=" * 60)
-    print("SIGNALS STEP 5: Checking for signal change notifications")
-    print("=" * 60)
-    _check_signal_change_notifications(sb, signal_rows)
+        print()
+        print("=" * 60)
+        print("SIGNALS STEP 5: Checking for signal change notifications")
+        print("=" * 60)
+        _check_signal_change_notifications(session, signal_rows)
+
+    finally:
+        session.close()
 
     elapsed = time.time() - start
     print()
@@ -317,71 +329,61 @@ def run_signals_pipeline() -> None:
     print("=" * 60)
 
 
-def _check_signal_change_notifications(sb: Any, signal_rows: list[dict]) -> None:
-    from datetime import datetime, timezone, timedelta
-
+def _check_signal_change_notifications(session: Any, signal_rows: list[dict]) -> None:
     try:
-        notif_resp = (
-            sb.table("signal_notifications")
-            .select("id, user_id, symbol, last_signal, last_notified_at")
-            .eq("is_active", True)
-            .execute()
+        notif_rows = (
+            session.query(SignalNotification)
+            .filter(SignalNotification.is_active == True)
+            .all()
         )
-        if not notif_resp.data:
+        if not notif_rows:
             print("  No active signal notifications to check.")
             return
 
         signal_map = {r["symbol"]: r for r in signal_rows}
 
-        user_ids = list({n["user_id"] for n in notif_resp.data})
-        profiles_resp = (
-            sb.table("profiles")
-            .select("id, email_notifications_enabled")
-            .in_("id", user_ids)
-            .execute()
+        user_ids = list({n.user_id for n in notif_rows})
+        profile_rows = (
+            session.query(Profile.id, Profile.email_notifications_enabled, Profile.email)
+            .filter(Profile.id.in_(user_ids))
+            .all()
         )
-        profile_map = {p["id"]: p for p in (profiles_resp.data or [])}
-
-        email_map: dict[str, str] = {}
-        for uid in user_ids:
-            try:
-                user_resp = sb.auth.admin.get_user_by_id(uid)
-                if user_resp and user_resp.user:
-                    email_map[uid] = user_resp.user.email or ""
-            except Exception:
-                pass
+        profile_map = {p.id: {"email_notifications_enabled": p.email_notifications_enabled, "email": p.email} for p in profile_rows}
 
         now = datetime.now(timezone.utc)
         cooldown = timedelta(hours=24)
         emails_sent = 0
         signals_changed = 0
 
-        for notif in notif_resp.data:
-            symbol = notif["symbol"]
+        for notif in notif_rows:
+            symbol = notif.symbol
             new_signal_data = signal_map.get(symbol)
             if not new_signal_data:
                 continue
 
             new_signal = new_signal_data["signal"]
-            old_signal = notif.get("last_signal")
+            old_signal = notif.last_signal
 
             if old_signal != new_signal:
                 signals_changed += 1
-                update_data: dict[str, Any] = {"last_signal": new_signal}
 
-                user_profile = profile_map.get(notif["user_id"], {})
+                user_profile = profile_map.get(notif.user_id, {})
                 email_enabled = user_profile.get("email_notifications_enabled", False)
-                user_email = email_map.get(notif["user_id"], "")
+                user_email = user_profile.get("email", "")
 
                 should_send = email_enabled and user_email and old_signal is not None
 
-                if should_send and notif.get("last_notified_at"):
-                    last_notified = datetime.fromisoformat(
-                        notif["last_notified_at"].replace("Z", "+00:00")
-                    )
+                if should_send and notif.last_notified_at:
+                    last_notified = notif.last_notified_at
+                    if hasattr(last_notified, 'replace') and isinstance(last_notified, str):
+                        last_notified = datetime.fromisoformat(
+                            last_notified.replace("Z", "+00:00")
+                        )
+                    elif not last_notified.tzinfo:
+                        last_notified = last_notified.replace(tzinfo=timezone.utc)
                     if now - last_notified < cooldown:
                         should_send = False
-                        print(f"  {symbol} ({notif['user_id'][:8]}...): signal changed but cooldown active")
+                        print(f"  {symbol} ({notif.user_id[:8]}...): signal changed but cooldown active")
 
                 if should_send:
                     try:
@@ -395,14 +397,17 @@ def _check_signal_change_notifications(sb: Any, signal_rows: list[dict]) -> None
                             confidence=new_signal_data.get("confidence", 0),
                         )
                         if sent:
-                            update_data["last_notified_at"] = now.isoformat()
+                            notif.last_notified_at = now
                             emails_sent += 1
                     except Exception as e:
                         print(f"  [notify] Email error for {symbol}: {e}")
 
-                sb.table("signal_notifications").update(update_data).eq("id", notif["id"]).execute()
+                notif.last_signal = new_signal
+                session.add(notif)
 
-        print(f"  Checked {len(notif_resp.data)} tracked signals.")
+        session.commit()
+
+        print(f"  Checked {len(notif_rows)} tracked signals.")
         print(f"  Signals changed: {signals_changed}")
         print(f"  Emails sent: {emails_sent}")
 

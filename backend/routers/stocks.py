@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, Query
-from supabase import Client
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
+from backend.database import get_db, row_to_dict
+from backend.models.db_models import Stock, Ohlcv, Signal, TechnicalIndicator
 
-from ..dependencies import get_supabase_client
 from ..services.market_data import (
     fetch_historical_daily,
     fetch_live_quotes_batch,
@@ -16,60 +17,57 @@ router = APIRouter()
 @router.get("/stocks")
 async def list_stocks(
     sector: str | None = None,
-    supabase: Client = Depends(get_supabase_client),
+    db: Session = Depends(get_db),
 ):
-    query = supabase.table("stocks").select("*").eq("active", True)
+    query = db.query(Stock).filter(Stock.active == True)
     if sector:
-        query = query.eq("sector", sector)
-    result = query.order("symbol").execute()
-    return result.data
+        query = query.filter(Stock.sector == sector)
+    stocks = query.order_by(Stock.symbol).all()
+    return [row_to_dict(s) for s in stocks]
 
 
 @router.get("/stocks/live")
 async def list_stocks_live(
     sector: str | None = None,
     nifty50_only: bool = False,
-    supabase: Client = Depends(get_supabase_client),
+    db: Session = Depends(get_db),
 ):
-    query = supabase.table("stocks").select("symbol, company_name, sector, is_nifty50, yf_ticker").eq("active", True)
+    query = db.query(Stock).filter(Stock.active == True)
     if sector:
-        query = query.eq("sector", sector)
+        query = query.filter(Stock.sector == sector)
     if nifty50_only:
-        query = query.eq("is_nifty50", True)
-    stocks = query.order("symbol").execute().data or []
+        query = query.filter(Stock.is_nifty50 == True)
+    stocks = query.order_by(Stock.symbol).all()
 
     signals = (
-        supabase.table("signals")
-        .select("symbol, signal, date")
-        .order("date", desc=True)
+        db.query(Signal.symbol, Signal.signal, Signal.date)
+        .order_by(Signal.date.desc())
         .limit(max(50, len(stocks) * 2))
-        .execute()
-        .data
-        or []
+        .all()
     )
     signal_map: dict[str, str] = {}
     for row in signals:
-        signal_map.setdefault(row["symbol"], row["signal"])
+        signal_map.setdefault(row.symbol, row.signal)
 
     quote_map = fetch_live_quotes_batch(
-        {stock["symbol"]: stock.get("yf_ticker") for stock in stocks}
+        {stock.symbol: stock.yf_ticker for stock in stocks}
     )
 
     enriched = []
     for stock in stocks:
-        quote = quote_map.get(stock["symbol"]) or get_quote_with_fallback(
-            supabase, stock["symbol"], stock.get("yf_ticker")
+        quote = quote_map.get(stock.symbol) or get_quote_with_fallback(
+            db, stock.symbol, stock.yf_ticker
         )
         enriched.append(
             {
-                "symbol": stock["symbol"],
-                "company_name": stock.get("company_name") or "",
-                "sector": stock.get("sector") or "",
+                "symbol": stock.symbol,
+                "company_name": stock.company_name or "",
+                "sector": stock.sector or "",
                 "current_price": quote.price,
                 "previous_close": quote.previous_close,
                 "change": quote.change,
                 "change_pct": quote.change_pct,
-                "signal": signal_map.get(stock["symbol"]),
+                "signal": signal_map.get(stock.symbol),
                 "provider": quote.provider,
                 "latest_trading_day": quote.latest_trading_day,
             }
@@ -78,24 +76,26 @@ async def list_stocks_live(
 
 
 @router.get("/stocks/{symbol}")
-async def get_stock(symbol: str, supabase: Client = Depends(get_supabase_client)):
+async def get_stock(symbol: str, db: Session = Depends(get_db)):
     symbol = require_stock_symbol(symbol)
-    result = supabase.table("stocks").select("*").eq("symbol", symbol).single().execute()
-    return result.data
+    stock = db.query(Stock).filter(Stock.symbol == symbol).first()
+    if not stock:
+        raise HTTPException(status_code=404, detail="Stock not found")
+    return row_to_dict(stock)
 
 
 @router.get("/stocks/{symbol}/quote")
-async def get_stock_quote(symbol: str, supabase: Client = Depends(get_supabase_client)):
+async def get_stock_quote(symbol: str, db: Session = Depends(get_db)):
     symbol = require_stock_symbol(symbol)
-    stock = supabase.table("stocks").select("symbol, company_name, sector, yf_ticker").eq("symbol", symbol).single().execute().data
+    stock = db.query(Stock).filter(Stock.symbol == symbol).first()
     if not stock:
         return None
 
-    quote = get_quote_with_fallback(supabase, symbol, stock.get("yf_ticker"))
+    quote = get_quote_with_fallback(db, symbol, stock.yf_ticker)
     return {
-        "symbol": stock["symbol"],
-        "company_name": stock.get("company_name") or "",
-        "sector": stock.get("sector") or "",
+        "symbol": stock.symbol,
+        "company_name": stock.company_name or "",
+        "sector": stock.sector or "",
         "current_price": quote.price,
         "change_pct": quote.change_pct,
         "change": quote.change,
@@ -112,25 +112,27 @@ async def get_stock_quote(symbol: str, supabase: Client = Depends(get_supabase_c
 async def get_ohlcv(
     symbol: str,
     days: int = Query(default=90, ge=1, le=3650),
-    supabase: Client = Depends(get_supabase_client),
+    db: Session = Depends(get_db),
 ):
     symbol = require_stock_symbol(symbol)
-    result = (
-        supabase.table("ohlcv")
-        .select("*")
-        .eq("symbol", symbol)
-        .order("date", desc=True)
+    db_rows = (
+        db.query(Ohlcv)
+        .filter(Ohlcv.symbol == symbol)
+        .order_by(Ohlcv.date.desc())
         .limit(days)
-        .execute()
+        .all()
     )
-    rows = sorted(result.data or [], key=lambda x: x["date"])
+    rows = sorted(
+        [row_to_dict(r) for r in db_rows],
+        key=lambda x: x["date"],
+    )
     try:
-        stock = supabase.table("stocks").select("yf_ticker").eq("symbol", symbol).single().execute().data or {}
-        ticker = stock.get("yf_ticker")
+        stock = db.query(Stock).filter(Stock.symbol == symbol).first()
+        ticker = stock.yf_ticker if stock else None
         live_history = fetch_historical_daily(symbol, ticker, days)
         if live_history:
             rows = live_history
-        quote = get_quote_with_fallback(supabase, symbol, ticker)
+        quote = get_quote_with_fallback(db, symbol, ticker)
         rows = merge_live_quote_into_history(rows, quote)
     except Exception:
         pass
@@ -141,15 +143,15 @@ async def get_ohlcv(
 async def get_indicators(
     symbol: str,
     days: int = Query(default=30, ge=1, le=365),
-    supabase: Client = Depends(get_supabase_client),
+    db: Session = Depends(get_db),
 ):
     symbol = require_stock_symbol(symbol)
-    result = (
-        supabase.table("technical_indicators")
-        .select("*")
-        .eq("symbol", symbol)
-        .order("date", desc=True)
+    db_rows = (
+        db.query(TechnicalIndicator)
+        .filter(TechnicalIndicator.symbol == symbol)
+        .order_by(TechnicalIndicator.date.desc())
         .limit(days)
-        .execute()
+        .all()
     )
-    return sorted(result.data, key=lambda x: x["date"])
+    result = [row_to_dict(r) for r in db_rows]
+    return sorted(result, key=lambda x: x["date"])

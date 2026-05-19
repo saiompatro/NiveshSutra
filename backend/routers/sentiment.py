@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
-from supabase import Client
-from ..dependencies import get_supabase_client
+from sqlalchemy.orm import Session, joinedload
+from backend.database import get_db, row_to_dict
+from backend.models.db_models import SentimentDaily, ArticleSentiment, NewsArticle
 
 router = APIRouter()
 
@@ -9,49 +10,49 @@ router = APIRouter()
 async def get_sentiment(
     symbol: str,
     days: int = Query(default=30, le=90),
-    supabase: Client = Depends(get_supabase_client),
+    db: Session = Depends(get_db),
 ):
-    result = (
-        supabase.table("sentiment_daily")
-        .select("*")
-        .eq("symbol", symbol)
-        .order("date", desc=True)
+    rows = (
+        db.query(SentimentDaily)
+        .filter(SentimentDaily.symbol == symbol)
+        .order_by(SentimentDaily.date.desc())
         .limit(days)
-        .execute()
+        .all()
     )
-    return sorted(result.data, key=lambda x: x["date"])
+    result = [row_to_dict(r) for r in rows]
+    return sorted(result, key=lambda x: x["date"])
 
 
 @router.get("/stocks/{symbol}/news")
 async def get_news(
     symbol: str,
     limit: int = Query(default=20, le=50),
-    supabase: Client = Depends(get_supabase_client),
+    db: Session = Depends(get_db),
 ):
-    result = (
-        supabase.table("article_sentiments")
-        .select("*, news_articles(*)")
-        .eq("symbol", symbol)
-        .order("computed_at", desc=True)
+    rows = (
+        db.query(ArticleSentiment)
+        .options(joinedload(ArticleSentiment.article))
+        .filter(ArticleSentiment.symbol == symbol)
+        .order_by(ArticleSentiment.computed_at.desc())
         .limit(limit)
-        .execute()
+        .all()
     )
-    return result.data
+    return [row_to_dict(r, rels=["article"]) for r in rows]
 
 
 @router.get("/sentiment/market")
-async def market_sentiment(supabase: Client = Depends(get_supabase_client)):
-    result = (
-        supabase.table("sentiment_daily")
-        .select("symbol, avg_sentiment, article_count, date")
-        .order("date", desc=True)
+async def market_sentiment(db: Session = Depends(get_db)):
+    rows = (
+        db.query(SentimentDaily)
+        .order_by(SentimentDaily.date.desc())
         .limit(50)
-        .execute()
+        .all()
     )
-    if not result.data:
+    data = [row_to_dict(r) for r in rows]
+    if not data:
         return {"overall": 0, "stocks": []}
 
-    latest_date = result.data[0]["date"]
-    today_data = [r for r in result.data if r["date"] == latest_date]
+    latest_date = data[0]["date"]
+    today_data = [r for r in data if r["date"] == latest_date]
     avg = sum(float(r["avg_sentiment"]) for r in today_data) / len(today_data) if today_data else 0
     return {"overall": round(avg, 3), "date": latest_date, "stocks": today_data}

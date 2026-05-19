@@ -4,45 +4,42 @@
 
 ```mermaid
 graph TB
-    subgraph ProductUI
-        A[Streamlit App] --> B[Supabase Auth]
-        A --> D[Supabase Postgres]
-        A --> C[Optional FastAPI Service]
+    subgraph Frontend
+        A[Next.js App :3000] --> B[FastAPI Backend]
     end
 
     subgraph Backend
-        C --> D
-        C --> E[Auth Middleware]
+        B[FastAPI :8000] --> C[SQLite DB]
+        B --> D[Market Data Service]
     end
 
-    subgraph MLPipeline
-        F[Daily Orchestrator] --> G[OHLCV Ingestion]
-        F --> H[Sentiment Pipeline]
-        F --> I[Signal Engine]
-        F --> J[Alert Generator]
-        G --> K[yfinance API]
-        G --> L[pandas-ta Indicators]
-        H --> M[Moneycontrol News API]
-        H --> N[FinBERT Model]
-        I --> O[Technical Scorer]
-        I --> P[Momentum Scorer]
-        I --> Q[Weighted Combiner]
+    subgraph Pipeline
+        E[Daily Orchestrator] --> F[OHLCV Ingestion]
+        E --> G[Sentiment Pipeline]
+        E --> H[Signal Engine]
+        E --> I[Alert Generator]
+        F --> J[yfinance / jugaad-data]
+        F --> K[Technical Indicators]
+        G --> L[Moneycontrol News]
+        G --> M[FinBERT Model]
+        H --> N[Technical Scorer]
+        H --> O[Momentum Scorer]
+        H --> P[Weighted Combiner]
     end
 
-    G --> D
-    H --> D
-    I --> D
-    J --> D
+    F --> C
+    G --> C
+    H --> C
+    I --> C
 ```
 
 ## Data Flow
 
-1. **Ingestion**: yfinance -> OHLCV table -> pandas-ta -> technical_indicators table
+1. **Ingestion**: yfinance/jugaad-data -> OHLCV table -> technical indicators computation -> technical_indicators table
 2. **Sentiment**: Moneycontrol news -> ticker mapping -> FinBERT scoring -> sentiment_daily table
 3. **Signals**: indicators + sentiment + momentum -> weighted combination -> signals table
 4. **Portfolio**: user holdings + OHLCV returns -> PyPortfolioOpt -> allocation recommendations
-5. **Frontend runtime**: Streamlit pages read and write Supabase directly for auth, watchlist, holdings, alerts, and dashboard views
-6. **Frontend-to-backend calls**: stock onboarding and portfolio optimization use the separate FastAPI service via `API_BASE_URL`
+5. **Frontend**: Next.js dashboard reads from FastAPI endpoints for stocks, signals, charts, and portfolio data
 
 ## Signal Engine
 
@@ -63,45 +60,44 @@ Signal mapping:
 confidence = min(|composite| * 2, 1.0)
 ```
 
-## Database Schema
+## Database
 
-| Table | Purpose | RLS |
-|-------|---------|-----|
-| profiles | User profiles + risk scoring | user=own |
-| stocks | Nifty 50 master list | public read |
-| watchlist | User stock watchlists | user=own |
-| holdings | User portfolio holdings | user=own |
-| ohlcv | Historical price data | public read |
-| technical_indicators | Computed indicators | public read |
-| news_articles | Fetched news articles | public read |
-| article_sentiments | Per-article FinBERT scores | public read |
-| sentiment_daily | Aggregated daily sentiment | public read |
-| signal_config | Signal weight configuration | public read |
-| signals | Computed buy/sell signals | public read |
-| portfolio_optimizations | User optimization runs | user=own |
-| optimization_allocations | Recommended allocations | user=own |
-| rebalance_history | Rebalancing audit trail | user=own |
-| alerts | User notifications | user=own |
+SQLAlchemy ORM with SQLite backend. Schema is defined in Python models and created via `init_db()`.
+
+| Table | Purpose |
+|-------|---------|
+| stocks | Nifty 50 master list |
+| ohlcv | Historical price data |
+| technical_indicators | Computed indicators |
+| news_articles | Fetched news articles |
+| article_sentiments | Per-article FinBERT scores |
+| sentiment_daily | Aggregated daily sentiment |
+| signal_config | Signal weight configuration |
+| signals | Computed buy/sell signals |
+| holdings | Portfolio holdings |
+| portfolio_optimizations | Optimization runs |
+| optimization_allocations | Recommended allocations |
+| alerts | Notifications |
 
 ## Tech Stack
 
 | Component | Technology |
 |-----------|-----------|
-| Frontend | Streamlit |
-| Charts | Plotly |
-| Backend | FastAPI, Python 3.12 |
-| Database | Supabase (Postgres 17) |
-| Auth | Supabase Auth (email/password) |
-| Market Data | yfinance + Moneycontrol market scrape fallback |
-| Indicators | pandas-ta (RSI, MACD, BB, SMA, EMA, ATR, OBV) |
+| Frontend | Next.js 16, Tailwind CSS, shadcn/ui, Recharts |
+| Backend | FastAPI, Python 3.11+ |
+| Database | SQLAlchemy + SQLite |
+| Market Data | yfinance, jugaad-data |
+| Indicators | RSI, MACD, BB, SMA, EMA, ATR, OBV |
 | Sentiment | ProsusAI/finbert |
-| News | Moneycontrol via `moneycontrol-api` |
-| Optimization | PyPortfolioOpt |
+| News | Moneycontrol RSS |
+| Optimization | PyPortfolioOpt (with NumPy/Pandas fallback) |
+| Risk | Vectorized Monte Carlo VaR/CVaR |
 
-## Hosting Model
+## Runtime
 
-- **Frontend**: Streamlit Community Cloud, serving `streamlit_app/app.py`
-- **Backend**: Render free web service, serving `services.api.main:app`
-- **Database/Auth**: Supabase
+- **Backend**: FastAPI on port 8000 (`uvicorn backend.main:app`)
+- **Frontend**: Next.js on port 3000 (`npm run dev` in `frontend/`)
+- **Database**: SQLite file at project root (`niveshsutra.db`)
+- **Pipeline**: `python scripts/run_daily_pipeline.py` (run daily after market close)
 
-This split matches the current codebase. The Streamlit app is the public product UI, while FastAPI remains available as a separate service for documented API access and backend-only workflows.
+All components run locally. No cloud services required.

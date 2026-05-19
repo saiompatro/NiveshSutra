@@ -1,34 +1,50 @@
 export const dynamic = "force-dynamic";
 
 import { Navbar } from "@/components/Navbar";
-import { createSupabaseAdminClient } from "@/lib/supabase-server";
 import { LivePricesOverlay } from "@/components/stocks/LivePricesOverlay";
 
-export default async function StocksPage() {
-  const admin = await createSupabaseAdminClient();
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
-  // Latest OHLCV per symbol (order desc → first row per symbol = latest)
-  const { data: ohlcv } = await admin
-    .from("ohlcv")
-    .select("symbol, date, close, volume")
-    .order("date", { ascending: false })
-    .limit(500);
+type OhlcvRow = { symbol: string; date: string; close: number; volume: number };
+type SignalRow = { symbol: string; signal: string; composite_score: number; date: string };
+
+async function fetchLatestOhlcv(): Promise<OhlcvRow[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/stocks`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as OhlcvRow[];
+  } catch {
+    return [];
+  }
+}
+
+async function fetchSignals(): Promise<SignalRow[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/signals`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as SignalRow[];
+  } catch {
+    return [];
+  }
+}
+
+export default async function StocksPage() {
+  const [stocks, signals] = await Promise.all([fetchLatestOhlcv(), fetchSignals()]);
 
   // Deduplicate: most recent row per symbol
-  type OhlcvRow = { symbol: string; date: string; close: number; volume: number };
   const latestBySymbol = new Map<string, OhlcvRow>();
-  for (const row of ohlcv ?? []) {
-    if (!latestBySymbol.has(row.symbol)) latestBySymbol.set(row.symbol, row as OhlcvRow);
+  for (const row of stocks) {
+    if (!latestBySymbol.has(row.symbol)) latestBySymbol.set(row.symbol, row);
   }
 
-  const { data: signals } = await admin
-    .from("signals")
-    .select("symbol, signal, composite_score, date")
-    .order("date", { ascending: false })
-    .limit(200);
-
   const latestSignalBySymbol = new Map<string, { signal: string; composite_score: number }>();
-  for (const s of signals ?? []) {
+  for (const s of signals) {
     if (!latestSignalBySymbol.has(s.symbol))
       latestSignalBySymbol.set(s.symbol, {
         signal: s.signal,
@@ -63,7 +79,7 @@ export default async function StocksPage() {
         </div>
 
         {/* LivePricesOverlay is a client component:
-            renders the table server-side with last-close prices from Supabase,
+            renders the table server-side with last-close prices,
             then fetches live quotes from /api/quotes (Yahoo Finance) and updates prices */}
         <LivePricesOverlay rows={rows} />
       </main>

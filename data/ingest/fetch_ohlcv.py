@@ -1,21 +1,26 @@
 """
 Fetch OHLCV data for all active stocks using yfinance-backed market data helpers.
-Reads the stock list from Supabase and pulls daily candles instrument-by-instrument.
+Reads the stock list from the local SQLite database and pulls daily candles
+instrument-by-instrument.
 """
 
 
 import pandas as pd
 import time
 
-from data.config import get_supabase
+from backend.database import SessionLocal
+from backend.models.db_models import Stock
 from backend.services.market_data import fetch_historical_daily
 
 
 def get_stock_list() -> pd.DataFrame:
-    """Read all stocks from Supabase stocks table."""
-    sb = get_supabase()
-    resp = sb.table("stocks").select("symbol, yf_ticker, company_name").execute()
-    return pd.DataFrame(resp.data)
+    """Read all stocks from the local stocks table."""
+    session = SessionLocal()
+    try:
+        rows = session.query(Stock.symbol, Stock.yf_ticker, Stock.company_name).all()
+        return pd.DataFrame([{"symbol": r.symbol, "yf_ticker": r.yf_ticker, "company_name": r.company_name} for r in rows])
+    finally:
+        session.close()
 
 
 def fetch_ohlcv(days: int = 365) -> pd.DataFrame:

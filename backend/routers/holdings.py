@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends
-from supabase import Client
-from ..dependencies import get_current_user, get_supabase_for_user
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session, joinedload
+from backend.database import get_db, row_to_dict, DEFAULT_USER_ID
+from backend.models.db_models import Holding, Stock
 from ..models.holding import HoldingCreate, HoldingUpdate
 from ..services.market_data import fetch_live_quotes_batch, get_quote_with_fallback
 
@@ -8,54 +9,51 @@ router = APIRouter()
 
 
 @router.get("/holdings")
-async def list_holdings(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
-    result = (
-        supabase.table("holdings")
-        .select("*, stocks(*)")
-        .eq("user_id", user["id"])
-        .order("created_at", desc=True)
-        .execute()
+async def list_holdings(db: Session = Depends(get_db)):
+    user_id = DEFAULT_USER_ID
+    holdings = (
+        db.query(Holding)
+        .options(joinedload(Holding.stock))
+        .filter(Holding.user_id == user_id)
+        .order_by(Holding.created_at.desc())
+        .all()
     )
-    return result.data
+    return [row_to_dict(h, rels=["stock"]) for h in holdings]
 
 
 @router.get("/holdings/live")
-async def list_holdings_live(
-    user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_for_user),
-):
+async def list_holdings_live(db: Session = Depends(get_db)):
+    user_id = DEFAULT_USER_ID
     holdings = (
-        supabase.table("holdings")
-        .select("id, symbol, quantity, avg_buy_price, buy_date, notes, stocks(yf_ticker)")
-        .eq("user_id", user["id"])
-        .execute()
-        .data
-        or []
+        db.query(Holding)
+        .options(joinedload(Holding.stock))
+        .filter(Holding.user_id == user_id)
+        .all()
     )
 
     quote_map = fetch_live_quotes_batch(
         {
-            holding["symbol"]: (holding.get("stocks") or {}).get("yf_ticker")
-            for holding in holdings
+            h.symbol: (h.stock.yf_ticker if h.stock else None)
+            for h in holdings
         }
     )
 
     enriched = []
-    for holding in holdings:
-        stock_info = holding.get("stocks") or {}
-        quote = quote_map.get(holding["symbol"]) or get_quote_with_fallback(
-            supabase, holding["symbol"], stock_info.get("yf_ticker")
+    for h in holdings:
+        yf_ticker = h.stock.yf_ticker if h.stock else None
+        quote = quote_map.get(h.symbol) or get_quote_with_fallback(
+            db, h.symbol, yf_ticker
         )
-        avg_price = float(holding.get("avg_buy_price") or 0)
-        quantity = float(holding.get("quantity") or 0)
+        avg_price = float(h.avg_buy_price or 0)
+        quantity = float(h.quantity or 0)
         value = quote.price * quantity
         invested = avg_price * quantity
         pnl = value - invested
         pnl_pct = (pnl / invested * 100) if invested else 0
         enriched.append(
             {
-                "id": holding["id"],
-                "symbol": holding["symbol"],
+                "id": h.id,
+                "symbol": h.symbol,
                 "quantity": quantity,
                 "avg_price": avg_price,
                 "current_price": quote.price,
@@ -69,40 +67,35 @@ async def list_holdings_live(
 
 
 @router.post("/holdings")
-async def create_holding(
-    body: HoldingCreate,
-    user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_for_user),
-):
+async def create_holding(body: HoldingCreate, db: Session = Depends(get_db)):
+    user_id = DEFAULT_USER_ID
     data = body.model_dump()
-    data["user_id"] = user["id"]
-    result = supabase.table("holdings").insert(data).execute()
-    return result.data[0] if result.data else None
+    h = Holding(user_id=user_id, **data)
+    db.add(h)
+    db.commit()
+    db.refresh(h)
+    return row_to_dict(h)
 
 
 @router.put("/holdings/{holding_id}")
-async def update_holding(
-    holding_id: str,
-    body: HoldingUpdate,
-    user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_for_user),
-):
+async def update_holding(holding_id: str, body: HoldingUpdate, db: Session = Depends(get_db)):
+    user_id = DEFAULT_USER_ID
+    h = db.query(Holding).filter(Holding.id == holding_id, Holding.user_id == user_id).first()
+    if not h:
+        return None
     data = body.model_dump(exclude_none=True)
-    result = (
-        supabase.table("holdings")
-        .update(data)
-        .eq("id", holding_id)
-        .eq("user_id", user["id"])
-        .execute()
-    )
-    return result.data[0] if result.data else None
+    for key, value in data.items():
+        setattr(h, key, value)
+    db.commit()
+    db.refresh(h)
+    return row_to_dict(h)
 
 
 @router.delete("/holdings/{holding_id}")
-async def delete_holding(
-    holding_id: str,
-    user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_for_user),
-):
-    supabase.table("holdings").delete().eq("id", holding_id).eq("user_id", user["id"]).execute()
+async def delete_holding(holding_id: str, db: Session = Depends(get_db)):
+    user_id = DEFAULT_USER_ID
+    h = db.query(Holding).filter(Holding.id == holding_id, Holding.user_id == user_id).first()
+    if h:
+        db.delete(h)
+        db.commit()
     return {"status": "deleted"}

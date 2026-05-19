@@ -1,9 +1,10 @@
 export const dynamic = "force-dynamic";
 
 import { Navbar } from "@/components/Navbar";
-import { createSupabaseAdminClient } from "@/lib/supabase-server";
 import { SignalBadge } from "@/components/dashboard/SignalBadge";
 import type { SignalLabel } from "@/types";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 const SIGNAL_ORDER: Record<SignalLabel, number> = {
   strong_buy: 0,
@@ -13,21 +14,37 @@ const SIGNAL_ORDER: Record<SignalLabel, number> = {
   strong_sell: 4,
 };
 
-export default async function SignalsPage() {
-  const admin = await createSupabaseAdminClient();
+type SignalRow = {
+  symbol: string;
+  date: string;
+  signal: string;
+  composite_score: number;
+  technical_score: number;
+  sentiment_score: number;
+  momentum_score: number;
+  confidence: number;
+  explanation: string;
+};
 
-  const { data: signals } = await admin
-    .from("signals")
-    .select(
-      "symbol, date, signal, composite_score, technical_score, sentiment_score, momentum_score, confidence, explanation"
-    )
-    .order("date", { ascending: false })
-    .order("composite_score", { ascending: false })
-    .limit(500);
+async function fetchSignals(): Promise<SignalRow[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/signals`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as SignalRow[];
+  } catch {
+    return [];
+  }
+}
+
+export default async function SignalsPage() {
+  const signals = await fetchSignals();
 
   // Keep only the most recent date's signals
-  const mostRecentDate = signals?.[0]?.date ?? null;
-  const todaySignals = signals?.filter((s) => s.date === mostRecentDate) ?? [];
+  const mostRecentDate = signals.length > 0 ? signals[0]?.date ?? null : null;
+  const todaySignals = signals.filter((s) => s.date === mostRecentDate);
 
   const sorted = [...todaySignals].sort(
     (a, b) =>

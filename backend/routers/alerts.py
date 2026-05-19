@@ -1,40 +1,39 @@
 from fastapi import APIRouter, Depends
-from supabase import Client
-from ..dependencies import get_current_user, get_supabase_for_user
+from sqlalchemy.orm import Session
+from backend.database import get_db, row_to_dict, DEFAULT_USER_ID
+from backend.models.db_models import Alert
 
 router = APIRouter()
 
 
 @router.get("/alerts")
-async def list_alerts(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
-    result = (
-        supabase.table("alerts")
-        .select("*")
-        .eq("user_id", user["id"])
-        .order("created_at", desc=True)
+async def list_alerts(db: Session = Depends(get_db)):
+    user_id = DEFAULT_USER_ID
+    alerts = (
+        db.query(Alert)
+        .filter(Alert.user_id == user_id)
+        .order_by(Alert.created_at.desc())
         .limit(50)
-        .execute()
+        .all()
     )
-    return result.data
+    return [row_to_dict(a) for a in alerts]
 
 
 @router.put("/alerts/{alert_id}/read")
-async def mark_read(
-    alert_id: str,
-    user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_for_user),
-):
-    result = (
-        supabase.table("alerts")
-        .update({"is_read": True})
-        .eq("id", alert_id)
-        .eq("user_id", user["id"])
-        .execute()
-    )
-    return result.data[0] if result.data else None
+async def mark_read(alert_id: str, db: Session = Depends(get_db)):
+    user_id = DEFAULT_USER_ID
+    alert = db.query(Alert).filter(Alert.id == alert_id, Alert.user_id == user_id).first()
+    if not alert:
+        return None
+    alert.is_read = True
+    db.commit()
+    db.refresh(alert)
+    return row_to_dict(alert)
 
 
 @router.put("/alerts/read-all")
-async def mark_all_read(user: dict = Depends(get_current_user), supabase: Client = Depends(get_supabase_for_user)):
-    supabase.table("alerts").update({"is_read": True}).eq("user_id", user["id"]).eq("is_read", False).execute()
+async def mark_all_read(db: Session = Depends(get_db)):
+    user_id = DEFAULT_USER_ID
+    db.query(Alert).filter(Alert.user_id == user_id, Alert.is_read == False).update({"is_read": True})
+    db.commit()
     return {"status": "ok"}

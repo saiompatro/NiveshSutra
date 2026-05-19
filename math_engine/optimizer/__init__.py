@@ -19,7 +19,12 @@ import zlib
 import numpy as np
 import pandas as pd
 
-from data.config import get_supabase
+from sqlalchemy.orm import Session
+
+from backend.database import SessionLocal
+from backend.models.db_models import (
+    Holding, Ohlcv, Stock, PortfolioOptimization, OptimizationAllocation,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -31,7 +36,7 @@ def run_optimization(
     user_id: str,
     risk_profile: str,
     opt_id: str,
-    supabase: Any | None = None,
+    db: Session | None = None,
 ) -> dict[str, Any]:
     """
     Run portfolio optimization for a user.
@@ -41,11 +46,28 @@ def run_optimization(
         risk_profile: One of 'conservative', 'moderate', 'aggressive'.
         opt_id: UUID for this optimization run (pre-created row in
                 portfolio_optimizations).
+        db: Optional SQLAlchemy session. A new one is created if not passed.
 
     Returns:
         dict with optimization results.
     """
-    sb = supabase or get_supabase()
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+
+    try:
+        return _run_optimization_inner(db, user_id, risk_profile, opt_id)
+    finally:
+        if own_session:
+            db.close()
+
+
+def _run_optimization_inner(
+    db: Session,
+    user_id: str,
+    risk_profile: str,
+    opt_id: str,
+) -> dict[str, Any]:
     start = time.time()
 
     print(f"Running optimization for user={user_id}, risk={risk_profile}, opt_id={opt_id}")
@@ -56,44 +78,42 @@ def run_optimization(
         "aggressive": "efficient_return",
     }
 
-    holdings_resp = (
-        sb.table("holdings")
-        .select("symbol, quantity, avg_buy_price")
-        .eq("user_id", user_id)
-        .execute()
+    holdings_rows = (
+        db.query(Holding.symbol, Holding.quantity, Holding.avg_buy_price)
+        .filter(Holding.user_id == user_id)
+        .all()
     )
-    holdings = holdings_resp.data or []
+    holdings = [{"symbol": h.symbol, "quantity": h.quantity, "avg_buy_price": h.avg_buy_price} for h in holdings_rows]
     if not holdings:
         print("No holdings found for user. Returning equal-weight fallback.")
-        return _equal_weight_fallback(sb, user_id, risk_profile, opt_id, [])
+        return _equal_weight_fallback(db, user_id, risk_profile, opt_id, [])
 
     symbols = list({h["symbol"] for h in holdings})
     print(f"  User holds {len(symbols)} symbols: {symbols}")
 
     price_frames: dict[str, pd.Series] = {}
     for sym in symbols:
-        resp = (
-            sb.table("ohlcv")
-            .select("date,close")
-            .eq("symbol", sym)
-            .order("date", desc=False)
+        rows = (
+            db.query(Ohlcv.date, Ohlcv.close)
+            .filter(Ohlcv.symbol == sym)
+            .order_by(Ohlcv.date.asc())
             .limit(365)
-            .execute()
+            .all()
         )
-        if resp.data and len(resp.data) >= 30:
-            df = pd.DataFrame(resp.data)
+        if rows and len(rows) >= 30:
+            df = pd.DataFrame([{"date": r.date, "close": r.close} for r in rows])
             df["date"] = pd.to_datetime(df["date"])
             df = df.set_index("date")["close"]
             price_frames[sym] = df
 
     if len(price_frames) < 2:
         print("Insufficient price data for optimization. Falling back to equal weight.")
-        return _equal_weight_fallback(sb, user_id, risk_profile, opt_id, symbols)
+        return _equal_weight_fallback(db, user_id, risk_profile, opt_id, symbols)
 
     prices_df = pd.DataFrame(price_frames).dropna()
     if len(prices_df) < 30:
         print("Not enough overlapping price data. Falling back to equal weight.")
-        return _equal_weight_fallback(sb, user_id, risk_profile, opt_id, symbols)
+        return _equal_weight_fallback(db, user_id, risk_profile, opt_id, symbols)
 
     try:
         from pypfopt import expected_returns, risk_models, EfficientFrontier
@@ -130,7 +150,7 @@ def run_optimization(
         except Exception as fallback_exc:
             print(f"Vectorized optimizer failed: {fallback_exc}")
             traceback.print_exc()
-            return _equal_weight_fallback(sb, user_id, risk_profile, opt_id, symbols)
+            return _equal_weight_fallback(db, user_id, risk_profile, opt_id, symbols)
 
     total_current_value = 0.0
     current_values: dict[str, float] = {}
@@ -169,18 +189,22 @@ def run_optimization(
             }
         )
 
-    sb.table("portfolio_optimizations").update(
-        {
-            "optimization_method": method_map.get(risk_profile, "max_sharpe"),
-            "expected_return": expected_return,
-            "expected_risk": expected_risk,
-            "sharpe_ratio": sharpe_ratio,
-            "status": "completed",
-        }
-    ).eq("id", opt_id).execute()
+    # Update the optimization record
+    opt_obj = db.query(PortfolioOptimization).filter(PortfolioOptimization.id == opt_id).first()
+    if opt_obj:
+        opt_obj.optimization_method = method_map.get(risk_profile, "max_sharpe")
+        opt_obj.expected_return = expected_return
+        opt_obj.expected_risk = expected_risk
+        opt_obj.sharpe_ratio = sharpe_ratio
+        opt_obj.status = "completed"
+        db.add(opt_obj)
 
+    # Insert allocations
     if allocations:
-        sb.table("optimization_allocations").insert(allocations).execute()
+        alloc_objects = [OptimizationAllocation(**a) for a in allocations]
+        db.add_all(alloc_objects)
+
+    db.commit()
 
     elapsed = time.time() - start
     print(f"Optimization completed in {elapsed:.1f}s")
@@ -200,11 +224,11 @@ def run_optimization(
 
 
 def _equal_weight_fallback(
-    sb: Any, user_id: str, risk_profile: str, opt_id: str, symbols: list[str]
+    db: Session, user_id: str, risk_profile: str, opt_id: str, symbols: list[str]
 ) -> dict[str, Any]:
     if not symbols:
-        resp = sb.table("stocks").select("symbol").execute()
-        symbols = [r["symbol"] for r in resp.data] if resp.data else []
+        rows = db.query(Stock.symbol).all()
+        symbols = [r.symbol for r in rows] if rows else []
 
     n = len(symbols)
     equal_weight = round(1.0 / n, 6) if n > 0 else 0.0
@@ -224,18 +248,21 @@ def _equal_weight_fallback(
             }
         )
 
-    sb.table("portfolio_optimizations").update(
-        {
-            "optimization_method": "equal_weight_fallback",
-            "expected_return": None,
-            "expected_risk": None,
-            "sharpe_ratio": None,
-            "status": "completed_fallback",
-        }
-    ).eq("id", opt_id).execute()
+    # Update the optimization record
+    opt_obj = db.query(PortfolioOptimization).filter(PortfolioOptimization.id == opt_id).first()
+    if opt_obj:
+        opt_obj.optimization_method = "equal_weight_fallback"
+        opt_obj.expected_return = None
+        opt_obj.expected_risk = None
+        opt_obj.sharpe_ratio = None
+        opt_obj.status = "completed_fallback"
+        db.add(opt_obj)
 
     if allocations:
-        sb.table("optimization_allocations").insert(allocations).execute()
+        alloc_objects = [OptimizationAllocation(**a) for a in allocations]
+        db.add_all(alloc_objects)
+
+    db.commit()
 
     return {
         "opt_id": opt_id,

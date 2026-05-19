@@ -1,10 +1,27 @@
-# Streamlit frontend dependencies
-streamlit>=1.31.0
-plotly>=5.18.0
-python-dotenv>=1.0.0
-supabase==2.11.0
-requests>=2.31.0
-yfinance>=0.2.61
+# Core backend
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+sqlalchemy>=2.0.0
+pydantic-settings>=2.7.0
+python-dotenv>=1.1.0
+
+# Data fetching
+yfinance>=0.2.40
 jugaad-data>=0.27
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+
+# Data processing
 pandas>=2.2.0
+pandas-ta>=0.3.14b
 numpy>=1.26.0
+scipy>=1.11.0
+plotly>=5.18.0
+
+# Sentiment analysis (optional — needed for sentiment pipeline)
+# transformers>=4.40.0
+# torch>=2.0.0
+# moneycontrol-api>=0.1.0
+
+# Portfolio optimization (optional — needed for optimizer)
+# pyportfolioopt>=1.5.0

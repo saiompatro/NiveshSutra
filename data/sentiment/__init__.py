@@ -4,7 +4,7 @@ Sentiment analysis pipeline:
   2. Map articles to Nifty 50 stock symbols
   3. Score headlines with ProsusAI/finbert
   4. Aggregate daily sentiment per symbol
-  5. Persist everything to Supabase
+  5. Persist everything to local SQLite
 """
 
 from __future__ import annotations
@@ -461,6 +461,9 @@ def run_sentiment_pipeline() -> None:
     """Run the full sentiment pipeline end-to-end."""
     import time
 
+    from backend.database import SessionLocal
+    from backend.models.db_models import NewsArticle
+
     from data.ingest.store import (
         upsert_news_articles,
         upsert_article_sentiments,
@@ -481,72 +484,73 @@ def run_sentiment_pipeline() -> None:
     # --- store articles and get back IDs ---
     print()
     print("=" * 60)
-    print("SENTIMENT STEP 2: Storing articles in Supabase")
+    print("SENTIMENT STEP 2: Storing articles in database")
     print("=" * 60)
-    upsert_news_articles(articles)
 
-    # Retrieve article IDs from Supabase (using url as key)
-    from data.config import get_supabase
+    session = SessionLocal()
+    try:
+        upsert_news_articles(articles, session=session)
 
-    sb = get_supabase()
-    urls = [a["url"] for a in articles]
-    # Fetch in batches to avoid query-string size limits
-    article_id_map: dict[str, str] = {}
-    batch_size = 50
-    for i in range(0, len(urls), batch_size):
-        batch_urls = urls[i : i + batch_size]
-        resp = (
-            sb.table("news_articles")
-            .select("id,url")
-            .in_("url", batch_urls)
-            .execute()
-        )
-        for row in resp.data:
-            article_id_map[row["url"]] = row["id"]
+        # Retrieve article IDs from database (using url as key)
+        urls = [a["url"] for a in articles]
+        article_id_map: dict[str, str] = {}
+        batch_size = 50
+        for i in range(0, len(urls), batch_size):
+            batch_urls = urls[i : i + batch_size]
+            rows = (
+                session.query(NewsArticle.id, NewsArticle.url)
+                .filter(NewsArticle.url.in_(batch_urls))
+                .all()
+            )
+            for row in rows:
+                article_id_map[row.url] = row.id
 
-    # Enrich articles with DB IDs and symbol mappings
-    for a in articles:
-        a["id"] = article_id_map.get(a["url"])
+        # Enrich articles with DB IDs and symbol mappings
+        for a in articles:
+            a["id"] = article_id_map.get(a["url"])
 
-    # --- map to symbols ---
-    print()
-    print("=" * 60)
-    print("SENTIMENT STEP 3: Mapping articles to stock symbols")
-    print("=" * 60)
-    # Attach symbol sets to articles
-    for a in articles:
-        title = a.get("title", "")
-        matched: set[str] = set()
-        for pattern, symbol in _PATTERNS:
-            if pattern.search(title):
-                matched.add(symbol)
-        a["_symbols"] = matched
+        # --- map to symbols ---
+        print()
+        print("=" * 60)
+        print("SENTIMENT STEP 3: Mapping articles to stock symbols")
+        print("=" * 60)
+        # Attach symbol sets to articles
+        for a in articles:
+            title = a.get("title", "")
+            matched: set[str] = set()
+            for pattern, symbol in _PATTERNS:
+                if pattern.search(title):
+                    matched.add(symbol)
+            a["_symbols"] = matched
 
-    # --- score ---
-    print()
-    print("=" * 60)
-    print("SENTIMENT STEP 4: Scoring with FinBERT")
-    print("=" * 60)
-    sentiments = score_sentiments(articles)
+        # --- score ---
+        print()
+        print("=" * 60)
+        print("SENTIMENT STEP 4: Scoring with FinBERT")
+        print("=" * 60)
+        sentiments = score_sentiments(articles)
 
-    if not sentiments:
-        print("No sentiments produced. Exiting.")
-        return
+        if not sentiments:
+            print("No sentiments produced. Exiting.")
+            return
 
-    # --- store article sentiments ---
-    print()
-    print("=" * 60)
-    print("SENTIMENT STEP 5: Storing article sentiments")
-    print("=" * 60)
-    upsert_article_sentiments(sentiments)
+        # --- store article sentiments ---
+        print()
+        print("=" * 60)
+        print("SENTIMENT STEP 5: Storing article sentiments")
+        print("=" * 60)
+        upsert_article_sentiments(sentiments, session=session)
 
-    # --- aggregate ---
-    print()
-    print("=" * 60)
-    print("SENTIMENT STEP 6: Aggregating daily sentiment")
-    print("=" * 60)
-    daily = aggregate_daily(sentiments)
-    upsert_daily_sentiment(daily)
+        # --- aggregate ---
+        print()
+        print("=" * 60)
+        print("SENTIMENT STEP 6: Aggregating daily sentiment")
+        print("=" * 60)
+        daily = aggregate_daily(sentiments)
+        upsert_daily_sentiment(daily, session=session)
+
+    finally:
+        session.close()
 
     elapsed = time.time() - start
     print()

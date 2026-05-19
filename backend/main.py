@@ -1,9 +1,6 @@
-import os
-from html import escape
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from .database import init_db
 from .routers import health, profile, stocks, stock_search, watchlist, holdings, market, sentiment, signals, portfolio, alerts, notifications
 
 app = FastAPI(
@@ -12,48 +9,19 @@ app = FastAPI(
     version="1.0.0",
 )
 
-cors_origins = [
-    origin.strip()
-    for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
-    if origin.strip()
-]
-if not cors_origins:
-    cors_origins = ["*"]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=cors_origins != ["*"],
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-@app.get("/", include_in_schema=False)
-async def root() -> HTMLResponse:
-    frontend_url = os.getenv("PUBLIC_APP_URL", "").strip()
-    safe_frontend_url = escape(frontend_url, quote=True)
-    frontend_link = (
-        f'<p><a href="{safe_frontend_url}">Open the Streamlit app</a></p>'
-        if frontend_url
-        else "<p>Set <code>PUBLIC_APP_URL</code> to show the public Streamlit frontend URL here.</p>"
-    )
-    return HTMLResponse(
-        f"""
-        <html>
-          <head>
-            <title>NiveshSutra API</title>
-          </head>
-          <body style="font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; line-height: 1.5;">
-            <h1>NiveshSutra API</h1>
-            <p>This host serves the FastAPI backend for NiveshSutra.</p>
-            {frontend_link}
-            <p><a href="/docs">Open API docs</a></p>
-            <p><a href="/api/v1/health">Health check</a></p>
-          </body>
-        </html>
-        """
-    )
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
 
 app.include_router(health.router, prefix="/api/v1", tags=["Health"])
 app.include_router(profile.router, prefix="/api/v1", tags=["Profile"])

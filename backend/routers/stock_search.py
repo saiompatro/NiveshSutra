@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from supabase import Client
-from ..dependencies import get_supabase_admin, get_current_user
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from backend.database import get_db, row_to_dict, DEFAULT_USER_ID
+from backend.models.db_models import Stock, Ohlcv
 from ..services.market_data import fetch_historical_daily, fetch_live_quote, search_instrument
 from ..validation import require_stock_symbol
 
@@ -9,9 +10,8 @@ router = APIRouter()
 
 @router.get("/stocks/search")
 async def search_stock(
-    q: str = Query(..., min_length=1, max_length=20, description="Stock symbol to search"),
-    user: dict = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase_admin),
+    q: str,
+    db: Session = Depends(get_db),
 ):
     """
     Search for a stock by symbol. If it exists in the DB, return it.
@@ -20,9 +20,9 @@ async def search_stock(
     symbol = require_stock_symbol(q)
 
     # Check if stock already exists
-    result = supabase.table("stocks").select("*").eq("symbol", symbol).execute()
-    if result.data:
-        return {"stock": result.data[0], "source": "database"}
+    existing = db.query(Stock).filter(Stock.symbol == symbol).first()
+    if existing:
+        return {"stock": row_to_dict(existing), "source": "database"}
 
     # Try to validate with the free provider stack.
     try:
@@ -35,28 +35,27 @@ async def search_stock(
         industry = "Unknown"
         cap_category = "unknown"
 
-        stock_data = {
-            "symbol": symbol,
-            "yf_ticker": instrument.instrument_key,
-            "company_name": name,
-            "sector": sector,
-            "industry": industry,
-            "market_cap_category": cap_category,
-            "is_nifty50": False,
-            "active": True,
-        }
-
-        insert_result = supabase.table("stocks").insert(stock_data).execute()
-        if not insert_result.data:
-            raise HTTPException(status_code=500, detail="Failed to add stock to database")
+        stock = Stock(
+            symbol=symbol,
+            yf_ticker=instrument.instrument_key,
+            company_name=name,
+            sector=sector,
+            industry=industry,
+            market_cap_category=cap_category,
+            is_nifty50=False,
+            active=True,
+        )
+        db.add(stock)
+        db.commit()
+        db.refresh(stock)
 
         # Fetch initial OHLCV data (last 90 days) in background
         try:
-            _fetch_initial_ohlcv(supabase, symbol)
+            _fetch_initial_ohlcv(db, symbol)
         except Exception:
             pass  # Non-critical; data will be fetched by next pipeline run
 
-        return {"stock": insert_result.data[0], "source": "yfinance"}
+        return {"stock": row_to_dict(stock), "source": "yfinance"}
 
     except HTTPException:
         raise
@@ -67,25 +66,34 @@ async def search_stock(
         )
 
 
-def _fetch_initial_ohlcv(supabase: Client, symbol: str) -> None:
+def _fetch_initial_ohlcv(db: Session, symbol: str) -> None:
     """Fetch last 90 days of OHLCV data for a newly added stock."""
     try:
         rows = fetch_historical_daily(symbol, days=90)
         if not rows:
             return
-        upsert_rows = [
-            {
-                "symbol": symbol,
-                "date": row["date"],
-                "open": round(float(row["open"]), 2),
-                "high": round(float(row["high"]), 2),
-                "low": round(float(row["low"]), 2),
-                "close": round(float(row["close"]), 2),
-                "volume": int(row["volume"]),
-            }
-            for row in rows
-        ]
-        if upsert_rows:
-            supabase.table("ohlcv").upsert(upsert_rows, on_conflict="symbol,date").execute()
+        for row in rows:
+            existing = (
+                db.query(Ohlcv)
+                .filter(Ohlcv.symbol == symbol, Ohlcv.date == row["date"])
+                .first()
+            )
+            if existing:
+                existing.open = round(float(row["open"]), 2)
+                existing.high = round(float(row["high"]), 2)
+                existing.low = round(float(row["low"]), 2)
+                existing.close = round(float(row["close"]), 2)
+                existing.volume = int(row["volume"])
+            else:
+                db.add(Ohlcv(
+                    symbol=symbol,
+                    date=row["date"],
+                    open=round(float(row["open"]), 2),
+                    high=round(float(row["high"]), 2),
+                    low=round(float(row["low"]), 2),
+                    close=round(float(row["close"]), 2),
+                    volume=int(row["volume"]),
+                ))
+        db.commit()
     except Exception as e:
         print(f"Initial OHLCV fetch failed for {symbol}: {e}")

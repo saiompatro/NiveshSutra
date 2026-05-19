@@ -11,10 +11,11 @@ from typing import Any
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from supabase import Client
+from sqlalchemy.orm import Session
 import yfinance as yf
 
 from ..config import get_settings
+from ..models.db_models import Ohlcv
 
 
 DEFAULT_CACHE_TTL_SECONDS = 60
@@ -633,30 +634,38 @@ def fetch_historical_daily(symbol: str, preferred_ticker: str | None = None, day
     return rows
 
 
-def get_latest_db_bars(supabase: Client, symbols: list[str]) -> dict[str, list[dict[str, Any]]]:
+def get_latest_db_bars(db: Session, symbols: list[str]) -> dict[str, list[dict[str, Any]]]:
     if not symbols:
         return {}
-    result = (
-        supabase.table("ohlcv")
-        .select("symbol, date, open, high, low, close, volume")
-        .in_("symbol", symbols)
-        .order("date", desc=True)
+    rows = (
+        db.query(Ohlcv)
+        .filter(Ohlcv.symbol.in_(symbols))
+        .order_by(Ohlcv.date.desc())
         .limit(max(2, len(symbols) * 3))
-        .execute()
+        .all()
     )
     grouped: dict[str, list[dict[str, Any]]] = {}
-    for row in result.data or []:
-        grouped.setdefault(row["symbol"], [])
-        if len(grouped[row["symbol"]]) < 2:
-            grouped[row["symbol"]].append(row)
+    for row in rows:
+        sym = row.symbol
+        grouped.setdefault(sym, [])
+        if len(grouped[sym]) < 2:
+            grouped[sym].append({
+                "symbol": row.symbol,
+                "date": row.date,
+                "open": row.open,
+                "high": row.high,
+                "low": row.low,
+                "close": row.close,
+                "volume": row.volume,
+            })
     return grouped
 
 
-def get_quote_with_fallback(supabase: Client, symbol: str, preferred_ticker: str | None = None) -> QuoteSnapshot:
+def get_quote_with_fallback(db: Session, symbol: str, preferred_ticker: str | None = None) -> QuoteSnapshot:
     try:
         return fetch_live_quote(symbol, preferred_ticker)
     except Exception:
-        rows = get_latest_db_bars(supabase, [symbol]).get(symbol, [])
+        rows = get_latest_db_bars(db, [symbol]).get(symbol, [])
         if not rows:
             raise
 
@@ -677,7 +686,7 @@ def get_quote_with_fallback(supabase: Client, symbol: str, preferred_ticker: str
             low=float(latest.get("low", 0) or 0),
             volume=int(latest.get("volume", 0) or 0),
             latest_trading_day=str(latest.get("date") or ""),
-            provider="supabase",
+            provider="database",
         )
 
 

@@ -1,10 +1,10 @@
 export const dynamic = "force-dynamic";
 
 import { Navbar } from "@/components/Navbar";
-import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { redirect } from "next/navigation";
 import { SignalBadge } from "@/components/dashboard/SignalBadge";
 import type { SignalLabel } from "@/types";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 type HoldingRow = {
   id: string;
@@ -41,11 +41,8 @@ function pnlColor(n: number) {
 }
 
 async function fetchLiveQuoteMap() {
-  const base = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
-  if (!base) return new Map<string, LiveStockRow>();
-
   try {
-    const res = await fetch(`${base.replace(/\/$/, "")}/api/v1/stocks/live`, {
+    const res = await fetch(`${API_BASE}/api/v1/stocks/live`, {
       cache: "no-store",
       signal: AbortSignal.timeout(15_000),
     });
@@ -57,17 +54,13 @@ async function fetchLiveQuoteMap() {
   }
 }
 
-async function fetchRiskSummary(token?: string) {
-  const base = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
-  if (!base || !token) return null;
-
+async function fetchRiskSummary(): Promise<RiskSummary | null> {
   try {
-    const res = await fetch(`${base.replace(/\/$/, "")}/api/v1/portfolio/risk`, {
+    const res = await fetch(`${API_BASE}/api/v1/portfolio/risk`, {
       method: "POST",
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         scenarios: 10_000,
@@ -84,37 +77,52 @@ async function fetchRiskSummary(token?: string) {
   }
 }
 
+async function fetchHoldings(): Promise<HoldingRow[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/holdings`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as HoldingRow[];
+  } catch {
+    return [];
+  }
+}
+
+async function fetchSignalsForSymbols(symbols: string[]): Promise<{ symbol: string; signal: string; composite_score: number; date: string }[]> {
+  if (symbols.length === 0) return [];
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/signals`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return [];
+    const data = (await res.json()) as { symbol: string; signal: string; composite_score: number; date: string }[];
+    // Filter to only the symbols we care about
+    const symbolSet = new Set(symbols);
+    return data.filter((s) => symbolSet.has(s.symbol));
+  } catch {
+    return [];
+  }
+}
+
 export default async function PortfolioPage() {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!user) redirect("/login");
-
-  const [{ data: holdings }, liveQuoteMap, riskSummary] = await Promise.all([
-    supabase
-    .from("holdings")
-    .select("id, symbol, quantity, avg_buy_price")
-    .eq("user_id", user.id)
-      .order("created_at", { ascending: false }),
+  const [holdings, liveQuoteMap, riskSummary] = await Promise.all([
+    fetchHoldings(),
     fetchLiveQuoteMap(),
-    fetchRiskSummary(session?.access_token),
+    fetchRiskSummary(),
   ]);
 
-  const { data: signals } = await supabase
-    .from("signals")
-    .select("symbol, signal, composite_score, date")
-    .in("symbol", (holdings ?? []).map((h) => h.symbol))
-    .order("date", { ascending: false })
-    .limit(200);
+  const signals = await fetchSignalsForSymbols(holdings.map((h) => h.symbol));
 
   const latestSignalBySymbol = new Map<string, { signal: string; composite_score: number }>();
-  for (const s of signals ?? []) {
+  for (const s of signals) {
     if (!latestSignalBySymbol.has(s.symbol))
       latestSignalBySymbol.set(s.symbol, { signal: s.signal, composite_score: s.composite_score });
   }
 
-  const rows = ((holdings ?? []) as HoldingRow[])
+  const rows = (holdings as HoldingRow[])
     .map((holding) => {
       const live = liveQuoteMap.get(holding.symbol);
       const avgPrice = Number(holding.avg_buy_price);

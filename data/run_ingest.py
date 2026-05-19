@@ -1,5 +1,5 @@
 """
-CLI entry point: orchestrates OHLCV fetch -> compute indicators -> store in Supabase.
+CLI entry point: orchestrates OHLCV fetch -> compute indicators -> store in database.
 """
 
 import argparse
@@ -34,10 +34,10 @@ def main():
 
     indicators_df = compute_indicators(ohlcv_df)
 
-    # Step 3: Store in Supabase
+    # Step 3: Store in database
     print()
     print("=" * 60)
-    print("STEP 3: Storing data in Supabase")
+    print("STEP 3: Storing data in database")
     print("=" * 60)
     from data.ingest.store import upsert_ohlcv, upsert_indicators
 

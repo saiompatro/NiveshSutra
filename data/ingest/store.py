@@ -1,131 +1,212 @@
 """
-Upsert OHLCV and indicator data to Supabase.
-Batches in chunks of 500 rows with on_conflict for (symbol, date).
+Upsert OHLCV, indicator, news, sentiment, and signal data to SQLite via SQLAlchemy.
+Batches in chunks of 500 rows with ON CONFLICT upserts.
 """
 
 import math
 import pandas as pd
 
-from data.config import get_supabase
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+
+from backend.database import SessionLocal
+from backend.models.db_models import (
+    Ohlcv, TechnicalIndicator, NewsArticle, ArticleSentiment,
+    SentimentDaily, Signal,
+)
 
 BATCH_SIZE = 500
 
 
-def upsert_ohlcv(df: pd.DataFrame) -> int:
+# ---------------------------------------------------------------------------
+# Generic bulk-upsert helper
+# ---------------------------------------------------------------------------
+
+def _bulk_upsert(session, model, records, conflict_cols, update_cols):
+    """Bulk upsert records into a table."""
+    if not records:
+        return
+    for i in range(0, len(records), BATCH_SIZE):
+        batch = records[i : i + BATCH_SIZE]
+        stmt = sqlite_insert(model.__table__).values(batch)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=conflict_cols,
+            set_={col: stmt.excluded[col] for col in update_cols},
+        )
+        session.execute(stmt)
+    session.commit()
+
+
+# ---------------------------------------------------------------------------
+# Upsert functions
+# ---------------------------------------------------------------------------
+
+def upsert_ohlcv(df: pd.DataFrame, session=None) -> int:
     if df.empty:
         print("No OHLCV data to upsert.")
         return 0
 
-    sb = get_supabase()
-    records = _df_to_records(df)
-    total = 0
+    own_session = session is None
+    if own_session:
+        session = SessionLocal()
 
-    num_batches = math.ceil(len(records) / BATCH_SIZE)
-    print(f"Upserting {len(records)} OHLCV rows in {num_batches} batches...")
+    try:
+        records = _df_to_records(df)
+        total = len(records)
 
-    for i in range(0, len(records), BATCH_SIZE):
-        batch = records[i : i + BATCH_SIZE]
-        sb.table("ohlcv").upsert(batch, on_conflict="symbol,date").execute()
-        total += len(batch)
-        batch_num = (i // BATCH_SIZE) + 1
-        if batch_num % 5 == 0 or batch_num == num_batches:
-            print(f"  OHLCV batch {batch_num}/{num_batches} done ({total} rows)")
+        num_batches = math.ceil(total / BATCH_SIZE)
+        print(f"Upserting {total} OHLCV rows in {num_batches} batches...")
 
-    print(f"Upserted {total} OHLCV rows.")
-    return total
+        _bulk_upsert(
+            session, Ohlcv, records,
+            conflict_cols=["symbol", "date"],
+            update_cols=["open", "high", "low", "close", "adj_close", "volume"],
+        )
+
+        print(f"Upserted {total} OHLCV rows.")
+        return total
+    finally:
+        if own_session:
+            session.close()
 
 
-def upsert_indicators(df: pd.DataFrame) -> int:
+def upsert_indicators(df: pd.DataFrame, session=None) -> int:
     if df.empty:
         print("No indicator data to upsert.")
         return 0
 
-    sb = get_supabase()
-    records = _df_to_records(df)
-    total = 0
+    own_session = session is None
+    if own_session:
+        session = SessionLocal()
 
-    num_batches = math.ceil(len(records) / BATCH_SIZE)
-    print(f"Upserting {len(records)} indicator rows in {num_batches} batches...")
+    try:
+        records = _df_to_records(df)
+        total = len(records)
 
-    for i in range(0, len(records), BATCH_SIZE):
-        batch = records[i : i + BATCH_SIZE]
-        sb.table("technical_indicators").upsert(batch, on_conflict="symbol,date").execute()
-        total += len(batch)
-        batch_num = (i // BATCH_SIZE) + 1
-        if batch_num % 5 == 0 or batch_num == num_batches:
-            print(f"  Indicators batch {batch_num}/{num_batches} done ({total} rows)")
+        num_batches = math.ceil(total / BATCH_SIZE)
+        print(f"Upserting {total} indicator rows in {num_batches} batches...")
 
-    print(f"Upserted {total} indicator rows.")
-    return total
+        _bulk_upsert(
+            session, TechnicalIndicator, records,
+            conflict_cols=["symbol", "date"],
+            update_cols=[
+                "rsi_14", "macd_line", "macd_signal", "macd_hist",
+                "bb_upper", "bb_middle", "bb_lower",
+                "sma_20", "sma_50", "ema_12", "ema_26",
+                "atr_14", "obv",
+            ],
+        )
+
+        print(f"Upserted {total} indicator rows.")
+        return total
+    finally:
+        if own_session:
+            session.close()
 
 
-def upsert_news_articles(articles: list[dict]) -> int:
+def upsert_news_articles(articles: list[dict], session=None) -> int:
     if not articles:
         return 0
 
-    sb = get_supabase()
-    total = 0
+    own_session = session is None
+    if own_session:
+        session = SessionLocal()
 
-    for i in range(0, len(articles), BATCH_SIZE):
-        batch = articles[i : i + BATCH_SIZE]
-        sb.table("news_articles").upsert(batch, on_conflict="url").execute()
-        total += len(batch)
+    try:
+        _bulk_upsert(
+            session, NewsArticle, articles,
+            conflict_cols=["url"],
+            update_cols=["title", "source", "published_at"],
+        )
 
-    print(f"Upserted {total} news articles.")
-    return total
+        total = len(articles)
+        print(f"Upserted {total} news articles.")
+        return total
+    finally:
+        if own_session:
+            session.close()
 
 
-def upsert_article_sentiments(sentiments: list[dict]) -> int:
+def upsert_article_sentiments(sentiments: list[dict], session=None) -> int:
     if not sentiments:
         return 0
 
-    sb = get_supabase()
-    total = 0
+    own_session = session is None
+    if own_session:
+        session = SessionLocal()
 
-    for i in range(0, len(sentiments), BATCH_SIZE):
-        batch = sentiments[i : i + BATCH_SIZE]
-        sb.table("article_sentiments").upsert(
-            batch, on_conflict="article_id,symbol"
-        ).execute()
-        total += len(batch)
+    try:
+        _bulk_upsert(
+            session, ArticleSentiment, sentiments,
+            conflict_cols=["article_id", "symbol"],
+            update_cols=[
+                "positive_prob", "negative_prob", "neutral_prob",
+                "sentiment_label", "relevance_score", "computed_at",
+            ],
+        )
 
-    print(f"Upserted {total} article sentiments.")
-    return total
+        total = len(sentiments)
+        print(f"Upserted {total} article sentiments.")
+        return total
+    finally:
+        if own_session:
+            session.close()
 
 
-def upsert_daily_sentiment(records_list: list[dict]) -> int:
+def upsert_daily_sentiment(records_list: list[dict], session=None) -> int:
     if not records_list:
         return 0
 
-    sb = get_supabase()
-    total = 0
+    own_session = session is None
+    if own_session:
+        session = SessionLocal()
 
-    for i in range(0, len(records_list), BATCH_SIZE):
-        batch = records_list[i : i + BATCH_SIZE]
-        sb.table("sentiment_daily").upsert(
-            batch, on_conflict="symbol,date"
-        ).execute()
-        total += len(batch)
+    try:
+        _bulk_upsert(
+            session, SentimentDaily, records_list,
+            conflict_cols=["symbol", "date"],
+            update_cols=[
+                "avg_sentiment", "positive_avg", "negative_avg",
+                "neutral_avg", "article_count",
+            ],
+        )
 
-    print(f"Upserted {total} daily sentiment rows.")
-    return total
+        total = len(records_list)
+        print(f"Upserted {total} daily sentiment rows.")
+        return total
+    finally:
+        if own_session:
+            session.close()
 
 
-def upsert_signals(signals: list[dict]) -> int:
+def upsert_signals(signals: list[dict], session=None) -> int:
     if not signals:
         return 0
 
-    sb = get_supabase()
-    total = 0
+    own_session = session is None
+    if own_session:
+        session = SessionLocal()
 
-    for i in range(0, len(signals), BATCH_SIZE):
-        batch = signals[i : i + BATCH_SIZE]
-        sb.table("signals").upsert(batch, on_conflict="symbol,date").execute()
-        total += len(batch)
+    try:
+        _bulk_upsert(
+            session, Signal, signals,
+            conflict_cols=["symbol", "date"],
+            update_cols=[
+                "technical_score", "sentiment_score", "momentum_score",
+                "composite_score", "signal", "confidence", "explanation",
+            ],
+        )
 
-    print(f"Upserted {total} signal rows.")
-    return total
+        total = len(signals)
+        print(f"Upserted {total} signal rows.")
+        return total
+    finally:
+        if own_session:
+            session.close()
 
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
 def _df_to_records(df: pd.DataFrame) -> list[dict]:
     """Convert DataFrame to list of dicts, replacing NaN with None."""

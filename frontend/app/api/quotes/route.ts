@@ -34,7 +34,7 @@ type BackendIndexQuote = {
 };
 
 const API_BASE =
-  process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 const CACHE_TTL_MS = 10_000;
 const MAX_SYMBOLS = 25;
