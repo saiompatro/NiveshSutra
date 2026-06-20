@@ -5,8 +5,8 @@ from backend.models.db_models import Stock, Ohlcv, Signal, TechnicalIndicator
 
 from ..services.market_data import (
     fetch_historical_daily,
-    fetch_live_quotes_batch,
     get_quote_with_fallback,
+    get_quotes_with_fallback_batch,
     merge_live_quote_into_history,
 )
 from ..validation import require_stock_symbol
@@ -49,15 +49,16 @@ async def list_stocks_live(
     for row in signals:
         signal_map.setdefault(row.symbol, row.signal)
 
-    quote_map = fetch_live_quotes_batch(
+    quote_map = get_quotes_with_fallback_batch(
+        db,
         {stock.symbol: stock.yf_ticker for stock in stocks}
     )
 
     enriched = []
     for stock in stocks:
-        quote = quote_map.get(stock.symbol) or get_quote_with_fallback(
-            db, stock.symbol, stock.yf_ticker
-        )
+        quote = quote_map.get(stock.symbol)
+        if not quote:
+            continue
         enriched.append(
             {
                 "symbol": stock.symbol,

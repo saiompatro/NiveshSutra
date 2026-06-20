@@ -13,7 +13,7 @@ beautifulsoup4>=4.12.0
 
 # Data processing
 pandas>=2.2.0
-pandas-ta>=0.3.14b
+# pandas-ta>=0.3.14b  # requires Python <3.14; install manually if needed
 numpy>=1.26.0
 scipy>=1.11.0
 plotly>=5.18.0

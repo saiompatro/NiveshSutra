@@ -661,33 +661,57 @@ def get_latest_db_bars(db: Session, symbols: list[str]) -> dict[str, list[dict[s
     return grouped
 
 
+def quote_from_db_bars(symbol: str, rows: list[dict[str, Any]]) -> QuoteSnapshot | None:
+    if not rows:
+        return None
+
+    latest = rows[0]
+    previous = rows[1] if len(rows) > 1 else latest
+    previous_close = float(previous.get("close", latest.get("close", 0)) or 0)
+    price = float(latest.get("close", 0) or 0)
+    change = price - previous_close
+    change_pct = (change / previous_close * 100) if previous_close else 0.0
+
+    return QuoteSnapshot(
+        provider_symbol=symbol,
+        price=price,
+        previous_close=previous_close,
+        change=change,
+        change_pct=change_pct,
+        open=float(latest.get("open", 0) or 0),
+        high=float(latest.get("high", 0) or 0),
+        low=float(latest.get("low", 0) or 0),
+        volume=int(latest.get("volume", 0) or 0),
+        latest_trading_day=str(latest.get("date") or ""),
+        provider="database",
+    )
+
+
+def get_quotes_with_fallback_batch(
+    db: Session,
+    requests_map: dict[str, str | None],
+) -> dict[str, QuoteSnapshot]:
+    quotes = fetch_live_quotes_batch(requests_map)
+    missing_symbols = [symbol for symbol in requests_map if symbol not in quotes]
+    if not missing_symbols:
+        return quotes
+
+    db_bars = get_latest_db_bars(db, missing_symbols)
+    for symbol in missing_symbols:
+        quote = quote_from_db_bars(symbol, db_bars.get(symbol, []))
+        if quote:
+            quotes[symbol] = quote
+    return quotes
+
+
 def get_quote_with_fallback(db: Session, symbol: str, preferred_ticker: str | None = None) -> QuoteSnapshot:
     try:
         return fetch_live_quote(symbol, preferred_ticker)
     except Exception:
-        rows = get_latest_db_bars(db, [symbol]).get(symbol, [])
-        if not rows:
+        quote = quote_from_db_bars(symbol, get_latest_db_bars(db, [symbol]).get(symbol, []))
+        if not quote:
             raise
-
-        latest = rows[0]
-        previous = rows[1] if len(rows) > 1 else latest
-        previous_close = float(previous.get("close", latest.get("close", 0)) or 0)
-        price = float(latest.get("close", 0) or 0)
-        change = price - previous_close
-        change_pct = (change / previous_close * 100) if previous_close else 0.0
-        return QuoteSnapshot(
-            provider_symbol=symbol,
-            price=price,
-            previous_close=previous_close,
-            change=change,
-            change_pct=change_pct,
-            open=float(latest.get("open", 0) or 0),
-            high=float(latest.get("high", 0) or 0),
-            low=float(latest.get("low", 0) or 0),
-            volume=int(latest.get("volume", 0) or 0),
-            latest_trading_day=str(latest.get("date") or ""),
-            provider="database",
-        )
+        return quote
 
 
 def merge_live_quote_into_history(history: list[dict[str, Any]], quote: QuoteSnapshot) -> list[dict[str, Any]]:
